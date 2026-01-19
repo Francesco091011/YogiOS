@@ -1,35 +1,35 @@
-; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; =============================================================================
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; This is loaded from the drive by BOOTLOAD.BIN, as KERNEL.BIN.
-; First we have the system call vectors, which start at a static point
-; for programs to use. Following that is the main kernel code and
-; then additional system call code is included.
-; ==================================================================
+; Esto es cargado desde el drive por BOOTLOAD.BIN, como KERNEL.BIN.
+; Primero tenemos los system call vectors, que inician en un punto estático
+; para que usen los programas. Siguiendo lo que es el código del kernel
+; principal y también código adicional de llamadas al sistema es incluído.
+; =============================================================================
 
 
 	BITS 16
 
-	%DEFINE MIKEOS_VER '4.5'	; OS version number
-	%DEFINE MIKEOS_API_VER 16	; API version for programs to check
+	%DEFINE YOGIOS_VER '0.1'	; Número de versión del SO
+	%DEFINE YOGIOS_API_VER 1	; Versión API para que chequeen los
+                                        ; programas
 
-
-	; This is the location in RAM for kernel disk operations, 24K
-	; after the point where the kernel has loaded; it's 8K in size,
-	; because external programs load after it at the 32K point:
+	; Esta es la ubicación en RAM para operaciones de disco del kernel, 24K
+	; después del punto donde el kernel ha sido cargado; es 8K en tamaño,
+	; porque programas externos cargan después de eso en el punto de 32K:
 
 	disk_buffer	equ	24576
 
 
 ; ------------------------------------------------------------------
-; OS CALL VECTORS -- Static locations for system call vectors
-; Note: these cannot be moved, or it'll break the calls!
+; OS CALL VECTORS -- Ubicaciones estáticas para system call vectors
+; Nota: estos no pueden ser movidos, o romperán las calls!
 
-; The comments show exact locations of instructions in this section,
-; and are used in programs/mikedev.inc so that an external program can
-; use a MikeOS system call without having to know its exact position
-; in the kernel source code...
+; Los comentarios muestran ubicaciones exactas de instrucciones en esta
+; sección, y son usados en programas/yogidev.inc así que un programa externo
+; puede usar una llamada al sistema de YogiOS sin tener que conocer su posición
+; exacta en el código fuente del kernel...
 
 os_call_vectors:
 	jmp os_main			; 0000h -- Called from bootloader
@@ -108,220 +108,220 @@ os_call_vectors:
 ; START OF MAIN KERNEL CODE
 
 os_main:
-	cli				; Clear interrupts
+	cli				; Limpia interruptores
 	mov ax, 0
-	mov ss, ax			; Set stack segment and pointer
+	mov ss, ax			; Poner el segmento stack y apuntador
 	mov sp, 0FFFFh
-	sti				; Restore interrupts
+	sti				; Restaurar interruptores
 
-	cld				; The default direction for string operations
-					; will be 'up' - incrementing address in RAM
+	cld				; La dirección predeterminada para operaciones de
+					; texto será 'up' - incrementando dirección en RAM
 
-	mov ax, 2000h			; Set all segments to match where kernel is loaded
-	mov ds, ax			; After this, we don't need to bother with
-	mov es, ax			; segments ever again, as MikeOS and its programs
-	mov fs, ax			; live entirely in 64K
+	mov ax, 2000h			; Poner todos los segmentos to match donde el kernel
+	mov ds, ax			; es cargado. Después de eso, no necesitaremos
+	mov es, ax			; fastidiarnos con segmentos no más, como YogiOS y sus
+	mov fs, ax			; programas viven enteramente en 64K
 	mov gs, ax
 
 	cmp dl, 0
 	je no_change
-	mov [bootdev], dl		; Save boot device number
+	mov [bootdev], dl		; Guardar el boot device number
 	push es
-	mov ah, 8			; Get drive parameters
+	mov ah, 8			; Obtener drive parameters
 	int 13h
 	pop es
-	and cx, 3Fh			; Maximum sector number
-	mov [SecsPerTrack], cx		; Sector numbers start at 1
-	movzx dx, dh			; Maximum head number
-	add dx, 1			; Head numbers start at 0 - add 1 for total
+	and cx, 3Fh			; Número máximo de sector
+	mov [SecsPerTrack], cx		; Números de sector incian en 1
+	movzx dx, dh			; Número máximo de cabecera
+	add dx, 1			; Números de cabecera incian en 0 - añadir 1 para el total
 	mov [Sides], dx
 
 no_change:
-	mov ax, 1003h			; Set text output with certain attributes
+	mov ax, 1003h			; Poner texto de salida con ciertos atributos
 	mov bx, 0			; to be bright, and not blinking
 	int 10h
 
-	call os_seed_random		; Seed random number generator
+	call os_seed_random		; Generador de número aleatorio por semilla
 
 
-	; Let's see if there's a file called AUTORUN.BIN and execute
-	; it if so, before going to the program launcher menu
+	; Vamos a ver si hay un archivo llamado AUTORUN.BIN y ejecutarlo si es que sí,
+	; antes de ir al menú de lanzador de programas
 
 	mov ax, autorun_bin_file_name
 	call os_file_exists
-	jc no_autorun_bin		; Skip next three lines if AUTORUN.BIN doesn't exist
+	jc no_autorun_bin		; Saltar las siguientes tres líneas si AUTORUN.BIN no existe
 
-	mov cx, 32768			; Otherwise load the program into RAM...
+	mov cx, 32768			; Si no, cargar el programa al RAM...
 	call os_load_file
-	jmp execute_bin_program		; ...and move on to the executing part
+	jmp execute_bin_program		; ...y moverlo a la parte ejecutable
 
 
-	; Or perhaps there's an AUTORUN.BAS file?
+	; O más bien habrá un archivo AUTORUN.BAS?
 
 no_autorun_bin:
 	mov ax, autorun_bas_file_name
 	call os_file_exists
-	jc option_screen		; Skip next section if AUTORUN.BAS doesn't exist
+	jc option_screen		; Saltar la sección siguiente si AUTORUN.BAS no existe
 
-	mov cx, 32768			; Otherwise load the program into RAM
+	mov cx, 32768			; Si no, cargar el programa en el RAM
 	call os_load_file
 	call os_clear_screen
 	mov ax, 32768
-	call os_run_basic		; Run the kernel's BASIC interpreter
+	call os_run_basic		; Correr el intérprete BASIC del kernel
 
-	jmp app_selector		; And go to the app selector menu when BASIC ends
+	jmp app_selector		; E ir al menú selector de aplicaciones cuando BASIC termine
 
 
-	; Now we display a dialog box offering the user a choice of
-	; a menu-driven program selector, or a command-line interface
+	; Ahora mostramos una caja de diálogo ofreciendo al usuario la opción de
+	; un selector de progrmaas menu-driven, o una interfaz a línea de comando
 
 option_screen:
-	mov ax, os_init_msg		; Set up the welcome screen
+	mov ax, os_init_msg		; Poner la pantalla de bienvenida
 	mov bx, os_version_msg
-	mov cx, 10011111b		; Colour: white text on light blue
+	mov cx, 10011111b		; Color: texto blanco en fondo celeste
 	call os_draw_background
 
-	mov ax, dialog_string_1		; Ask if user wants app selector or command-line
-	mov bx, dialog_string_2
+	mov ax, dialog_string_1		; Pedir si el usuario quiere el selector
+	mov bx, dialog_string_2         ; de aplicaciones o líneas de comando
 	mov cx, dialog_string_3
-	mov dx, 1			; We want a two-option dialog box (OK or Cancel)
+	mov dx, 1			; Queremos una caja de diálogo con dos opciones (OK o Cancelar)
 	call os_dialog_box
 
-	cmp ax, 1			; If OK (option 0) chosen, start app selector
+	cmp ax, 1			; Si OK (opción 0) escogido, iniciar selector de apps
 	jne near app_selector
 
-	call os_clear_screen		; Otherwise clean screen and start the CLI
+	call os_clear_screen		; Si no limpiar pantalla e iniciar el CLI
 	call os_command_line
 
-	jmp option_screen		; Offer menu/CLI choice after CLI has exited
+	jmp option_screen		; Ofrecer menu/CLI opciones después CLI haya salido.
 
 
 	; Data for the above code...
 
-	os_init_msg		db 'Welcome to MikeOS', 0
-	os_version_msg		db 'Version ', MIKEOS_VER, 0
+	os_init_msg		db 'Bienvenido a YogiOS', 0
+	os_version_msg		db 'Version ', YOGIOS_VER, 0
 
-	dialog_string_1		db 'Thanks for trying out MikeOS!', 0
-	dialog_string_2		db 'Please select an interface: OK for the', 0
-	dialog_string_3		db 'program menu, Cancel for command line.', 0
+	dialog_string_1		db 'Gracias por probar YogiOS!', 0
+	dialog_string_2		db 'Por favor seleccionar una interfaz: OK para el', 0
+	dialog_string_3		db 'menú de programas, Cancelar para líneas de comando.', 0
 
 
 
 app_selector:
-	mov ax, os_init_msg		; Draw main screen layout
+	mov ax, os_init_msg		; Dibujar diseño de pantalla principal
 	mov bx, os_version_msg
-	mov cx, 10011111b		; Colour: white text on light blue
+	mov cx, 10011111b		; Color: texto blanco en fondo celeste
 	call os_draw_background
 
-	call os_file_selector		; Get user to select a file, and store
-					; the resulting string location in AX
-					; (other registers are undetermined)
+	call os_file_selector		; Hacer al usuario seleccionar un archivo, y guardar
+					; la ubicación del texto resultante en AX
+					; (otros registros son indeterminados)
 
-	jc option_screen		; Return to the CLI/menu choice screen if Esc pressed
+	jc option_screen		; Regresar a la pantalla de escogida CLI/menu si Esc presionado
 
-	mov si, ax			; Did the user try to run 'KERNEL.BIN'?
+	mov si, ax			; El usuario trató de correr 'KERNEL.BIN'?
 	mov di, kern_file_name
 	call os_string_compare
-	jc no_kernel_execute		; Show an error message if so
+	jc no_kernel_execute		; Mostrar un mensaje de error si es que sí.
 
 
-	; Next, we need to check that the program we're attempting to run is
-	; valid -- in other words, that it has a .BIN extension
+	; Luego, necesitamos chequear que el programa que estamos tratando de correr es
+	; válido -- en otras palabras, que tiene la extensión .BIN
 
-	push si				; Save filename temporarily
+	push si				; Guardar nombre de archivo temporalmente
 
 	mov bx, si
 	mov ax, si
 	call os_string_length
 
 	mov si, bx
-	add si, ax			; SI now points to end of filename...
+	add si, ax			; SI ahora apunta al final del nombre de archivo...
 
 	dec si
 	dec si
-	dec si				; ...and now to start of extension!
+	dec si				; ...y ahora a iniciar la extensión!
 
 	mov di, bin_ext
 	mov cx, 3
-	rep cmpsb			; Are final 3 chars 'BIN'?
-	jne not_bin_extension		; If not, it might be a '.BAS'
+	rep cmpsb			; Son los últimos 3 carácteres 'BIN'?
+	jne not_bin_extension		; Si no, sería un '.BAS'
 
-	pop si				; Restore filename
+	pop si				; Restaurar nombre de archivo
 
 
 	mov ax, si
-	mov cx, 32768			; Where to load the program file
-	call os_load_file		; Load filename pointed to by AX
+	mov cx, 32768			; Donde cargar el archivo de programa
+	call os_load_file		; Cargar nombre de archivo apuntado por AX
 
 
 execute_bin_program:
-	call os_clear_screen		; Clear screen before running
+	call os_clear_screen		; Limpiar pantalla antes de correr
 
-	mov ax, 0			; Clear all registers
+	mov ax, 0			; Limpiar todos los registros
 	mov bx, 0
 	mov cx, 0
 	mov dx, 0
 	mov si, 0
 	mov di, 0
 
-	call 32768			; Call the external program code,
-					; loaded at second 32K of segment
-					; (program must end with 'ret')
+	call 32768			; Llamar el código del programa externo,
+					; cargado al segundo segmento de 32K
+					; (el programa debe terminar en 'ret')
 
-	call os_clear_screen		; When finished, clear screen
-	jmp app_selector		; and go back to the program list
+	call os_clear_screen		; Cuando terminado, limpiar pantalla
+	jmp app_selector		; y volver a la lista de programas
 
 
-no_kernel_execute:			; Warn about trying to executing kernel!
+no_kernel_execute:			; Advertencia sobre tratando de ejecutar el kernel!
 	mov ax, kerndlg_string_1
 	mov bx, kerndlg_string_2
 	mov cx, kerndlg_string_3
-	mov dx, 0			; One button for dialog box
+	mov dx, 0			; Un botón para la caja de diálogo
 	call os_dialog_box
 
-	jmp app_selector		; Start over again...
+	jmp app_selector		; Iniciar de nuevo...
 
 
 not_bin_extension:
-	pop si				; We pushed during the .BIN extension check
+	pop si				; We pushed durante el chequeo de la extensión .BIN
 
-	push si				; Save it again in case of error...
+	push si				; Guardarlo de nuevo en caso de error...
 
 	mov bx, si
 	mov ax, si
 	call os_string_length
 
 	mov si, bx
-	add si, ax			; SI now points to end of filename...
+	add si, ax			; SI ahora apunta al fin de nombre de archivo...
 
 	dec si
 	dec si
-	dec si				; ...and now to start of extension!
+	dec si				; ...y ahora a iniciar la extensión!
 
 	mov di, bas_ext
 	mov cx, 3
-	rep cmpsb			; Are final 3 chars 'BAS'?
-	jne not_bas_extension		; If not, error out
+	rep cmpsb			; Son los últimos 3 carácteres 'BAS'?
+	jne not_bas_extension		; Si no, sale error
 
 
 	pop si
 
 	mov ax, si
-	mov cx, 32768			; Where to load the program file
-	call os_load_file		; Load filename pointed to by AX
+	mov cx, 32768			; Donde cargar el archivo de programa
+	call os_load_file		; Cargar nombre de archivo apuntado por AX
 
-	call os_clear_screen		; Clear screen before running
+	call os_clear_screen		; Limpiar pantalla antes de correr
 
 	mov ax, 32768
-	mov si, 0			; No params to pass
-	call os_run_basic		; And run our BASIC interpreter on the code!
+	mov si, 0			; No parámetros para pasar
+	call os_run_basic		; Y correr nuestro intérprete BASIC en el códgio!
 
 	mov si, basic_finished_msg
 	call os_print_string
 	call os_wait_for_key
 
 	call os_clear_screen
-	jmp app_selector		; and go back to the program list
+	jmp app_selector		; y volver a la lista de programas
 
 
 not_bas_extension:
@@ -330,13 +330,13 @@ not_bas_extension:
 	mov ax, ext_string_1
 	mov bx, ext_string_2
 	mov cx, 0
-	mov dx, 0			; One button for dialog box
+	mov dx, 0			; Un botón para la caja de diálogo
 	call os_dialog_box
 
-	jmp app_selector		; Start over again...
+	jmp app_selector		; Iniciar de nuevo...
 
 
-	; And now data for the above code...
+	; Y ahora datos para el código antes mencionado...
 
 	kern_file_name		db 'KERNEL.BIN', 0
 
@@ -346,27 +346,27 @@ not_bas_extension:
 	bin_ext			db 'BIN'
 	bas_ext			db 'BAS'
 
-	kerndlg_string_1	db 'Cannot load and execute MikeOS kernel!', 0
-	kerndlg_string_2	db 'KERNEL.BIN is the core of MikeOS, and', 0
-	kerndlg_string_3	db 'is not a normal program.', 0
+	kerndlg_string_1	db 'No se pudo cargar y ejecutar el kernel de YogiOS!', 0
+	kerndlg_string_2	db 'KERNEL.BIN es el corazón de YogiOS, y', 0
+	kerndlg_string_3	db 'no es un programa normal.', 0
 
-	ext_string_1		db 'Invalid filename extension! You can', 0
-	ext_string_2		db 'only execute .BIN or .BAS programs.', 0
+	ext_string_1		db 'Extensión del archivo inválido! Solo', 0
+	ext_string_2		db 'puedes ejecutar programas .BIN o .BAS.', 0
 
-	basic_finished_msg	db '>>> BASIC program finished -- press a key', 0
+	basic_finished_msg	db '>>> Programa BASIC terminado -- presionar una tecla', 0
 
 
 ; ------------------------------------------------------------------
-; SYSTEM VARIABLES -- Settings for programs and system calls
+; VARIABLES DE SISTEMA -- Ajustes para programas y llamadas a sistema
 
 
-	; Time and date formatting
+	; Formateo de hora y fecha
 
-	fmt_12_24	db 0		; Non-zero = 24-hr format
+	fmt_12_24	db 0		; No-cero = formato 24-hr
 
 	fmt_date	db 0, '/'	; 0, 1, 2 = M/D/Y, D/M/Y or Y/M/D
-					; Bit 7 = use name for months
-					; If bit 7 = 0, second byte = separator character
+					; Bit 7 = usa nombre para meses
+					; Si bit 7 = 0, segundo byte = carácter separador
 
 
 ; ------------------------------------------------------------------
@@ -386,6 +386,6 @@ not_bas_extension:
 
 
 ; ==================================================================
-; END OF KERNEL
+; FIN DEL KERNEL
 ; ==================================================================
 
