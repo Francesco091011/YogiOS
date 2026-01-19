@@ -1,225 +1,232 @@
-; ==================================================================
-; The Mike Operating System bootloader
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; =============================================================================
+; El arrancador del Yogi Operating System (Sistema Operativo YOGI)
+; Copyright (C) 2026 FAEH Premiu,
 ;
-; Based on a free boot loader by E Dehling. It scans the FAT12
-; floppy for KERNEL.BIN (the MikeOS kernel), loads it and executes it.
-; This must grow no larger than 512 bytes (one sector), with the final
-; two bytes being the boot signature (AA55h). Note that in FAT12,
-; a cluster is the same as a sector: 512 bytes.
-; ==================================================================
+; Basado en un arrancador libre de E Dehling. Escanea el diskete FAT12 para el
+; KERNEL.BIN (el kernel de YogiOS), lo carga y lo ejecuta.
+; Esto debería crecer no más que 512 bytes (one sector), con los últimos dos
+; bytes siendo el signo de arranque (AA55h). Note que en FAT12, un cluster es
+; lo mismo que un sector: 512 bytes.
+; =============================================================================
 
 
 	BITS 16
 
-	jmp short bootloader_start	; Jump past disk description section
+	jmp short bootloader_start	; Salta a la sección de descripción del 
+                                        ; disco.
 	nop				; Pad out before disk description
 
 
 ; ------------------------------------------------------------------
-; Disk description table, to make it a valid floppy
-; Note: some of these values are hard-coded in the source!
-; Values are those used by IBM for 1.44 MB, 3.5" diskette
+; Tabla de descripción del disco, para hacerlo un diskete válido.
+; Nota: algunos de estos valores están hard-coded en el código!
+; Valores son los usados por IBM para disketes de 1.44 MB y 3.5".
 
-OEMLabel		db "MIKEBOOT"	; Disk label
-BytesPerSector		dw 512		; Bytes per sector
-SectorsPerCluster	db 1		; Sectors per cluster
-ReservedForBoot		dw 1		; Reserved sectors for boot record
-NumberOfFats		db 2		; Number of copies of the FAT
-RootDirEntries		dw 224		; Number of entries in root dir
-					; (224 * 32 = 7168 = 14 sectors to read)
-LogicalSectors		dw 2880		; Number of logical sectors
-MediumByte		db 0F0h		; Medium descriptor byte
-SectorsPerFat		dw 9		; Sectors per FAT
-SectorsPerTrack		dw 18		; Sectors per track (36/cylinder)
-Sides			dw 2		; Number of sides/heads
-HiddenSectors		dd 0		; Number of hidden sectors
-LargeSectors		dd 0		; Number of LBA sectors
+OEMLabel		db "MIKEBOOT"	; Nombre de disco
+BytesPerSector		dw 512		; Bytes por sector
+SectorsPerCluster	db 1		; Sectores por cluster
+ReservedForBoot		dw 1		; Sectores reservados para grabación de
+                                        ; arranque
+NumberOfFats		db 2		; Número de copias del FAT
+RootDirEntries		dw 224		; Número de entradas en el directorio
+					; root (224*32=7168=14 sectores porleer)
+LogicalSectors		dw 2880		; Número de sectores lógicos
+MediumByte		db 0F0h		; Byte descriptor medio
+SectorsPerFat		dw 9		; Sectores por FAT
+SectorsPerTrack		dw 18		; Sectores por track (36/cilindro)
+Sides			dw 2		; Número de lados/cabeceras
+HiddenSectors		dd 0		; Número de sectores ocultps
+LargeSectors		dd 0		; Número de sectores LBA
 DriveNo			dw 0		; Drive No: 0
-Signature		db 41		; Drive signature: 41 for floppy
-VolumeID		dd 00000000h	; Volume ID: any number
-VolumeLabel		db "MIKEOS     "; Volume Label: any 11 chars
-FileSystem		db "FAT12   "	; File system type: don't change!
+Signature		db 41		; Drive signature: 41 para diskete
+VolumeID		dd 00000000h	; ID de Volumen: cualquier número
+VolumeLabel		db "MIKEOS     "; Volume Label: cualquier once caráct.
+FileSystem		db "FAT12   "	; File system tipo: no cambiarlo!
 
 
 ; ------------------------------------------------------------------
 ; Main bootloader code
 
 bootloader_start:
-	mov ax, 07C0h			; Set up 4K of stack space above buffer
-	add ax, 544			; 8k buffer = 512 paragraphs + 32 paragraphs (loader)
-	cli				; Disable interrupts while changing stack
+	mov ax, 07C0h			; Poner 4K de espacio stack sobre el
+                                        ; buffer
+	add ax, 544			; 8k buffer = 512 parágrafos + 32 
+                                        ; parágrafos (loader)
+	cli				; Deshabilita interruptores al cambiar stack
 	mov ss, ax
 	mov sp, 4096
-	sti				; Restore interrupts
+	sti				; Restaura interruptores
 
-	mov ax, 07C0h			; Set data segment to where we're loaded
+	mov ax, 07C0h			; Pone segmentos de datos donde estamos
+                                        ; cargados.
 	mov ds, ax
 
-	; NOTE: A few early BIOSes are reported to improperly set DL
+	; NOTA: Algunos BIOSes iniciales son repportados de impropiamente poner en DL
 
 	cmp dl, 0
 	je no_change
-	mov [bootdev], dl		; Save boot device number
-	mov ah, 8			; Get drive parameters
+	mov [bootdev], dl		; Guardar número de dispositivo boot
+	mov ah, 8			; Obtener parámetros del drive.
 	int 13h
 	jc fatal_disk_error
-	and cx, 3Fh			; Maximum sector number
-	mov [SectorsPerTrack], cx	; Sector numbers start at 1
-	movzx dx, dh			; Maximum head number
-	add dx, 1			; Head numbers start at 0 - add 1 for total
+	and cx, 3Fh			; Máximo número de sector
+	mov [SectorsPerTrack], cx	; Números de sector inicia en 1
+	movzx dx, dh			; Máximo número de cabecera
+	add dx, 1			; Números de cabecera inicia en 0 -
+                                        ; añadir 1 for total
 	mov [Sides], dx
 
 no_change:
-	mov eax, 0			; Needed for some older BIOSes
+	mov eax, 0			; Necesitado para algunos BIOSes viejos.
 
 
-; First, we need to load the root directory from the disk. Technical details:
+; Primero, necesitamos cargar el directorio root desde el disco. Detalles técnicos:
 ; Start of root = ReservedForBoot + NumberOfFats * SectorsPerFat = logical 19
 ; Number of root = RootDirEntries * 32 bytes/entry / 512 bytes/sector = 14
 ; Start of user data = (start of root) + (number of root) = logical 33
 
-floppy_ok:				; Ready to read first block of data
-	mov ax, 19			; Root dir starts at logical sector 19
+floppy_ok:				; Listo para leer el primer bloque de datos
+	mov ax, 19			; Directorio Root inicia en el sector lógico 19
 	call l2hts
 
-	mov si, buffer			; Set ES:BX to point to our buffer (see end of code)
+	mov si, buffer			; Poner ES:BX para apuntar a nuestro buffer
+                                        ; (ver fin del código)
 	mov bx, ds
 	mov es, bx
 	mov bx, si
 
-	mov ah, 2			; Params for int 13h: read floppy sectors
-	mov al, 14			; And read 14 of them
+	mov ah, 2			; Parámetros para int 13h: leer sectores de diskete
+	mov al, 14			; Y leer 14 de esos
 
-	pusha				; Prepare to enter loop
+	pusha				; Preparar para entrar en bucle
 
 
 read_root_dir:
-	popa				; In case registers are altered by int 13h
+	popa				; En caso registros son alterados por int 13h
 	pusha
 
-	stc				; A few BIOSes do not set properly on error
-	int 13h				; Read sectors using BIOS
+	stc				; Algunos BIOSes no lo ponen propiamente por error
+	int 13h				; Leer sectores usando BIOS
 
-	jnc search_dir			; If read went OK, skip ahead
-	call reset_floppy		; Otherwise, reset floppy controller and try again
-	jnc read_root_dir		; Floppy reset OK?
+	jnc search_dir			; Si lectura fue OK, saltar ahead
+	call reset_floppy		; Si no, resetear controlador de diskete y reintentarlo
+	jnc read_root_dir		; Reseteo de diskete OK?
 
-	jmp reboot			; If not, fatal double error
+	jmp reboot			; Si no, doble error fatal
 
 
 search_dir:
 	popa
 
-	mov ax, ds			; Root dir is now in [buffer]
-	mov es, ax			; Set DI to this info
+	mov ax, ds			; Directorio Root está ahora en [buffer]
+	mov es, ax			; Poner DI en esta info
 	mov di, buffer
 
-	mov cx, word [RootDirEntries]	; Search all (224) entries
-	mov ax, 0			; Searching at offset 0
+	mov cx, word [RootDirEntries]	; Buscar todas las entradas (224)
+	mov ax, 0			; Buscando en el offset 0
 
 
 next_root_entry:
-	xchg cx, dx			; We use CX in the inner loop...
+	xchg cx, dx			; Usamos CX in the inner loop...
 
-	mov si, kern_filename		; Start searching for kernel filename
+	mov si, kern_filename		; Iniciar búsqueda para el kernel filename
 	mov cx, 11
 	rep cmpsb
-	je found_file_to_load		; Pointer DI will be at offset 11
+	je found_file_to_load		; Apuntador DI estará en el offset 11
 
 	add ax, 32			; Bump searched entries by 1 (32 bytes per entry)
 
-	mov di, buffer			; Point to next entry
+	mov di, buffer			; Apuntar a la siguiente entrada
 	add di, ax
 
-	xchg dx, cx			; Get the original CX back
+	xchg dx, cx			; Tener el CX original de vuelta
 	loop next_root_entry
 
-	mov si, file_not_found		; If kernel is not found, bail out
+	mov si, file_not_found		; Si kernel no se encuentra, bail out
 	call print_string
 	jmp reboot
 
 
-found_file_to_load:			; Fetch cluster and load FAT into RAM
-	mov ax, word [es:di+0Fh]	; Offset 11 + 15 = 26, contains 1st cluster
+found_file_to_load:			; Fetch cluster y cargar FAT en la RAM
+	mov ax, word [es:di+0Fh]	; Offset 11 + 15 = 26, contiene el 1er cluster
 	mov word [cluster], ax
 
-	mov ax, 1			; Sector 1 = first sector of first FAT
+	mov ax, 1			; Sector 1 = primer sector del primer FAT
 	call l2hts
 
-	mov di, buffer			; ES:BX points to our buffer
+	mov di, buffer			; ES:BX apunta a nuestro buffer
 	mov bx, di
 
-	mov ah, 2			; int 13h params: read (FAT) sectors
-	mov al, 9			; All 9 sectors of 1st FAT
+	mov ah, 2			; int 13h parámetris: leer (FAT) sectores
+	mov al, 9			; Todos los 9 sectores del 1er FAT
 
-	pusha				; Prepare to enter loop
+	pusha				; Preparar para entran en bucle
 
 
 read_fat:
-	popa				; In case registers are altered by int 13h
+	popa				; En caso registros son alterados por int 13h
 	pusha
 
 	stc
-	int 13h				; Read sectors using the BIOS
+	int 13h				; Leer sectores usando la BIOS
 
-	jnc read_fat_ok			; If read went OK, skip ahead
-	call reset_floppy		; Otherwise, reset floppy controller and try again
-	jnc read_fat			; Floppy reset OK?
+	jnc read_fat_ok			; Si lectura fue OK, saltar ahead
+	call reset_floppy		; Si no, resetear controlador de diskete y reintentar
+	jnc read_fat			; Reseteo de diskete OK?
 
 ; ******************************************************************
 fatal_disk_error:
 ; ******************************************************************
-	mov si, disk_error		; If not, print error message and reboot
+	mov si, disk_error		; si no, imprimir mensaje de error y reinicia.
 	call print_string
-	jmp reboot			; Fatal double error
+	jmp reboot			; Doble error fatal
 
 
 read_fat_ok:
 	popa
 
-	mov ax, 2000h			; Segment where we'll load the kernel
+	mov ax, 2000h			; Segmento donde cargaremos el kernel
 	mov es, ax
 	mov bx, 0
 
-	mov ah, 2			; int 13h floppy read params
+	mov ah, 2			; int 13h floppy lee params
 	mov al, 1
 
-	push ax				; Save in case we (or int calls) lose it
+	push ax				; Guardar en caso nosotros (o llamadas int) lo perdamos
 
 
-; Now we must load the FAT from the disk. Here's how we find out where it starts:
+; Ahora debemos cargar el FAT desde el disco. Aquí es como encontramos donde inicia:
 ; FAT cluster 0 = media descriptor = 0F0h
 ; FAT cluster 1 = filler cluster = 0FFh
 ; Cluster start = ((cluster number) - 2) * SectorsPerCluster + (start of user)
 ;               = (cluster number) + 31
 
 load_file_sector:
-	mov ax, word [cluster]		; Convert sector to logical
+	mov ax, word [cluster]		; Convertir sector a lógico
 	add ax, 31
 
-	call l2hts			; Make appropriate params for int 13h
+	call l2hts			; Hacer parámetros apropiados para int 13h
 
 	mov ax, 2000h			; Set buffer past what we've already read
 	mov es, ax
 	mov bx, word [pointer]
 
-	pop ax				; Save in case we (or int calls) lose it
+	pop ax				; Guardar en caso nosotros (o llamadas int) lo perdamos.
 	push ax
 
 	stc
 	int 13h
 
-	jnc calculate_next_cluster	; If there's no error...
+	jnc calculate_next_cluster	; Si no hay error...
 
-	call reset_floppy		; Otherwise, reset floppy and retry
+	call reset_floppy		; Si no, resetear diskete y reintentar
 	jmp load_file_sector
 
 
-	; In the FAT, cluster values are stored in 12 bits, so we have to
-	; do a bit of maths to work out whether we're dealing with a byte
-	; and 4 bits of the next byte -- or the last 4 bits of one byte
-	; and then the subsequent byte!
+	; En el FAT, valores de clusteres están guardados en 12 bits, así que tenemos
+	; que hacer un par de mates para descubrir si es que estamos trabajando con un
+	; byte y 4 bits del byte siguiente -- o los últimos 4 bits de un byte y el byte
+	; siguiente!
 
 calculate_next_cluster:
 	mov ax, [cluster]
@@ -232,13 +239,14 @@ calculate_next_cluster:
 	add si, ax			; AX = word in FAT for the 12 bit entry
 	mov ax, word [ds:si]
 
-	or dx, dx			; If DX = 0 [cluster] is even; if DX = 1 then it's odd
+	or dx, dx			; Si DX = 0 [cluster] es par; if DX = 1 entonces es impar
 
-	jz even				; If [cluster] is even, drop last 4 bits of word
-					; with next cluster; if odd, drop first 4 bits
+	jz even				; Si [cluster] es par, echar los últimos 4 bits de la
+					; palabra con el siguiente cluster; si impar, echar los 
+                                        ; primeros 4 bits
 
 odd:
-	shr ax, 4			; Shift out first 4 bits (they belong to another entry)
+	shr ax, 4			; Shift out first 4 bits (ellos pertenecen a una otra entrada)
 	jmp short next_cluster_cont
 
 
@@ -247,20 +255,20 @@ even:
 
 
 next_cluster_cont:
-	mov word [cluster], ax		; Store cluster
+	mov word [cluster], ax		; Guardar cluster
 
-	cmp ax, 0FF8h			; FF8h = end of file marker in FAT12
+	cmp ax, 0FF8h			; FF8h = marcador de fin de archivo en FAT12
 	jae end
 
 	add word [pointer], 512		; Increase buffer pointer 1 sector length
 	jmp load_file_sector
 
 
-end:					; We've got the file to load!
-	pop ax				; Clean up the stack (AX was pushed earlier)
-	mov dl, byte [bootdev]		; Provide kernel with boot device info
+end:					; Ya tenemos el archivo por cargar!
+	pop ax				; Limpiar el stack (AX was pushed anteriormente)
+	mov dl, byte [bootdev]		; Dar al kernel el boot device info
 
-	jmp 2000h:0000h			; Jump to entry point of loaded kernel!
+	jmp 2000h:0000h			; Saltar al punto de entrada al kernel cargado!
 
 
 ; ------------------------------------------------------------------
@@ -268,21 +276,21 @@ end:					; We've got the file to load!
 
 reboot:
 	mov ax, 0
-	int 16h				; Wait for keystroke
+	int 16h				; Espera para keystroke
 	mov ax, 0
-	int 19h				; Reboot the system
+	int 19h				; Reinicia el sistema
 
 
-print_string:				; Output string in SI to screen
+print_string:				; Texto de salida en SI a la pantalla
 	pusha
 
 	mov ah, 0Eh			; int 10h teletype function
 
 .repeat:
-	lodsb				; Get char from string
+	lodsb				; Obtener carácter de texto
 	cmp al, 0
-	je .done			; If char is zero, end of string
-	int 10h				; Otherwise, print it
+	je .done			; Si el carácter es 0, fin del texto
+	int 10h				; Si no, imprimirlo
 	jmp short .repeat
 
 .done:
@@ -302,30 +310,30 @@ reset_floppy:		; IN: [bootdev] = boot device; OUT: carry set on error
 	ret
 
 
-l2hts:			; Calculate head, track and sector settings for int 13h
-			; IN: logical sector in AX, OUT: correct registers for int 13h
+l2hts:			; Calcular ajustes de cabecera, track y sector para int 13h
+			; IN: sector lógico in AX, OUT: registros correctos para int 13h
 	push bx
 	push ax
 
-	mov bx, ax			; Save logical sector
+	mov bx, ax			; Guardar sector lógico
 
-	mov dx, 0			; First the sector
+	mov dx, 0			; Primero el sector
 	div word [SectorsPerTrack]
-	add dl, 01h			; Physical sectors start at 1
-	mov cl, dl			; Sectors belong in CL for int 13h
+	add dl, 01h			; Sectores físicos inician en 1
+	mov cl, dl			; Sectores pertenecen en CL para int 13h
 	mov ax, bx
 
-	mov dx, 0			; Now calculate the head
+	mov dx, 0			; Ahora calcular la cabecera
 	div word [SectorsPerTrack]
 	mov dx, 0
 	div word [Sides]
-	mov dh, dl			; Head/side
+	mov dh, dl			; Cabecera/lado
 	mov ch, al			; Track
 
 	pop ax
 	pop bx
 
-	mov dl, byte [bootdev]		; Set correct device
+	mov dl, byte [bootdev]		; Poner dispositivo correcto
 
 	ret
 
@@ -333,14 +341,14 @@ l2hts:			; Calculate head, track and sector settings for int 13h
 ; ------------------------------------------------------------------
 ; STRINGS AND VARIABLES
 
-	kern_filename	db "KERNEL  BIN"	; MikeOS kernel filename
+	kern_filename	db "KERNEL  BIN"	; YogiOS kernel filename
 
-	disk_error	db "Floppy error! Press any key...", 0
-	file_not_found	db "KERNEL.BIN not found!", 0
+	disk_error	db "Error de diskete! Presionar cualquier tecla...", 0
+	file_not_found	db "KERNEL.BIN no encontrado!", 0
 
 	bootdev		db 0 	; Boot device number
-	cluster		dw 0 	; Cluster of the file we want to load
-	pointer		dw 0 	; Pointer into Buffer, for loading kernel
+	cluster		dw 0 	; Cluster del archivo que queremos cargar
+	pointer		dw 0 	; Apuntador al Buffer, para cargar el kernel
 
 
 ; ------------------------------------------------------------------
