@@ -1,24 +1,24 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; KEYBOARD HANDLING ROUTINES
+; RUTINAS DE MANEJO DE TECLADO
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_wait_for_key -- Waits for keypress and returns key
-; IN: Nothing; OUT: AX = key pressed, other regs preserved
+; os_wait_for_key -- Espera para presión de tecla y entrega la tecla
+; IN: Nothing; OUT: AX = tecla presionada, otros registros preservados
 
 os_wait_for_key:
 	pusha
 
 	mov ax, 0
-	mov ah, 10h			; BIOS call to wait for key
+	mov ah, 10h			; llamada a BIOS a esperar una tecla
 	int 16h
 
-	mov [.tmp_buf], ax		; Store resulting keypress
+	mov [.tmp_buf], ax		; Guardar tecla presionada resultante
 
-	popa				; But restore all other regs
+	popa				; Pero restaura los demás registros
 	mov ax, [.tmp_buf]
 	ret
 
@@ -27,30 +27,30 @@ os_wait_for_key:
 
 
 ; ------------------------------------------------------------------
-; os_check_for_key -- Scans keyboard for input, but doesn't wait
-; IN: Nothing; OUT: AX = 0 if no key pressed, otherwise scan code
+; os_check_for_key -- Escanea teclado para entrada, pero no espera
+; IN: Nothing; OUT: AX = 0 si no tecla presionada, sino escaneo de código
 
 os_check_for_key:
 	pusha
 
 	mov ax, 0
-	mov ah, 1			; BIOS call to check for key
+	mov ah, 1			; Llamada de BIOS para chequear por tecla
 	int 16h
 
-	jz .nokey			; If no key, skip to end
+	jz .nokey			; Si no tecla, saltar al final
 
-	mov ax, 0			; Otherwise get it from buffer
+	mov ax, 0			; Si no, obténlo del buffer
 	int 16h
 
-	mov [.tmp_buf], ax		; Store resulting keypress
+	mov [.tmp_buf], ax		; Guardar tecla presionada resultante
 
-	popa				; But restore all other regs
+	popa				; Pero restaura los demás registros
 	mov ax, [.tmp_buf]
 	ret
 
 .nokey:
 	popa
-	mov ax, 0			; Zero result if no key pressed
+	mov ax, 0			; Resultado cero si ninguna tecla presionada
 	ret
 
 

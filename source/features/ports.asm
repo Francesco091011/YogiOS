@@ -1,13 +1,13 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; PORT INPUT AND OUTPUT ROUTINES
+; RUTINAS DE PUERTOS DE ENTRADA Y SALIDA
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_port_byte_out -- Send byte to a port
-; IN: DX = port address, AL = byte to send
+; os_port_byte_out -- Mandar byte a un  puerto
+; IN: DX = dirección del puerto, AL = byte por mandar
 
 os_port_byte_out:
 	pusha
@@ -19,9 +19,9 @@ os_port_byte_out:
 
 
 ; ------------------------------------------------------------------
-; os_port_byte_in -- Receive byte from a port
-; IN: DX = port address
-; OUT: AL = byte from port
+; os_port_byte_in -- Recibe byte de un puerto
+; IN: DX = dirección de puerto
+; OUT: AL = byte de puerto
 
 os_port_byte_in:
 	pusha
@@ -38,13 +38,13 @@ os_port_byte_in:
 
 
 ; ------------------------------------------------------------------
-; os_serial_port_enable -- Set up the serial port for transmitting data
-; IN: AX = 0 for normal mode (9600 baud), or 1 for slow mode (1200 baud)
+; os_serial_port_enable -- Poner el puerto serial para trasmitir datos
+; IN: AX = 0 para modo normal (9600 baud), or 1 para modo lento (1200 baud)
 
 os_serial_port_enable:
 	pusha
 
-	mov dx, 0			; Configure serial port 1
+	mov dx, 0			; Configurar puerto serial 1
 	cmp ax, 1
 	je .slow_mode
 
@@ -64,8 +64,8 @@ os_serial_port_enable:
 
 
 ; ------------------------------------------------------------------
-; os_send_via_serial -- Send a byte via the serial port
-; IN: AL = byte to send via serial; OUT: AH = Bit 7 clear on success
+; os_send_via_serial -- Mandar un byte via el puerto serial
+; IN: AL = byte para mandar via serial; OUT: AH = Bit 7 limpio en éxito
 
 os_send_via_serial:
 	pusha
@@ -88,8 +88,8 @@ os_send_via_serial:
 
 
 ; ------------------------------------------------------------------
-; os_get_via_serial -- Get a byte from the serial port
-; OUT: AL = byte that was received; OUT: AH = Bit 7 clear on success
+; os_get_via_serial -- Recibir un byte desde el puerto serial
+; OUT: AL = byte que fue recibido; OUT: AH = Bit 7 limpio en éxito
 
 os_get_via_serial:
 	pusha

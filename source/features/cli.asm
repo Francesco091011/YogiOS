@@ -1,8 +1,8 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; COMMAND LINE INTERFACE
+; INTERFAZ DE LÍNEAS DE COMANDO
 ; ==================================================================
 
 
@@ -556,14 +556,14 @@ exit:
 
 	prompt			db '> ', 0
 
-	help_text		db 'Commands: DIR, COPY, REN, DEL, CAT, SIZE, CLS, HELP, TIME, DATE, VER, EXIT', 13, 10, 0
-	invalid_msg		db 'No such command or program', 13, 10, 0
-	nofilename_msg		db 'No filename or not enough filenames', 13, 10, 0
-	notfound_msg		db 'File not found', 13, 10, 0
-	writefail_msg		db 'Could not write file. Write protected or invalid filename?', 13, 10, 0
-	exists_msg		db 'Target file already exists!', 13, 10, 0
+	help_text		db 'Comandos: DIR, COPY, REN, DEL, CAT, SIZE, CLS, HELP, TIME, DATE, VER, EXIT', 13, 10, 0
+	invalid_msg		db 'No existe tal comando o programa', 13, 10, 0
+	nofilename_msg		db 'No hay o no son suficentes nombres de archivos?', 13, 10, 0
+	notfound_msg		db 'Archivo no encontrado', 13, 10, 0
+	writefail_msg		db 'No se pudo escribir el archivo. Protegido solo-lectura o nombre de archivo inválido?', 13, 10, 0
+	exists_msg		db 'El archivo de destino ya existe!', 13, 10, 0
 
-	version_msg		db 'MikeOS ', MIKEOS_VER, 13, 10, 0
+	version_msg		db 'YogiOS ', YOGIOS_VER, 13, 10, 0
 
 	exit_string		db 'EXIT', 0
 	help_string		db 'HELP', 0
@@ -579,7 +579,7 @@ exit:
 	size_string		db 'SIZE', 0
 
 	kern_file_string	db 'KERNEL', 0
-	kern_warn_msg		db 'Cannot execute kernel file!', 13, 10, 0
+	kern_warn_msg		db 'No se pudo ejecutar el archivo del kernel!', 13, 10, 0
 
 
 ; ==================================================================

@@ -1,8 +1,8 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; BASIC CODE INTERPRETER (4.5)
+; INTÉRPRETE DE CÓDIGO BASIC (0.1)
 ; ==================================================================
 
 ; ------------------------------------------------------------------
@@ -19,8 +19,8 @@
 
 
 ; ------------------------------------------------------------------
-; The BASIC interpreter execution starts here -- a parameter string
-; is passed in SI and copied into the first string, unless SI = 0
+; La ejecución del intérprete BASIC inicia aquí -- un parámetro de texto
+; es pasado en SI y copiado en el primer texto, a menos que SI = 0
 
 os_run_basic:
 	mov word [orig_stack], sp		; Save stack pointer -- we might jump to the

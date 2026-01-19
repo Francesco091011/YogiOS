@@ -1,22 +1,22 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; PC SPEAKER SOUND ROUTINES
+; RUTINAS DE SONIDOS DE PC SPEAKER
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_speaker_tone -- Generate PC speaker tone (call os_speaker_off to turn off)
-; IN: AX = note frequency; OUT: Nothing (registers preserved)
+; os_speaker_tone -- Genera tono de PC speaker (call os_speaker_off to turn off)
+; IN: AX = nota frecuancia; OUT: Nothing (registros preservados)
 
 os_speaker_tone:
 	pusha
 
-	mov cx, ax			; Store note value for now
+	mov cx, ax			; Guardar valor de nota por ahora
 
 	mov al, 182
 	out 43h, al
-	mov ax, cx			; Set up frequency
+	mov ax, cx			; Poner frecuencia
 	out 42h, al
 	mov al, ah
 	out 42h, al
@@ -30,8 +30,8 @@ os_speaker_tone:
 
 
 ; ------------------------------------------------------------------
-; os_speaker_off -- Turn off PC speaker
-; IN/OUT: Nothing (registers preserved)
+; os_speaker_off -- Apagar el PC speaker
+; IN/OUT: Nothing (registros preservados)
 
 os_speaker_off:
 	pusha

@@ -1,32 +1,32 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- El kernel del Yogi Operating System
+; Copyright (C) 2026 FAEH Premium
 ;
-; MATH ROUTINES
+; RUTINAS MATEMÁTICAS
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_seed_random -- Seed the random number generator based on clock
-; IN: Nothing; OUT: Nothing (registers preserved)
+; os_seed_random -- Semilla del generador de números aleatorios basado en el reloj
+; IN: Nothing; OUT: Nothing (registros preservados)
 
 os_seed_random:
 	push bx
 	push ax
 
 	mov bx, 0
-	mov al, 0x02			; Minute
+	mov al, 0x02			; Minuto
 	out 0x70, al
 	in al, 0x71
 
 	mov bl, al
 	shl bx, 8
-	mov al, 0			; Second
+	mov al, 0			; Segundo
 	out 0x70, al
 	in al, 0x71
 	mov bl, al
 
-	mov word [os_random_seed], bx	; Seed will be something like 0x4435 (if it
-					; were 44 minutes and 35 seconds after the hour)
+	mov word [os_random_seed], bx	; Semilla será algo como 0x4435 (si fuera
+					; 44 minutos y 35 segundos después de la hora)
 	pop ax
 	pop bx
 	ret
@@ -36,16 +36,16 @@ os_seed_random:
 
 
 ; ------------------------------------------------------------------
-; os_get_random -- Return a random integer between low and high (inclusive)
-; IN: AX = low integer, BX = high integer
-; OUT: CX = random integer
+; os_get_random -- Da un entero aleatorio entre bajo y alto (inclusivos)
+; IN: AX = entero bajo, BX = entero alto
+; OUT: CX = entero aleatorio
 
 os_get_random:
 	push dx
 	push bx
 	push ax
 
-	sub bx, ax			; We want a number between 0 and (high-low)
+	sub bx, ax			; Queremos un número entre 0 y (alto-bajo)
 	call .generate_random
 	mov dx, bx
 	add dx, 1
@@ -55,7 +55,7 @@ os_get_random:
 	pop ax
 	pop bx
 	pop dx
-	add cx, ax			; Add the low offset back
+	add cx, ax			; Añadir el offset bajo de vuelta
 	ret
 
 
@@ -64,7 +64,7 @@ os_get_random:
 	push bx
 
 	mov ax, [os_random_seed]
-	mov dx, 0x7383			; The magic number (random.org)
+	mov dx, 0x7383			; El número mágico (random.org)
 	mul dx				; DX:AX = AX * DX
 	mov [os_random_seed], ax
 
@@ -74,26 +74,26 @@ os_get_random:
 
 
 ; ------------------------------------------------------------------
-; os_bcd_to_int -- Converts binary coded decimal number to an integer
-; IN: AL = BCD number; OUT: AX = integer value
+; os_bcd_to_int -- Convierte número decimal codificado en binario a un entero
+; IN: AL = BCD número; OUT: AX = valor entero
 
 os_bcd_to_int:
 	pusha
 
-	mov bl, al			; Store entire number for now
+	mov bl, al			; Guarda el número entero por ahora
 
 	and ax, 0Fh			; Zero-out high bits
-	mov cx, ax			; CH/CL = lower BCD number, zero extended
+	mov cx, ax			; CH/CL = bajo número BCD, cero extendido
 
-	shr bl, 4			; Move higher BCD number into lower bits, zero fill msb
+	shr bl, 4			; Mover número BCD más alto en los bits más bajos, zero fill msb
 	mov al, 10
 	mul bl				; AX = 10 * BL
 
-	add ax, cx			; Add lower BCD to 10*higher
+	add ax, cx			; Añadir BCD bajos a 10*altos
 	mov [.tmp], ax
 
 	popa
-	mov ax, [.tmp]			; And return it in AX!
+	mov ax, [.tmp]			; Y regresarlo en AX!
 	ret
 
 
@@ -101,8 +101,8 @@ os_bcd_to_int:
 
 
 ; ------------------------------------------------------------------
-; os_long_int_negate -- Multiply value in DX:AX by -1
-; IN: DX:AX = long integer; OUT: DX:AX = -(initial DX:AX)
+; os_long_int_negate -- Valor múltiplo en DX:AX by -1
+; IN: DX:AX = entero largo; OUT: DX:AX = -(initial DX:AX)
 
 os_long_int_negate:
 	neg ax

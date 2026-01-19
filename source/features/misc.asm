@@ -1,51 +1,51 @@
 ; ==================================================================
-; MikeOS -- The Mike Operating System kernel
-; Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+; YogiOS -- The Yogi Operating System kernel
+; Copyright (C) 2026 FAEH Premium
 ;
-; MISCELLANEOUS ROUTINES
+; RUTINAS MISCELÁNEAS
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_get_api_version -- Return current version of MikeOS API
-; IN: Nothing; OUT: AL = API version number
+; os_get_api_version -- Regresa versión actual del YogiOS API
+; IN: Nothing; OUT: AL = número de versión API
 
 os_get_api_version:
-	mov al, MIKEOS_API_VER
+	mov al, YOGIOS_API_VER
 	ret
 
 
 ; ------------------------------------------------------------------
-; os_pause -- Delay execution for specified 110ms chunks
-; IN: AX = 100 millisecond chunks to wait (max delay is 32767,
-;     which multiplied by 55ms = 1802 seconds = 30 minutes)
+; os_pause -- Retrasa la ejecución por trozos específicos de 110ms
+; IN: AX = trozos de 100 milisegundos por esperar (máx. tardanza es 32767,
+;     que multiplicado por 55ms = 1802 segundos = 30 minutos)
 
 os_pause:
 	pusha
 	cmp ax, 0
-	je .time_up			; If delay = 0 then bail out
+	je .time_up			; Si retraso = 0 entonces bail out
 
 	mov cx, 0
-	mov [.counter_var], cx		; Zero the counter variable
+	mov [.counter_var], cx		; Vacía la variable contadora
 
 	mov bx, ax
 	mov ax, 0
-	mov al, 2			; 2 * 55ms = 110mS
-	mul bx				; Multiply by number of 110ms chunks required 
-	mov [.orig_req_delay], ax	; Save it
+	mov al, 2			; 2 * 55ms = 110ms
+	mul bx				; Multiplicador por el número de trozos de 110ms requerido
+	mov [.orig_req_delay], ax	; Guárdalo
 
 	mov ah, 0
-	int 1Ah				; Get tick count	
+	int 1Ah				; Obtener contador de tick	
 
-	mov [.prev_tick_count], dx	; Save it for later comparison
+	mov [.prev_tick_count], dx	; Guárdalo para comparación posterior
 
 .checkloop:
 	mov ah,0
-	int 1Ah				; Get tick count again
+	int 1Ah				; Obtener contador de tick de nuevo
 
-	cmp [.prev_tick_count], dx	; Compare with previous tick count
+	cmp [.prev_tick_count], dx	; Comparar con el contador de tick previo
 
-	jne .up_date			; If it's changed check it
-	jmp .checkloop			; Otherwise wait some more
+	jne .up_date			; Si cambió, chequéalo
+	jmp .checkloop			; Si no, espere un poco más
 
 .time_up:
 	popa
@@ -56,12 +56,12 @@ os_pause:
 	inc ax
 	mov [.counter_var], ax
 
-	cmp ax, [.orig_req_delay]	; Is counter_var = required delay?
-	jge .time_up			; Yes, so bail out
+	cmp ax, [.orig_req_delay]	; Es counter_var = retraso requerido?
+	jge .time_up			; Sí, así, retírese
 
-	mov [.prev_tick_count], dx	; No, so update .prev_tick_count 
+	mov [.prev_tick_count], dx	; No, así actualiza .prev_tick_count 
 
-	jmp .checkloop			; And go wait some more
+	jmp .checkloop			; Y anda a esperar un poco más
 
 
 	.orig_req_delay		dw	0
@@ -70,18 +70,18 @@ os_pause:
 
 
 ; ------------------------------------------------------------------
-; os_fatal_error -- Display error message and halt execution
-; IN: AX = error message string location
+; os_fatal_error -- Muestra mensaje de error y ejecución de halt¡
+; IN: AX = ubicación del texto del mensaje de error
 
 os_fatal_error:
-	mov bx, ax			; Store string location for now
+	mov bx, ax			; Guardar ubicación del texto por aghora
 
 	mov dh, 0
 	mov dl, 0
 	call os_move_cursor
 
 	pusha
-	mov ah, 09h			; Draw red bar at top
+	mov ah, 09h			; Dibuja barra roja encima
 	mov bh, 0
 	mov cx, 240
 	mov bl, 01001111b
@@ -93,16 +93,16 @@ os_fatal_error:
 	mov dl, 0
 	call os_move_cursor
 
-	mov si, .msg_inform		; Inform of fatal error
+	mov si, .msg_inform		; Informe de error fatal
 	call os_print_string
 
-	mov si, bx			; Program-supplied error message
+	mov si, bx			; Mensaje de error dado por programa
 	call os_print_string
 
-	jmp $				; Halt execution
+	jmp $				; Ejecución halt
 
 	
-	.msg_inform		db '>>> FATAL OPERATING SYSTEM ERROR', 13, 10, 0
+	.msg_inform		db '>>> ERROR FATAL DEL SISTEMA OPERATIVO', 13, 10, 0
 
 
 ; ==================================================================
