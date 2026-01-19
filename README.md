@@ -1,7 +1,7 @@
 YogiOS
 ======
 
-Open source 16-bit operating system for x86 PCs
+Sistema operativo a 16 bits de código abierto para PCs x86
 -----------------------------------------------
 
 ```
@@ -13,26 +13,23 @@ YogiOS es un sistema operativo a 16 bits para PCs compatibles con x86, escritos 
 CD-ROM o USB. Se caracteriza por su interfaz de diálogo orientado a usuario basado en texto, una línea de comando, soporte para FAT12 (tipo MS-DOS) disketes, sonido (PC speaker), editor de texto, interpretador de BASIC y más.
 The kernel includes over 60 system calls.
 
-YogiOS es una herramienta educativa para los que desean entender la construcción de un SO simple y ensamblaje x86. Quick getting-started guide: MikeOS can 
-run from a floppy disk or CD-ROM, either on an emulator or a real PC. 
-See the disk_images/ directory for files that you can write to the 
-appropriate media or boot in, for instance, VMware, QEMU or VirtualBox.
+YogiOS es una herramienta educativa para los que desean entender la construcción de un SO simple y ensamblaje x86. Guía rápida de iniciación: MikeOS puede correr desde un diskete o CD-ROM, y también en un emulador o una PC real. 
+Vea el directorio disk_images/ para archivos que puedas escribir en el medio apropiado o bootear desde VMware, QEMU o VirtualBox.
 
-You can find the source code in the source/ directory, and sample 
-programs (included on the disk images) in the programs/ directory.
-See the doc/ directory for more info, including:
+Puedes encontrar el código fuente en el directorio source/, y programas de ejemplo (incluídos en las imágenes de disco) en el directorio programs/. 
+Vea el directorio doc/  para más información, incluyendo:
 
 - [handbook-user.html](doc/handbook-user.html) -- How to run and use MikeOS
 
-- [handbook-appdev-basic.html](doc/handbook-appdev-basic.html) -- Writing software in BASIC
-- [handbook-appdev-asm.html](doc/handbook-appdev-asm.html) -- Writing software in assembly
-- [handbook-sysdev.html](doc/handbook-sysdev.html) -- Building and modifying the OS
+- [handbook-appdev-basic.html](doc/handbook-appdev-basic.html) -- Escribiendo software en BASIC
+- [handbook-appdev-asm.html](doc/handbook-appdev-asm.html) -- Escribiendo software en assembly
+- [handbook-sysdev.html](doc/handbook-sysdev.html) -- Construcción y modificación del SO
 
-- [LICENSE.TXT](doc/LICENSE.TXT) -- The open source, BSD-like license
-- [CHANGES.TXT](doc/CHANGES.TXT) -- Detailed list of changes in previous releases
-- [CREDITS.TXT](doc/CREDITS.TXT) -- People involved in the project
+- [LICENSE.TXT](doc/LICENSE.TXT) -- La licencia de código abierto original, tipo BSD respetado. 
+- [CHANGES.TXT](doc/CHANGES.TXT) -- Detallada lista de cambios en lanzamientos previos de MikeOS. 
+- [CREDITS.TXT](doc/CREDITS.TXT) -- Personas involucradas en el proyecto de MikeOS. 
 
-Have fun, and see the [website](http://mikeos.sourceforge.net)
+Diviértere, y agradezco al creador de MikeOS: [el sitio web](http://mikeos.sourceforge.net)
 
 [Mike Saunders](mailto:okachi@gmail.com)
 
