@@ -201,10 +201,9 @@ option_screen:
 	os_init_msg		db 'Bienvenido a YogiOS', 0
 	os_version_msg		db 'Version ', YOGIOS_VER, 0
 
- dialog_string_1		db 'Gracias por probar YogiOS! Por favor, seleccionar', 0
-	dialog_string_2		db 'una opcion: OK para el menu de programas, Cancelar', 0
-	dialog_string_3		db 'para lineas de comando', 0
-
+ dialog_string_1		db 'Gracias por probar YogiOS! Por favor, se-', 0
+	dialog_string_2		db 'leccionar una opcion: OK para el menu de', 0
+	dialog_string_3		db 'programas, Cancelar para lineas de comando', 0
 
 
 app_selector:
