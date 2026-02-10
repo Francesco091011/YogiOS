@@ -105,29 +105,28 @@ os_call_vectors:
 
 
 ; ------------------------------------------------------------------
-; START OF MAIN KERNEL CODE
+; INICIO DEL CÓDIGO PRINCIPAL DEL KERNEL
 
 os_main:
-	cli				; Limpia interruptores
+	cli	; Limpia interruptores
 	mov ax, 0
-	mov ss, ax			; Poner el segmento stack y apuntador
+	mov ss, ax ; Poner el segmento stack y apuntador
 	mov sp, 0FFFFh
 	sti				; Restaurar interruptores
 
-	cld				; La dirección predeterminada para operaciones de
-					; texto será 'up' - incrementando dirección en RAM
+	cld ; La dirección predeterminada para operaciones de texto será 'up' - incrementando dirección en RAM
 
-	mov ax, 2000h			; Poner todos los segmentos to match donde el kernel
-	mov ds, ax			; es cargado. Después de eso, no necesitaremos
+	mov ax, 2000h		; Poner todos los segmentos para coincidir donde el kernel
+	mov ds, ax			; está cargado. Después de eso, no necesitaremos
 	mov es, ax			; fastidiarnos con segmentos no más, como YogiOS y sus
 	mov fs, ax			; programas viven enteramente en 64K
 	mov gs, ax
 
 	cmp dl, 0
 	je no_change
-	mov [bootdev], dl		; Guardar el boot device number
+	mov [bootdev], dl		; Guardar el número del boot device
 	push es
-	mov ah, 8			; Obtener drive parameters
+	mov ah, 8			; Obtener parámetros del drive
 	int 13h
 	pop es
 	and cx, 3Fh			; Número máximo de sector
