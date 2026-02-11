@@ -177,7 +177,7 @@ no_autorun_bin:
 option_screen:
 	mov ax, os_init_msg		; Poner la pantalla de bienvenida
 	mov bx, os_version_msg
-	mov cx, 10011111b		; Color: texto blanco en fondo celeste
+	mov cx, 00011111b		; Color: texto blanco en fondo azul oscuro
 	call os_draw_background
 
 	mov ax, dialog_string_1		; Pedir si el usuario quiere el selector
@@ -208,7 +208,7 @@ option_screen:
 app_selector:
 	mov ax, os_init_msg		; Dibujar diseño de pantalla principal
 	mov bx, os_version_msg
-	mov cx, 10011111b		; Color: texto blanco en fondo celeste
+	mov cx, 00011111b		; Color: texto blanco en fondo azul oscuro
 	call os_draw_background
 
 	call os_file_selector		; Hacer al usuario seleccionar un archivo, y guardar
@@ -386,4 +386,5 @@ not_bas_extension:
 ; ==================================================================
 ; FIN DEL KERNEL
 ; ==================================================================
+
 
