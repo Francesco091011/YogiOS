@@ -1,35 +1,35 @@
-rem Calculator Application (CALC.BAS)
-rem A simple calculator application.
+rem Aplicacion de calculadora (CALC.BAS)
+rem Una calculadora sencilla.
 rem Version 2.0.1
-rem Made by Joshua Beck
-rem Released under the GNU General Public Licence version 3
-rem Send any bugs, ideas or comments to mikeosdeveloper@gmail.com
+rem Creada por Joshua Beck
+rem Publicada bajo la Licencia Publica General de GNU, version 3
+rem Enviar errores, ideas o comentarios a mikeosdeveloper@gmail.com
 
-rem Uses the MB++ Library version 3.0
-rem Avaliable at code.google.com/p/mikebasic-applications
+rem Usa la biblioteca MB++ version 3.0
+rem Disponible en code.google.com/p/mikebasic-applications
 INCLUDE "MBPP.BAS"
 
 START:
   CLS
-  REM MB++ initialise function
+  REM Inicializar las funciones de MB++
   GOSUB STARTPRG
-  REM set the text colour and highlight (for the menu)
+  REM Establecer el color del texto y el resaltado del menu
   C = 3
   H = 11
-  REM set the box colour
+  REM Establecer el color de los cuadros
   T = 2
   MOVE 30 13
-  PRINT "Calculating..."
+  PRINT "Calculando..."
 GOTO MAIN
 
 MAIN:
-  REM main menu
-  $T = "Calculator"
-  $5 = "Simple Calculations"
-  $6 = "Advanced Maths"
-  $7 = "Change Colour Scheme"
-  $8 = "About"
-  $9 = "Exit"
+  REM Menu principal
+  $T = "Calculadora"
+  $5 = "Calculos sencillos"
+  $6 = "Matematicas avanzadas"
+  $7 = "Cambiar colores"
+  $8 = "Acerca de"
+  $9 = "Salir"
   GOSUB MENUBOX
   IF V = 1 THEN GOSUB BASEMATH
   IF V = 2 THEN GOSUB ADVMATH
@@ -39,97 +39,88 @@ MAIN:
 GOTO MAIN
 
 COLCHANGE:
-  $T = "Change Colour Scheme"
-  $5 = "Input a new colour for outline, 1-255"
-  $6 = "Input a new text colour, 1-15"
+  $T = "Cambiar colores"
+  $5 = "Nuevo color del borde, 1-255"
+  $6 = "Nuevo color del texto, 1-15"
   V = 0
   GOSUB DINBOX
-  $E = "Invalid colour"
+  $E = "Color no valido"
   IF A < 1 THEN GOTO ERRBOX
   IF A > 255 THEN GOTO ERRBOX
   IF B < 1 THEN GOTO ERRBOX
   IF B > 15 THEN GOTO ERRBOX
   T = A
   C = B
-  $5 = "Input a new highlight colour, 1-15"
+  $5 = "Nuevo color de resaltado, 1-15"
   $6 = ""
   V = 0
   GOSUB INPBOX
-  $E = "Invalid colour"
+  $E = "Color no valido"
   IF V < 1 THEN GOTO ERRBOX
   IF V > 15 THEN GOTO ERRBOX
   H = V
 RETURN
   
 BASEMATH:
-  REM start the menu loop
+  REM Iniciar el bucle del menu
   DO
-    REM set the menu title
-    $T = "Simple Calculations"
-    REM set items in the menu
-    $5 = "Addition"
-    $6 = "Subtraction"
-    $7 = "Multiplication"
+    REM Definir titulo y opciones del menu
+    $T = "Calculos sencillos"
+    $5 = "Suma"
+    $6 = "Resta"
+    $7 = "Multiplicacion"
     $8 = "Division"
-    $9 = "Back"
-    REM call a menu
+    $9 = "Volver"
+    REM Mostrar el menu
     GOSUB MENUBOX
-    REM find out what they selected and gosub there
+    REM Averiguar que opcion eligio y llamar a su rutina
     IF V = 1 THEN GOSUB ADD
     IF V = 2 THEN GOSUB SUB
     IF V = 3 THEN GOSUB MUL
     IF V = 4 THEN GOSUB DIV
-  REM present the menu again unless 'back' was selected
+  REM Repetir el menu salvo que se haya elegido «Volver»
   LOOP UNTIL V = 5
   V = 0
 RETURN
 
 ADD:
-  REM INPBOX and DINBOX use V to choose between text and numerical input
-  REM we want numerical
+  REM INPBOX y DINBOX usan V para elegir entrada de texto o numerica
   V = 0
-  REM set the title
-  $T = "Addition"
-  REM first input prompt
-  $5 = "Input first number..."
-  REM second input prompt
-  $6 = "Input second number..."
-  REM DINBOX is similar to INPBOX (Print text and asks for input) but
-  REM it asks for two inputs rather than just one.
+  REM Solicitar los dos valores para la suma
+  $T = "Suma"
+  $5 = "Ingrese el primer numero..."
+  $6 = "Ingrese el segundo numero..."
+  REM DINBOX permite solicitar dos valores a la vez.
   GOSUB DINBOX
-  REM do the actual calculation
-  REM the first input is A and the second is B
+  REM Realizar la operacion: A es el primer valor y B el segundo.
   a = a + b
-  REM prompt above first number
-  $5 = "Answer is:"
-  REM prompt about second
-  REM this is set to a blank string so it won't print it (we only need one)
+  REM Mostrar el resultado; la segunda cadena queda vacia.
   $6 = ""
-  REM call a number box to print our answer
+  REM Mostrar el resultado en un cuadro numerico.
   GOSUB NUMBOX
-  REM back to main menu
+  REM Volver al menu principal.
 RETURN
 
 SUB:
   v = 0
-  $T = "Subtraction"
-  $5 = "Input number to subtract from..."
-  $6 = "Input number to subtract..."
+  $T = "Resta"
+  $5 = "Numero al que se resta..."
+  $6 = "Numero que se resta..."
   GOSUB DINBOX
   A = A - B
-  $5 = "Answer is:"
+  $5 = "Resultado:"
   $6 = ""
   GOSUB NUMBOX
 RETURN
 
 MUL:
   v = 0
-  $T = "Multiplication"
-  $5 = "Input first number..."
-  $6 = "Input second number..."
+  $T = "Multiplicacion"
+  $5 = "Ingrese el primer numero..."
+  $6 = "Ingrese el segundo numero..."
   GOSUB DINBOX
   A = A * B
-  $5 = "Answer is:"
+  $5 = "Resultado:"
   $6 = ""
   GOSUB NUMBOX
 RETURN
@@ -137,30 +128,29 @@ RETURN
 DIV:
   v = 0
   $T = "Division"
-  $5 = "Input number to be divided..."
-  $6 = "Input number to divide by..."
+  $5 = "Ingrese el dividendo..."
+  $6 = "Ingrese el divisor..."
   GOSUB DINBOX
-  REM define error message
-  REM if the divisor is zero then present this error
-  $E = "Attempted to divide by zero!"
+  REM Definir el error que se muestra si el divisor es cero.
+  $E = "No se puede dividir entre cero"
   IF B = 0 THEN GOTO ERRBOX
   D = A / B
   E = A % B
   A = D
   B = E
-  $5 = "Answer is:"
-  $6 = "Reminder is:"
+  $5 = "Resultado:"
+  $6 = "Residuo:"
   GOSUB NUMBOX
 RETURN
 
 ADVMATH:
   DO
-    $T = "Advanced Maths"
-    $5 = "Square/Cube Number"
-    $6 = "Power"
-    $7 = "Mass Addition"
-    $8 = "Mass Subtraction"
-    $9 = "Back"
+    $T = "Matematicas avanzadas"
+    $5 = "Elevar al cuadrado/cubo"
+    $6 = "Potencia"
+    $7 = "Suma acumulada"
+    $8 = "Resta acumulada"
+    $9 = "Volver"
     GOSUB MENUBOX
     IF V = 1 THEN GOSUB SQUARE
     IF V = 2 THEN GOSUB POWER
@@ -171,25 +161,25 @@ ADVMATH:
 RETURN
 
 SQUARE:
-  $T = "Square/Cube Number"
+  $T = "Elevar al cuadrado/cubo"
   $5 = ""
-  $6 = "Input a number to square and cube"
+  $6 = "Ingrese un numero para elevar al cuadrado y al cubo"
   V = 0
   GOSUB INPBOX
   A = V
   D = A
   A = A * D
   B = A * D
-  $T = "Square/Cube Number"
-  $5 = "Number Squared is:"
-  $6 = "Number Cubed is:"
+  $T = "Elevar al cuadrado/cubo"
+  $5 = "Al cuadrado:"
+  $6 = "Al cubo:"
   GOSUB NUMBOX
 RETURN
 
 POWER:
-  $T = "Power"
-  $5 = "Input a number"
-  $6 = "Input power to raise to"
+  $T = "Potencia"
+  $5 = "Ingrese un numero"
+  $6 = "Ingrese el exponente"
   V = 0
   GOSUB DINBOX
   D = A
@@ -201,69 +191,69 @@ POWER:
     B = B - 1
   LOOP UNTIL B = 1
   POWERSKIP:
-  $T = "Power"
-  $5 = "Answer is:"
+  $T = "Potencia"
+  $5 = "Resultado:"
   $6 = ""
   GOSUB NUMBOX
 RETURN
 
 MASSADD:
-  $T = "Mass Add"
-  $5 = "Enter the base number"
-  $6 = "Enter the first number to add"
+  $T = "Suma acumulada"
+  $5 = "Ingrese el numero base"
+  $6 = "Ingrese el primer sumando"
   V = 0
   GOSUB DINBOX
   N = A
   N = N + B
 ADDMORE:
-  $T = "Mass Add"
-  $5 = "Enter another number to add"
-  $6 = "or zero to finish the sum"
+  $T = "Suma acumulada"
+  $5 = "Ingrese otro sumando"
+  $6 = "o cero para terminar"
   V = 0
   GOSUB INPBOX
   N = N + V
   IF V > 0 THEN GOTO ADDMORE
-  $5 = "The base number was: "
-  $6 = "The total was: "
+  $5 = "Numero base: "
+  $6 = "Total: "
   B = N
   GOSUB NUMBOX
 RETURN
 
 MASSTAKE:
-  $T = "Mass Subtract"
-  $5 = "Enter the base number"
-  $6 = "Enter the first number to take"
+  $T = "Resta acumulada"
+  $5 = "Ingrese el numero base"
+  $6 = "Ingrese el primer sustraendo"
   V = 0
   GOSUB DINBOX
   N = A
   N = N - B
 TAKEMORE:
-  $T = "Mass Subtract"
-  $5 = "Enter another number to take"
-  $6 = "or zero to finish the sum"
+  $T = "Resta acumulada"
+  $5 = "Ingrese otro sustraendo"
+  $6 = "o cero para terminar"
   V = 0
   GOSUB INPBOX
   N = N - V
   IF V > 0 THEN GOTO TAKEMORE
-  $5 = "The base number was: "
-  $6 = "The total was: "
+  $5 = "Numero base: "
+  $6 = "Total: "
   B = N
   GOSUB NUMBOX
 RETURN 
 
 ABOUT:
-  $T = "About"
-  $5 = "Calculator, version 2.0.1"
-  $6 = "An advanced calculator application"
-  $7 = "Released under the GNU GPL v3"
-  $8 = "Written in MikeOS BASIC"
-  $9 = "Thanks to the MikeOS developers"
+  $T = "Acerca de"
+  $5 = "Calculadora, version 2.0.1"
+  $6 = "Una calculadora avanzada"
+  $7 = "Publicada bajo la licencia GNU GPL v3"
+  $8 = "Escrita en BASIC para YogiOS"
+  $9 = "Gracias al equipo de MikeOS"
   GOSUB MESBOX
 
-  $5 = "Uses the MB++ Library, version 3.0"
-  $6 = "A great TUI library"
-  $7 = "Created by Joshua Beck"
-  $8 = "Mail: mikeosdeveloper@gmail.com"
-  $9 = "Try the new mass addition/subtraction"
+  $5 = "Usa la biblioteca MB++, version 3.0"
+  $6 = "Una biblioteca de interfaz de texto"
+  $7 = "Creada por Joshua Beck"
+  $8 = "Correo: mikeosdeveloper@gmail.com"
+  $9 = "Pruebe la suma y resta acumuladas"
   GOSUB MESBOX
 RETURN

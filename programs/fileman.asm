@@ -1,5 +1,5 @@
 ; ------------------------------------------------------------------
-; Simple file manager for MikeOS: copy, delete and rename files
+; Administrador de archivos de YogiOS: copiar, borrar y renombrar archivos.
 ; ------------------------------------------------------------------
 
 
@@ -8,9 +8,9 @@
 	ORG 32768
 
 
-	; This is the point used by the disk buffer in the MikeOS kernel
-	; code; it's 24K after the kernel start, and therefore 8K before
-	; the point where programs are loaded (32K):
+	; Esta es la direccion del bufer de disco del kernel de YogiOS:
+	; esta a 24 KiB del inicio del kernel y 8 KiB antes del punto
+	; donde se cargan los programas (32 KiB).
 
 	disk_buffer	equ	24576
 
@@ -265,33 +265,33 @@ start:
 	ret
 
 
-	.command_list		db 'Delete a file,Rename a file,Copy a file,Show file size,Show disk info', 0
+	.command_list		db 'Borrar archivo,Renombrar archivo,Copiar archivo,Ver tamano,Ver informacion del disco', 0
 
-	.help_msg1		db 'Select a file operation to perform,', 0
-	.help_msg2		db 'or press the Esc key to exit...', 0
+	.help_msg1		db 'Seleccione una operacion:', 0
+	.help_msg2		db 'o pulse Esc para salir...', 0
 
-	.title_msg		db 'MikeOS File Manager', 0
-	.footer_msg		db 'Copy, rename and delete files', 0
+	.title_msg		db 'Administrador de archivos YogiOS', 0
+	.footer_msg		db 'Copiar, renombrar y borrar archivos', 0
 
-	.label_string_text	db 'Filesystem label: ', 0
+	.label_string_text	db 'Etiqueta del sistema de archivos: ', 0
 	.label_string_full	times 30 db 0
 
-	.fstype_string_text	db 'Filesystem type: ', 0
+	.fstype_string_text	db 'Tipo de sistema de archivos: ', 0
 	.fstype_string_full	times 30 db 0
 
-	.delete_confirm_msg	db 'Are you sure?', 0
+	.delete_confirm_msg	db 'Esta seguro?', 0
 
-	.filename_msg		db 'Enter filename with extension (eg FOO.BAR):', 0
+	.filename_msg		db 'Nombre y extension (p. ej., FOO.BAR):', 0
 	.filename_input		times 255 db 0
 	.filename_tmp1		times 15 db 0
 	.filename_tmp2		times 15 db 0
 
-	.size_msg		db 'File size (in bytes):', 0
+	.size_msg		db 'Tamano del archivo en bytes:', 0
 
-	.error_msg		db 'Error writing to the disk!', 0
-	.error_msg2		db 'Read-only media, or file exists!', 0
-	.err_too_large_msg	db 'File too large (max 24K)!', 0
-	.err_file_exists	db 'File of that name exists!', 0
+	.error_msg		db 'Error al escribir en el disco.', 0
+	.error_msg2		db 'Medio protegido o archivo existente.', 0
+	.err_too_large_msg	db 'Archivo supera el limite de 24 KiB.', 0
+	.err_file_exists	db 'Ya existe un archivo con ese nombre.', 0
 
 	.tmp_string1		times 15 db 0
 	.tmp_string2		times 15 db 0

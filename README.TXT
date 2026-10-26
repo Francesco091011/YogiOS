@@ -1,37 +1,35 @@
 ==================================================================
-MikeOS -- Open source 16-bit operating system for x86 PCs
-Copyright (C) 2006 - 2014 MikeOS Developers -- see doc/LICENSE.TXT
+YogiOS -- Sistema operativo de código abierto de 16 bits para PC x86
+Copyright (C) 2006 - 2014 MikeOS Developers -- consulte doc/LICENSE.TXT
 ==================================================================
 
 
-MikeOS is a 16-bit real mode operating system for x86-compatible PCs, 
-written entirely in assembly language, which boots from a floppy disk,
-CD-ROM or USB key. It features a text-based dialog-driven user
-interface, a command-line, support for FAT12 (MS-DOS-like) floppy
-disks, sound (PC speaker), text editor, BASIC interpreter and more.
-The kernel includes over 60 system calls.
+YogiOS es un sistema operativo de 16 bits en modo real para PC compatibles
+con x86, escrito enteramente en lenguaje ensamblador. Puede arrancar desde
+un disquete, un CD-ROM o una memoria USB. Incluye una interfaz de diálogos
+de texto, una línea de comandos, compatibilidad con disquetes FAT12, sonido
+mediante el altavoz interno, editor de texto, intérprete de BASIC y más.
+El kernel ofrece más de 60 llamadas al sistema.
 
-MikeOS is a learning tool for those wishing to understand simple OS 
-construction and x86 assembly. Quick getting-started guide: MikeOS can 
-run from a floppy disk or CD-ROM, either on an emulator or a real PC. 
-See the disk_images/ directory for files that you can write to the 
-appropriate media or boot in, for instance, VMware, QEMU or VirtualBox.
+YogiOS es una herramienta educativa para quienes desean aprender a construir
+un sistema operativo sencillo y conocer el ensamblador x86. Puede ejecutarse
+en un emulador o en un PC compatible. En disk_images/ encontrará imágenes que
+puede grabar en el medio correspondiente o iniciar con VMware, QEMU o VirtualBox.
 
-You can find the source code in the source/ directory, and sample 
-programs (included on the disk images) in the programs/ directory.
-See the doc/ directory for more info, including:
+El código fuente está en source/ y los programas de ejemplo, incluidos en las
+imágenes de disco, están en programs/. En doc/ encontrará más información:
 
- # handbook-user.html -- How to run and use MikeOS
+ # handbook-user.html -- Cómo iniciar y usar YogiOS
 
- # handbook-appdev-basic.html -- Writing software in BASIC
- # handbook-appdev-asm.html -- Writing software in assembly
- # handbook-sysdev.html -- Building and modifying the OS
+ # handbook-appdev-basic.html -- Programación en BASIC
+ # handbook-appdev-asm.html -- Programación en ensamblador
+ # handbook-sysdev.html -- Construcción y modificación del sistema
 
- # LICENSE.TXT -- The open source, BSD-like license
- # CHANGES.TXT -- Detailed list of changes in previous releases
- # CREDITS.TXT -- People involved in the project
+ # LICENSE.TXT -- Licencia de código abierto similar a BSD
+ # CHANGES.TXT -- Cambios detallados de versiones anteriores
+ # CREDITS.TXT -- Colaboradores del proyecto
 
-Have fun, and see the website at http://mikeos.sourceforge.net
+¡Disfrútelo! Visite el sitio web: http://mikeos.sourceforge.net
 
  -- Mike Saunders (okachi@gmail.com)
 

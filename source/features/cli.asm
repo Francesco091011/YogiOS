@@ -52,7 +52,7 @@ get_cmd:				; Main processing loop
 
 
 
-	; First, let's check to see if it's an internal command...
+	; Primero, comprobar si se trata de un comando interno.
 
 	mov ax, input
 	call os_string_uppercase
@@ -108,18 +108,18 @@ get_cmd:				; Main processing loop
 	jc near size_file
 
 
-	; If the user hasn't entered any of the above commands, then we
-	; need to check for an executable file -- .BIN or .BAS, and the
-	; user may not have provided the extension
+	; Si el usuario no introdujo ninguno de los comandos anteriores,
+	; Buscar un archivo ejecutable .BIN o .BAS; el usuario podría no haber
+	; escrito la extensión.
 
 	mov ax, command
 	call os_string_uppercase
 	call os_string_length
 
 
-	; If the user has entered, say, MEGACOOL.BIN, we want to find that .BIN
-	; bit, so we get the length of the command, go four characters back to
-	; the full stop, and start searching from there
+	; Si el usuario introdujo, por ejemplo, MEGACOOL.BIN, buscamos ese archivo .BIN
+	; Obtener la longitud del comando, retroceder cuatro caracteres hasta
+	; el punto y comenzar la búsqueda desde allí.
 
 	mov si, command
 	add si, ax
@@ -397,8 +397,8 @@ del_file:
 	jmp get_cmd
 
 
-	.success_msg	db 'Deleted file: ', 0
-	.failure_msg	db 'Could not delete file - does not exist or write protected', 13, 10, 0
+	.success_msg	db 'Archivo eliminado: ', 0
+	.failure_msg	db 'No se pudo eliminar: no existe o esta protegido contra escritura', 13, 10, 0
 
 
 ; ------------------------------------------------------------------
@@ -434,7 +434,7 @@ size_file:
 	jmp get_cmd
 
 
-	.size_msg	db 'Size (in bytes) is: ', 0
+	.size_msg	db 'Tamano en bytes: ', 0
 
 
 ; ------------------------------------------------------------------
@@ -489,7 +489,7 @@ copy_file:
 
 
 	.tmp		dw 0
-	.success_msg	db 'File copied successfully', 13, 10, 0
+	.success_msg	db 'Archivo copiado correctamente', 13, 10, 0
 
 
 ; ------------------------------------------------------------------
@@ -530,8 +530,8 @@ ren_file:
 	jmp get_cmd
 
 
-	.success_msg	db 'File renamed successfully', 13, 10, 0
-	.failure_msg	db 'Operation failed - file not found or invalid filename', 13, 10, 0
+	.success_msg	db 'Archivo renombrado correctamente', 13, 10, 0
+	.failure_msg	db 'No se pudo completar: archivo inexistente o nombre no valido', 13, 10, 0
 
 
 ; ------------------------------------------------------------------
@@ -558,10 +558,10 @@ exit:
 
 	help_text		db 'Comandos: DIR, COPY, REN, DEL, CAT, SIZE, CLS, HELP, TIME, DATE, VER, EXIT', 13, 10, 0
 	invalid_msg		db 'No existe tal comando o programa', 13, 10, 0
-	nofilename_msg		db 'No hay o no son suficentes nombres de archivos?', 13, 10, 0
+	nofilename_msg		db 'Falta un nombre de archivo o hay nombres insuficientes', 13, 10, 0
 	notfound_msg		db 'Archivo no encontrado', 13, 10, 0
-	writefail_msg		db 'No se pudo escribir el archivo. Protegido solo-lectura o nombre de archivo inválido?', 13, 10, 0
-	exists_msg		db 'El archivo de destino ya existe!', 13, 10, 0
+	writefail_msg		db 'No se pudo escribir. El archivo esta protegido o el nombre no es valido', 13, 10, 0
+	exists_msg		db 'El archivo de destino ya existe', 13, 10, 0
 
 	version_msg		db 'YogiOS ', YOGIOS_VER, 13, 10, 0
 

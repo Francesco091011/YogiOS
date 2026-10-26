@@ -1,10 +1,10 @@
-rem ASCII Artist, version 3.0.0 (DRAW.BAS)
-rem A text drawing program for MikeOS
+rem Dibujante ASCII, version 3.0.0 (DRAW.BAS)
+rem Programa de dibujo en modo texto para YogiOS
 rem Copyright (C) Joshua Beck 2002
-rem Mail: mikeosdeveloper@gmail.com
-rem Licenced under the GNU General Public Licence, see licence.txt
+rem Correo: mikeosdeveloper@gmail.com
+rem Licencia Publica General de GNU; consulte licence.txt
 
-rem Requires the MB++ library, version 3.2.2 or greater
+rem Requiere la biblioteca MB++, version 3.2.2 o posterior
 include "mbpp.bas"
 
 initlib:
@@ -13,7 +13,7 @@ initlib:
   h = 12
   t = 4
   z = 4
-  $T = "ASCII Artist"
+  $T = "Dibujante ASCII"
   gosub settitle
   gosub anistart
   gosub border
@@ -41,7 +41,7 @@ preload:
   load $3 m
   
 mainloop:
-  rem ***MAIN LOOP***
+  rem ***BUCLE PRINCIPAL***
   
   e = 2
   f = 3
@@ -101,7 +101,7 @@ render_image:
 
   w = m + 200
   string load $4 w
-  $T = "ASCII Artist - " + $4
+  $T = "Dibujante ASCII - " + $4
   gosub settitle
 
   w = d
@@ -124,7 +124,7 @@ render_image:
 return
 
 invalid_file:
-  $E = "Rendering Error: Bad file format"
+  $E = "Error de dibujo: formato de archivo incorrecto"
   gosub errbox
   gosub endprog
   
@@ -284,7 +284,7 @@ nofile:
   w = m + 10
   gosub resetkey
   w = m + 200
-  $4 = "Untitled Picture"
+  $4 = "Dibujo sin titulo"
   string store $4 w
   w = m + 261
   for x = 1 to 1596
@@ -297,12 +297,12 @@ goto mainloop
 
 mainmenu:
   do
-    $T = "             Main  Menu"
-    $5 = "               File"
-    $6 = "               Tools"
-    $7 = "               Keymap"
-    $8 = "               Help"
-    $9 = "               Exit"
+    $T = "            Menu principal"
+    $5 = "               Archivo"
+    $6 = "             Herramientas"
+    $7 = "             Mapa de teclas"
+    $8 = "                Ayuda"
+    $9 = "                Salir"
     gosub menubox
     if v = 1 then gosub filemenu
     if v = 2 then gosub toolsmenu
@@ -314,12 +314,12 @@ return
 
 filemenu:
   do
-    $T = "             File  Menu"
-    $5 = "               New"
-    $6 = "               Revert"
-    $7 = "               Load"
-    $8 = "               Save"
-    $9 = "               Save As"
+    $T = "           Menu Archivo"
+    $5 = "                Nuevo"
+    $6 = "              Restaurar"
+    $7 = "                Cargar"
+    $8 = "               Guardar"
+    $9 = "              Guardar como"
     gosub menubox
     if v = 1 then gosub newfile
     if v = 2 then gosub revert
@@ -332,12 +332,12 @@ return
 
 toolsmenu:
   do
-    $T = "            Tools  Menu"
-    $5 = "               Clear"
-    $6 = "               Fill"
-    $7 = "               Invert"
-    $8 = "        Set all backcolour"
-    $9 = "        Set all forecolour"
+    $T = "        Menu Herramientas"
+    $5 = "                Borrar"
+    $6 = "               Rellenar"
+    $7 = "               Invertir"
+    $8 = "          Cambiar fondo"
+    $9 = "          Cambiar texto"
     gosub menubox
     if v = 1 then gosub clear
     if v = 2 then gosub fill
@@ -350,12 +350,12 @@ return
 
 keymapmenu:
   do
-    $T = "            Keymap  Menu"
-    $5 = "               Reset"
-    $6 = "               Load"
-    $7 = "               Save"
-    $8 = "             Change Key"
-    $9 = "          Set all colours"
+    $T = "       Menu Mapa de teclas"
+    $5 = "               Restablecer"
+    $6 = "                Cargar"
+    $7 = "               Guardar"
+    $8 = "             Cambiar tecla"
+    $9 = "          Cambiar colores"
     gosub menubox
     if v = 1 then gosub resetkey
     if v = 2 then gosub loadkey
@@ -368,12 +368,12 @@ return
 
 helpmenu:
   do
-    $T = "             Help  Menu"
-    $5 = "               About"
-    $6 = "               Basics"
-    $7 = "               Files"
-    $8 = "               Tools"
-    $9 = "               Keymap"
+    $T = "             Menu Ayuda"
+    $5 = "               Acerca de"
+    $6 = "               Basicos"
+    $7 = "               Archivos"
+    $8 = "             Herramientas"
+    $9 = "          Mapa de teclas"
     gosub menubox
     if v = 1 then gosub help_about
     if v = 2 then gosub help_basics
@@ -395,9 +395,9 @@ newfile:
   w = m + 6
   pokeint 261 w
   
-  $T = "            New File (title)"
-  $5 = "What do you want to call the picture?"
-  $6 = "Up to 35 characters."
+  $T = "          Archivo nuevo (titulo)"
+  $5 = "Que nombre quiere darle al dibujo?"
+  $6 = "Hasta 35 caracteres."
   v = 1
   gosub inpbox
   $4 = $I
@@ -418,9 +418,9 @@ newfile:
     w = w + 1
   next x
   
-  $T = "            New File (size)"
-  $5 = "How many columns?"
-  $6 = "How many rows?"
+  $T = "          Archivo nuevo (tamano)"
+  $5 = "Cuantas columnas?"
+  $6 = "Cuantas filas?"
   v = 0
   gosub dinbox
   w = m + 8
@@ -441,26 +441,26 @@ revert:
 return
 
 loadfile:
-  $T = "               Load File"
-  $5 = "Which file do you want to load?"
-  $6 = "8.3 filenames only, i.e. foo.aap"
+  $T = "             Cargar archivo"
+  $5 = "Que archivo desea cargar?"
+  $6 = "Solo nombres 8.3, por ejemplo foo.aap"
   v = 1
   gosub inpbox
   $4 = $I
 
   size $4
-  if r = 1 then $E = "File Load Error: Invalid Filename"
+  if r = 1 then $E = "Error al cargar: nombre no valido"
   if r = 1 then goto errbox
-  if s = 0 then $E = "File Load Error: Blank File"
+  if s = 0 then $E = "Error al cargar: archivo vacio"
   if s = 0 then goto errbox
-  if s > n then $E = "File Load Error: Not enough memory"
+  if s > n then $E = "Error al cargar: memoria insuficiente"
   if s > n then goto errbox
   load $4 m
   $3 = $4
 
   string load $4 m
   if $4 = "AAP" then rem
-  else $E = "File Load Error: Incorrect Filetype"
+  else $E = "Error al cargar: tipo de archivo incorrecto"
   else goto errbox
   w = m + 4
   peek v w
@@ -471,11 +471,11 @@ loadfile:
   if v > 1 then goto badformat
   w = m + 8
   peek v w
-  if v > 76 then $E = "File Test Error: Not enough screen space"
+  if v > 76 then $E = "Error de archivo: no cabe en pantalla"
   if v > 76 then goto errbox
   w = m + 9
   peek v w
-  if v > 21 then $E = "File Test Error: Not enough screen space"
+  if v > 21 then $E = "Error de archivo: no cabe en pantalla"
   if v > 21 then goto errbox
 
 image_okay:
@@ -488,15 +488,15 @@ image_okay:
 return
 
 badformat:
-  $E = "File Test Error: Bad File Format"
+  $E = "Error de archivo: formato incorrecto"
   goto errbox
   
 futureversion:
-  $T = "               Load File"
+  $T = "             Cargar archivo"
   $5 = ""
-  $6 = "This file appears to have been created"
-  $7 = "with a later version of this program."
-  $8 = "Try to load anyway?"
+  $6 = "Este archivo parece creado con una version"
+  $7 = "posterior de este programa."
+  $8 = "Intentar cargarlo de todos modos?"
   $9 = ""
   gosub askbox
   if v = 1 then goto image_okay
@@ -511,14 +511,14 @@ savefile:
   j = a * b * 2 + v
   save $3 m j
   if r > 0 then $3 = ""
-  if r > 0 then $E = "File Save Error: Disk operation failed"
+  if r > 0 then $E = "Fallo al guardar en el disco."
   if r > 0 then goto errbox
 return
 
 saveas:
-  $T = "            Save File As..."
-  $5 = "What filename do you want to save as?"
-  $6 = "8.3 filenames only, i.e. foo.aap"
+  $T = "          Guardar archivo como..."
+  $5 = "Con que nombre desea guardar el archivo?"
+  $6 = "Solo nombres 8.3, por ejemplo foo.aap"
   v = 1
   gosub inpbox
   $3 = $I
@@ -540,9 +540,9 @@ return
 
 fill:
   gosub savevar
-  $T = "             Fill Image"
-  $5 = "What character do you want to use?"
-  $6 = "Must be between 0-255"
+  $T = "           Rellenar dibujo"
+  $5 = "Que caracter desea usar?"
+  $6 = "Debe estar entre 0 y 255"
   v = 0
   gosub inpbox
   w = d + 1
@@ -557,9 +557,9 @@ return
 
 setback:
   gosub savevar
-  $T = "         Background Colour"
-  $5 = "What colour do you want to set?"
-  $6 = "Must be between 0-15"
+  $T = "          Color de fondo"
+  $5 = "Que color desea asignar?"
+  $6 = "Debe estar entre 0 y 15"
   v = 0
   gosub inpbox
   w = d
@@ -578,9 +578,9 @@ return
 
 setfore:
   gosub savevar
-  $T = "         Foreground Colour"
-  $5 = "What colour do you want to set?"
-  $6 = "Must be between 0-15"
+  $T = "          Color del texto"
+  $5 = "Que color desea asignar?"
+  $6 = "Debe estar entre 0 y 15"
   v = 0
   gosub inpbox
   w = d
@@ -639,17 +639,17 @@ resetkey:
 return
   
 loadkey:
-  $T = "           Load Keymap"
-  $5 = "Which keymap do you want to load?"
-  $6 = "8.3 filenames only, i.e. foo.map"
+  $T = "        Cargar mapa de teclas"
+  $5 = "Que mapa de teclas desea cargar?"
+  $6 = "Solo nombres 8.3, por ejemplo foo.map"
   v = 1
   gosub inpbox
   $4 = $I
   
   size $4
-  if r = 1 then $E = "Load Keymap: File not found"
+  if r = 1 then $E = "Cargar mapa: no se encontro el archivo"
   if r = 1 then goto errbox
-  if s > 200 then $E = "Load Keymap: Incorrect size"
+  if s > 200 then $E = "Cargar mapa: tamano incorrecto"
   if s > 200 then goto errbox
 
   w = m + 3500
@@ -657,15 +657,15 @@ loadkey:
   
   string load $4 w
   if $4 = "AAP" then rem
-  else goto badformat
+  else goto badkeyformat
   w = w + 4
   peek v w
   if v = 1 then rem
-  else goto badformat
+  else goto badkeyformat
   w = w + 1
   peek v w
   if v = 2 then rem
-  else goto badformat
+  else goto badkeyformat
   
   w = w + 1
   j = m + 10
@@ -678,14 +678,14 @@ loadkey:
   v = 0
 return
   
-badformat:
-  $E = "Load Keymap: Bad format"
+badkeyformat:
+  $E = "Cargar mapa: formato incorrecto"
   goto errbox
   
 savekey:
-  $T = "           Save Keymap"
-  $5 = "What do you want to call the keymap?"
-  $6 = "8.3 filenames only, i.e. foo.map"
+  $T = "       Guardar mapa de teclas"
+  $5 = "Que nombre desea darle al mapa?"
+  $6 = "Solo nombres 8.3, por ejemplo foo.map"
   v = 1
   gosub inpbox
 
@@ -716,18 +716,18 @@ changekey:
   gosub savevar
   x = a
   y = b
-  $T = "          Change Key"
-  $5 = "Enter the ASCII value of the key"
-  $6 = "Enter the new output value"
+  $T = "          Cambiar tecla"
+  $5 = "Ingrese el valor ASCII de la tecla"
+  $6 = "Ingrese el nuevo valor de salida"
   v = 0
   gosub dinbox
 
   k = a
   w = b * 256
   
-  $T = "          Change Key"
-  $5 = "Enter the background colour"
-  $6 = "Enter the foreground colour"
+  $T = "          Cambiar tecla"
+  $5 = "Ingrese el color de fondo"
+  $6 = "Ingrese el color del texto"
   v = 0
   gosub dinbox
   
@@ -744,9 +744,9 @@ return
 
 setmapcolour:
   gosub savevar
-  $T = "         Set Background"
-  $5 = "What colour do you want to use for"
-  $6 = "the key map background (0-15)?"
+  $T = "        Cambiar color de fondo"
+  $5 = "Que color quiere para el fondo"
+  $6 = "del mapa de teclas (0-15)?"
   v = 0
   gosub inpbox
   if v > 15 then v = 0
@@ -763,9 +763,9 @@ setmapcolour:
     w = w + 2
   next x
 
-  $T = "         Set Foreground"
-  $5 = "What colour do you want to use for"
-  $6 = "the key map foreground (0-15)?"
+  $T = "       Cambiar color del texto"
+  $5 = "Que color quiere para el texto"
+  $6 = "del mapa de teclas (0-15)?"
   v = 0
   gosub inpbox
   if v > 15 then v = 7
@@ -783,52 +783,52 @@ setmapcolour:
 return
     
 help_about:
-  $T = "              About"
-  $5 = "ASCII Artist, version 3.0.0"
+  $T = "            Acerca de"
+  $5 = "Dibujante ASCII, version 3.0.0"
   $6 = "Copyright (C) Joshua Beck 2012"
-  $7 = "Email: mikeosdeveloper@gmail.com"
-  $8 = "Licenced under the GNU GPL v3"
-  $9 = "Uses the MB++ library, version 3.2.2"
+  $7 = "Correo: mikeosdeveloper@gmail.com"
+  $8 = "Licencia GNU GPL v3"
+  $9 = "Usa la biblioteca MB++, version 3.2.2"
   gosub mesbox
 return
 
 help_basics:
-  $T = "              Basics"
-  $5 = "Use the arrow keys to move around."
-  $6 = "Letter, word and symbol keys will"
-  $7 = "create their corrosponding character"
-  $8 = "Use escape to bring up the main menu"
-  $9 = "and to exit from menus."
+  $T = "             Basicos"
+  $5 = "Use las flechas para desplazarse."
+  $6 = "Las teclas de letras, numeros y simbolos"
+  $7 = "dibujan el caracter correspondiente."
+  $8 = "Pulse Esc para abrir el menu principal"
+  $9 = "y para salir de los menus."
   gosub mesbox
 return
 
 help_tools:
-  $T = "              Tools"
-  $5 = "The tools menu helps you make large"
-  $6 = "scale modifications to the picture."
-  $7 = "You can clear the picture, fill it"
-  $8 = "with a character, invert it and"
-  $9 = "change the all the colours."
+  $T = "          Herramientas"
+  $5 = "El menu Herramientas permite hacer"
+  $6 = "cambios a gran escala en el dibujo."
+  $7 = "Puede borrarlo, rellenarlo con un"
+  $8 = "caracter, invertirlo y cambiar todos"
+  $9 = "los colores."
   gosub mesbox
 return
 
 help_keymap:
-  $T = "             Keymap"
-  $5 = "Each printable key is mapped to a"
-  $6 = "character by default this character"
-  $7 = "corrosponds to the one on the key"
-  $8 = "and uses the colour white but you"
-  $9 = "can customize these values."
+  $T = "          Mapa de teclas"
+  $5 = "Cada tecla imprimible corresponde a"
+  $6 = "un caracter. De forma predeterminada"
+  $7 = "coincide con su simbolo y usa el color"
+  $8 = "blanco, pero puede personalizar estos"
+  $9 = "valores."
   gosub mesbox
 return
 
 help_files:
-  $T = "              Files"
-  $5 = "ASCII Artist use its own file format."
-  $6 = "This supports titles, colour, custom"
-  $7 = "size, keymaps, etc. You can save"
-  $8 = "your pictures in the file menu and"
-  $9 = "custom key maps in the keymap menu."
+  $T = "            Archivos"
+  $5 = "El programa usa su propio formato."
+  $6 = "Admite titulos, colores, tamanos"
+  $7 = "personalizados y mapas de teclas."
+  $8 = "Guarde dibujos desde el menu Archivo"
+  $9 = "y mapas desde el menu correspondiente."
   gosub mesbox
 return
 

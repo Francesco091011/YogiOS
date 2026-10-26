@@ -7,7 +7,7 @@
 
 ; ------------------------------------------------------------------
 ; os_wait_for_key -- Espera para presión de tecla y entrega la tecla
-; IN: Nothing; OUT: AX = tecla presionada, otros registros preservados
+; ENTRADA: ninguna. SALIDA: AX = tecla; los demás registros se conservan.
 
 os_wait_for_key:
 	pusha
@@ -28,7 +28,7 @@ os_wait_for_key:
 
 ; ------------------------------------------------------------------
 ; os_check_for_key -- Escanea teclado para entrada, pero no espera
-; IN: Nothing; OUT: AX = 0 si no tecla presionada, sino escaneo de código
+; ENTRADA: ninguna. SALIDA: AX = 0 si no hay tecla; si la hay, su código.
 
 os_check_for_key:
 	pusha

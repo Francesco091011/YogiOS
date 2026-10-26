@@ -2,7 +2,7 @@ if $1 = "" then goto help
 d = ramstart
 
 main:
-  rem >>> Collect command, help if invalid <<<
+  rem >>> Leer el comando; mostrar la ayuda si no es valido <<<
   gosub collect_parameter
   if $2 = "HELP" then goto help
   if $2 = "CREATE" then goto create_archive
@@ -14,8 +14,8 @@ main:
 goto help
 
 collect_parameter:
-  rem >>> Collects a parameter separated by a space to $2 <<<
-  rem >>> Offset(P) updated each time <<<
+  rem >>> Leer en $2 un parametro separado por espacios <<<
+  rem >>> Actualizar el desplazamiento P en cada lectura <<<
   x = & $1
   x = x + p
   do
@@ -33,8 +33,8 @@ collect_parameter:
 return
 
 collect_list_item:
-  rem >>> Collect an item from a comma separated list $2 to $3 <<<
-  rem >>> offset in Q, returns null if list finished <<<
+  rem >>> Leer un elemento de la lista separada por comas $2 a $3 <<<
+  rem >>> Q contiene el desplazamiento; devolver nulo al final de la lista <<<
   if q = 255 then $3 = ""
   if q = 255 then return
   x = & $2
@@ -57,15 +57,15 @@ collect_list_item:
 return
 
 find_free_block:
-  rem >>> Find a free block big enough for filesize S <<<
-  rem >>> Returns N = block number, M = number of blocks <<<
+  rem >>> Buscar un bloque libre que pueda contener el archivo de tamano S <<<
+  rem >>> Devolver N = numero de bloque y M = cantidad de bloques <<<
 
   if s = 0 then return
 
   x = d + 14
   peek y x
 
-  rem turn raw size into a number of 512 byte blocks
+  rem Convertir el tamano en cantidad de bloques de 512 bytes
   m = s / 512
   v = s % 512
   if v > 0 then m = m + 1
@@ -76,15 +76,15 @@ find_free_block:
   peekint v x
   x = d + v
 
-  rem search the allocation map for free space
+  rem Buscar espacio libre en el mapa de asignacion
   do
     peek v x
     x = x + 1
     if v = 0 then w = w + 1
     if v > 0 then w = 0
     z = z + 1
-    rem if we exceed the allocation map there is no space
-    if z > y then print "There is no area large enough for this file."
+    rem Si se supera el mapa de asignacion, no queda espacio
+    if z > y then print "No hay espacio suficiente para este archivo."
     if z > y then end
   loop until w = m
 
@@ -92,17 +92,17 @@ find_free_block:
 return
 
 allocate_file_entry:
-  rem >>> Create a file entry with filename $3, size S and the used block <<<
-  rem >>> Must run find_free_block first to get file area <<<
+  rem >>> Crear una entrada con nombre $3, tamano S y bloque asignado <<<
+  rem >>> Antes hay que ejecutar find_free_block para obtener el espacio <<<
 
-  rem check the maximum files is not reached
+  rem Comprobar que no se haya alcanzado el maximo de archivos
   x = d + 11
   peek v x
   x = d + 12
   peek w x
-  if v = w then print "No free file entries."
+  if v = w then print "No hay entradas libres para archivos."
   if v = w then end
-  rem increase files in archive
+  rem Aumentar la cantidad de archivos del archivo comprimido
   v = v + 1
   x = d + 11  
   poke v x
@@ -111,12 +111,12 @@ allocate_file_entry:
   peekint v x
   x = v + d
   z = 0
-  rem search the file list for blank entries
+  rem Buscar entradas vacias en la lista de archivos
   do
     peek v x
     x = x + 17
     z = z + 1
-    if z > w then print "No free file entries."
+    if z > w then print "No hay entradas libres para archivos."
     if z > w then end
   loop until v = 0
   x = x - 17
@@ -124,7 +124,7 @@ allocate_file_entry:
   w = d + 9
   peekint z w
   
-  rem store information in entry
+  rem Guardar la informacion en la entrada
   string store $3 x
   x = x + 13
   o = n * 512 + z
@@ -134,13 +134,13 @@ allocate_file_entry:
 return
 
 allocate_free_block:
-  rem >>> Allocate free block found with find_free_block <<<
+  rem >>> Asignar el bloque libre encontrado por find_free_block <<<
 
   x = d + 5
   peekint v x
   x = d + v + n
 
-  rem store area as allocated
+  rem Marcar el bloque como asignado
   w = m
   do
     poke 1 x
@@ -148,7 +148,7 @@ allocate_free_block:
     w = w - 1
   loop until w = 0
 
-  rem if the last block allocate is more than highest block, update
+  rem Si el ultimo bloque asignado supera el maximo, actualizarlo
   w = n + m - 1
   x = d + 13
   peek v x
@@ -157,7 +157,7 @@ allocate_free_block:
 return
 
 collect_file_data:
-  rem >>> find filename $3 in the file list and get offset(O) and size(S) <<<
+  rem >>> Buscar el nombre $3 y obtener desplazamiento O y tamano S <<<
   x = d + 12
   peek z x
 
@@ -165,7 +165,7 @@ collect_file_data:
   peekint v x
   x = d + v
 
-  rem search file entries until we find a match
+  rem Buscar entradas hasta encontrar una coincidencia
   w = 0
   y = 0
   do
@@ -173,11 +173,11 @@ collect_file_data:
     if $4 = $3 then w = 1
     x = x + 17
     y = y + 1
-    if y = z then print "File does not exist."
+    if y = z then print "El archivo no existe."
     if y = z then end
   loop until w = 1
   
-  rem collect information
+  rem Recopilar la informacion
   x = x - 17
   x = x + 13
   peekint o x
@@ -186,13 +186,13 @@ collect_file_data:
 return
 
 deallocate_block:
-  rem >>> Deallocate block used by a file <<<
-  rem >>> Run collect_file_info first <<<
+  rem >>> Liberar el bloque que ocupa un archivo <<<
+  rem >>> Ejecutar antes collect_file_info <<<
 
   x = d + 9
   peekint v x
 
-  rem figure out block number and amount from offset and size
+  rem Calcular el numero y la cantidad de bloques a partir del desplazamiento y tamano
   n = o - v / 512
   m = s / 512
   v = s % 512
@@ -203,7 +203,7 @@ deallocate_block:
   peekint v x
   x = v + n + d
   y = m
-  rem store blocks as unused
+  rem Marcar los bloques como libres
   do
     poke 0 x
     x = x + 1
@@ -216,7 +216,7 @@ deallocate_block:
   peekint v x
   x = d + v + z - 1
   
-  rem find the new highest block and update
+  rem Buscar y actualizar el nuevo bloque maximo
   z = z + 1
   do
     peek v x
@@ -230,10 +230,10 @@ deallocate_block:
 return
 
 deallocate_file_entry:
-  rem >>> Remove file entry with name $3 <<<
-  rem >>> Must run collect_file_data first <<<
+  rem >>> Eliminar la entrada cuyo nombre es $3 <<<
+  rem >>> Antes hay que ejecutar collect_file_data <<<
 
-  rem reduce files in archive
+  rem Reducir la cantidad de archivos
   x = d + 11
   peek v x
   v = v - 1
@@ -243,7 +243,7 @@ deallocate_file_entry:
   peekint v x
   x = d + v
   
-  rem find file entry
+  rem Buscar la entrada del archivo
   w = 0
   do
     string load $4 x
@@ -251,7 +251,7 @@ deallocate_file_entry:
     if $4 = $3 then w = 1
   loop until w = 1
 
-  rem blank file entry
+  rem Vaciar la entrada del archivo
   x = x - 17
   for y = 1 to 17
     poke 0 x
@@ -260,147 +260,147 @@ deallocate_file_entry:
 return
   
 load_archive:
-  rem >>> load and verify archive <<<
+  rem >>> Cargar y verificar el archivo comprimido <<<
 
-  print "Opening Archive..."
-  rem get name off the commandline parameters
+  print "Abriendo el archivo..."
+  rem Obtener el nombre de los parametros de la linea de comandos
   gosub collect_parameter
   load $2 d
-  rem preserve opened name
+  rem Conservar el nombre abierto
   $8 = $2
 
-  rem make sure file is valid
-  if s = 0 then print "Archive file is blank."
+  rem Comprobar que el archivo sea valido
+  if s = 0 then print "El archivo comprimido esta vacio."
   if s = 0 then end
 
-  if r = 1 then print "Archive file does not exist."
+  if r = 1 then print "El archivo comprimido no existe."
   if r = 1 then end
 
-  rem check for archive header
+  rem Comprobar la cabecera del archivo comprimido
   string load $4 d
   if $4 = "MFA" then rem
-  else print "Not an archive file."
+  else print "No es un archivo comprimido."
   else end
 
-  rem check version is current
+  rem Comprobar que la version sea compatible
   x = d + 4
   peek v x
-  if v > 1 then print "Archive version not supported."
+  if v > 1 then print "Version del archivo no compatible."
   if v > 1 then end
 return
 
 save_archive:
-  rem >>> calculate size and store archive <<<
+  rem >>> Calcular el tamano y guardar el archivo comprimido <<<
 
-  print "Saving Archive..."
-  rem header size
+  print "Guardando el archivo..."
+  rem Tamano de la cabecera
   z = 14
   
-  rem allocate block size
+  rem Tamano del mapa de asignacion
   x = d + 14
   peek v x
   z = z + v
 
-  rem file list size
+  rem Tamano de la lista de archivos
   x = d + 12
   peek v x
   v = v * 17
   z = z + v
 
-  rem save only up to the last allocated block of data
+  rem Guardar solo hasta el ultimo bloque de datos asignado
   x = d + 13
   peek v x
   v = v + 1
   v = v * 512
   z = z + v
 
-  rem save per existing name, overwrite
+  rem Guardar con el nombre existente y sobrescribir
   delete $8
   save $8 d z
 return
 
 help:
-  rem present is no arguments, help argument or invalid argument
+  rem Presentar la ayuda si no hay argumentos o si el argumento no es valido
   print "============================"
-  print "ARCHIVE: File archiving tool"
+  print "ARCHIVE: herramienta para comprimir archivos"
   print "============================"
   print "Version 1.0.0"
   print "Copyright (C) Joshua Beck"
-  print "Email: mikeosdeveloper@gmail.com"
-  print "Licenced under the GNU General Public Licence v3"
+  print "Correo: mikeosdeveloper@gmail.com"
+  print "Licencia Publica General de GNU v3"
   print ""
-  print "Syntax: ARCHIVE (command) (archive filename) [comma separated list]"
+  print "Uso: ARCHIVE (comando) (archivo) [lista separada por comas]"
   print ""
-  print "Commands:"
-  print "    Create - Create an empty archive"
-  print "    Add - Added listed files to archive"
-  print "    Remove - Remove listed files from archive"
-  print "    Extract - Extract listed files from archive"
-  print "    ExtractAll - Extract all files from archive"
-  print "    List - List files in an  archive"
-  print "    Help - Display this help screen"
+  print "Comandos:"
+  print "    Create - Crear un archivo vacio"
+  print "    Add - Agregar los archivos indicados"
+  print "    Remove - Quitar los archivos indicados"
+  print "    Extract - Extraer los archivos indicados"
+  print "    ExtractAll - Extraer todos los archivos"
+  print "    List - Mostrar los archivos del archivo"
+  print "    Help - Mostrar esta ayuda"
   print ""
 end
 
 create_archive:
-  rem >>> create new archive <<<
+  rem >>> Crear un archivo comprimido nuevo <<<
 
-  rem file identifier
+  rem Identificador del archivo
   d = ramstart
   $4 = "MFA"
   string store $4 d
 
-  rem file version
+  rem Version del archivo
   x = d + 4
   poke 1 x
 
-  rem allocation map offset
+  rem Desplazamiento del mapa de asignacion
   x = d + 5
   pokeint 15 x
 
-  rem file list offset
+  rem Desplazamiento de la lista de archivos
   x = d + 7
   pokeint 45 x
 
-  rem data offset
+  rem Desplazamiento de los datos
   x = d + 9
   pokeint 385 x
 
-  rem files in archive
+  rem Archivos contenidos
   x = d + 11
   poke 0 x
 
-  rem file list entries
+  rem Entradas de la lista de archivos
   x = d + 12
   poke 20 x
 
-  rem highest allocated block
+  rem Bloque asignado mas alto
   x = d + 13
   poke 0 x
 
-  rem blocks (512 bytes) in allocation map
+  rem Bloques de 512 bytes del mapa de asignacion
   x = d + 14
   poke 40 x
 
-  rem create blank allocation map
+  rem Crear un mapa de asignacion vacio
   x = d + 15
   for y = 1 to 40
     poke 0 x
     x = x + 1
   next y
 
-  rem create blank file list
+  rem Crear una lista de archivos vacia
   x = d + 45
   for y = 1 to 340
     poke 0 x
     x = x + 1
   next y
 
-  rem collect filename off parameter list
+  rem Obtener el nombre de archivo de la lista de parametros
   gosub collect_parameter
   $8 = $2
   gosub save_archive
-  print "File created."
+  print "Archivo creado."
 end
 
 add_file:
@@ -411,7 +411,7 @@ add_file:
 
   t = 0
   do
-    $4 = "Adding file: " + $3
+    $4 = "Agregando archivo: " + $3
     print $4
 
     size $3 
@@ -421,7 +421,7 @@ add_file:
 
     v = d + o
     load $3 v
-    if r = 1 then print "File does not exist."
+    if r = 1 then print "El archivo no existe."
     if r = 1 then end
 
     gosub collect_list_item
@@ -429,7 +429,7 @@ add_file:
   loop until t = 1
 
   gosub save_archive
-  print "All files added successfully."
+  print "Se agregaron todos los archivos."
 end
 
 remove_file:
@@ -440,7 +440,7 @@ remove_file:
 
   t = 0
   do
-    $4 = "Removing file: " + $3
+    $4 = "Quitando archivo: " + $3
     print $4
 
     gosub collect_file_data
@@ -452,7 +452,7 @@ remove_file:
   loop until t = 1
 
   gosub save_archive
-  print "All files successfully removed."
+  print "Se quitaron todos los archivos."
 end
 
 extract_file:
@@ -463,21 +463,21 @@ extract_file:
 
   t = 0
   do
-    $4 = "Extracting file: " + $3
+    $4 = "Extrayendo archivo: " + $3
     print $4
 
     gosub collect_file_data
     v = o + d
     delete $3
     save $3 v s
-    if r > 0 then print "Invalid filename or read-only disk."
+    if r > 0 then print "Nombre no valido o disco protegido contra escritura."
     if r > 0 then end
 
     gosub collect_list_item
     if $3 = "" then t = 1
   loop until t = 1
 
-  print "All files extracted successfully."
+  print "Se extrajeron todos los archivos."
 end
 
 extract_all:
@@ -495,7 +495,7 @@ extract_all:
     string load $3 t
     t = t + 17
 
-    $4 = "Extracting file: " + $3
+    $4 = "Extrayendo archivo: " + $3
     if $3 = "" then rem
     else print $4
 
@@ -505,11 +505,11 @@ extract_all:
     else delete $3
     else save $3 v s
 
-    if r = 1 then print "Invalid filename or read-only disk."
+    if r = 1 then print "Nombre no valido o disco protegido contra escritura."
     if r = 1 then end
   loop until t = u
 
-  print "All files extracted successfully."
+  print "Se extrajeron todos los archivos."
 end
 
 archive_list:
@@ -517,19 +517,19 @@ archive_list:
 
   x = d + 11
   peek a x
-  $4 = "File in archive: " + a
+  $4 = "Archivos: " + a
   x = d + 12
   peek b x  
 
-  $4 = "Files in archive:   " + a
-  $5 = "Maximum files:      " + b
-  $6 = "Archive size:       " + s
+  $4 = "Archivos:            " + a
+  $5 = "Maximo de archivos:  " + b
+  $6 = "Tamano del archivo:  " + s
 
-  print "Mega File Archive - Version 1"
+  print "Archivo Mega File - Version 1"
   print $4
   print $5
   print $6
-  print "File list:"
+  print "Lista de archivos:"
   if v = 0 then end
 
   x = d + 12

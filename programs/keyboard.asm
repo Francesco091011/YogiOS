@@ -1,6 +1,6 @@
 ; ------------------------------------------------------------------
-; Music keyboard -- Use the keyboard to play notes via the PC speaker
-; Use Z key rightwards for an octave
+; Teclado musical: toque notas con el altavoz interno del PC.
+; Use las teclas desde Z hacia la derecha para recorrer una octava.
 ; ------------------------------------------------------------------
 
 
@@ -28,7 +28,7 @@ start:
 
 
 
-	; Now lots of loops to draw the keyboard
+	; Dibujar el teclado con varios bucles.
 
 	mov dl, 24		; Top line of box
 	mov dh, 6
@@ -148,7 +148,7 @@ start:
 	jne .loop7
 
 
-	; And now for the black keys...
+	; Ahora, las teclas negras...
 
 	mov bl, WHITE_ON_BLACK
 
@@ -184,8 +184,8 @@ start:
 
 
 
-	; And lastly, draw the labels on the keys indicating which
-	; (computer!) keys to press to get notes
+	; Por último, rotular las teclas del teclado del PC que se deben
+	; pulsar para reproducir cada nota.
 	
 	mov ah, 0Eh
 
@@ -231,7 +231,7 @@ start:
 	mov al, ','
 	int 10h
 
-	; Now the accidentals...
+	; Dibujar ahora las alteraciones...
 	
 	mov dh, 11
 	mov dl, 27
@@ -259,7 +259,7 @@ start:
 	mov al, 'J'
 	int 10h
 
-	; Phew! We've drawn all the keys now
+	; Ya están dibujadas todas las teclas.
 
 .retry:
 	call os_wait_for_key
@@ -383,8 +383,8 @@ start:
 	ret			; Back to OS
 
 
-	mus_kbd_title_msg	db 'MikeOS Music Keyboard (PC speaker sound)', 0
-	mus_kbd_footer_msg	db 'Hit keys to play notes, space to silence a note, and Esc to quit', 0
+	mus_kbd_title_msg	db 'Teclado musical de YogiOS (altavoz interno)', 0
+	mus_kbd_footer_msg	db 'Pulse teclas para tocar; espacio silencia; Esc sale', 0
 
 
 ; ------------------------------------------------------------------

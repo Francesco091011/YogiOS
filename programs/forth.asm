@@ -1,26 +1,23 @@
 ; *****************************************************************************
 ; *
-; *               Forth operating system for an IBM Compatible PC
+; *               Sistema Forth para PC compatible con IBM
 ; *                       Copyright (C) 1993-2011 W Nagel
 ; *         Copyright (C) 2014 MikeOS Developers -- see doc/LICENSE.TXT
 ; *
-; * For the most part it follows the FIG model, Forth-79 standard
-; * There are differences, however
+; * En su mayor parte sigue el modelo FIG y el estandar Forth-79.
+; * Sin embargo, hay algunas diferencias.
 ; *
 ; *****************************************************************************
-; Some machines use subroutine threading (use SP for R stack) - this is 
-;   considered Forth-like, and not true Forth.  Also, the 8086 does not support 
-;   [SP] and there are many more PUSH (1 byte) than RPUSH (4 bytes) instructions.
-;   This would be a poor choice for this processor.
+; Algunas maquinas usan llamadas anidadas y SP como pila de retorno; esto se
+; considera similar a Forth, pero no Forth autentico. Ademas, el 8086 no admite
+; [SP] y PUSH ocupa menos que RPUSH, por lo que no conviene usar ese metodo.
 
-; CFA = Compilation (or Code) Field Address.
-; A Forth header =
-;			LFA	address of previous word in chain, last one = 0
-;			NFA	count(b4-0)/flags(b7=immediate, b5=smudge) + name
-;			CFA	points to executable code for this definition
-;			PFA	may contain parameters or code
+; CFA = direccion del campo de compilacion (o codigo).
+; Una cabecera Forth contiene LFA (direccion de palabra anterior),
+; NFA (longitud, indicadores y nombre), CFA (direccion del codigo ejecutable)
+; y PFA (parametros o codigo opcionales).
 
-; converted to nasm's macro processor
+; convertido al procesador de macros de NASM.
 
 bits	16		; nasm, 8086
 
@@ -51,10 +48,10 @@ bits	16		; nasm, 8086
 	inc bp
 %endmacro
 
-; A vocabulary is specified by a number between 1 and 15. See 'vocabulary' for a short
-; discussion. A minimum of (2* highest vocabulary) dictionary threads are needed to 
-; prevent 'collisions' among the vocabularies. Initial compilation is entirely in the
-; 'FORTH' vocabulary.
+; Un vocabulario se identifica con un numero entre 1 y 15. Consulte «vocabulary»
+; para una breve explicacion. Se necesitan al menos el doble de cadenas de
+; diccionario que el numero mas alto para evitar colisiones. La compilacion
+; inicial se realiza en el vocabulario FORTH.
   VOC EQU 1				; specify FORTH part of Dictionary for this build
 
 %assign IMM 0				; next word is not IMMEDIATE
@@ -86,10 +83,10 @@ org	0x8000		; Start 1/2 way through segment for MikeOS
 
 	jmp     do_startup	; maximize use-once code that will be "forgotten"
 
-; Nucleus / Core -- ground 0
+; Nucleo -- nivel 0
 
-; Single precision (16-bit) Arithmetic operators
-; CODE used extensively for speed
+; Operadores aritmeticos de precision sencilla (16 bits).
+; Se usa codigo maquina con frecuencia para ganar velocidad.
 
 HEADING '*'			; ( n1 n2 -- n )
   mult:		dw	$ + 2
@@ -261,7 +258,7 @@ HEADING 'ABS'			; ( n -- |n| )
 	push ax
 	NEXT
 
-; Bit and Logical operators
+; Operadores logicos y de bits
 
 HEADING 'AND'			; ( n1 n2 -- n )
   cfa_and:	dw	$ + 2
@@ -315,7 +312,7 @@ HEADING 'XOR'			; ( n1 n2 -- n )
 	push ax
 	NEXT
 
-; Number comparison
+; Comparacion de numeros
 
 HEADING '0<'			; ( n -- f )
   zero_less:    dw $ + 2
@@ -411,7 +408,7 @@ HEADING 'WITHIN'		; ( n nl nh -- f >> true if nl <= n < nh )
 	push cx
 	NEXT
 
-; Memory reference, 16 bit
+; Referencias a memoria de 16 bits
 
 HEADING '!'			; ( n a -- )
   store:        dw      $ + 2
@@ -471,7 +468,7 @@ HEADING 'XFER'			; ( a1 a2 -- >> transfers contents of 1 to 2 )
 	stosw
 	NEXT
 
-; 16-bit Parameter Stack operators
+; Operadores de la pila de parametros de 16 bits
 
 HEADING '-ROT'			; ( n1 n2 n3 -- n3 n1 n2 )
   m_ROT:	dw      $ + 2
@@ -530,7 +527,7 @@ HEADING 'ROT'			; ( n1 n2 n3 -- n2 n3 n1 )
 	push ax
 	NEXT
 
-; Note: 'push sp' results vary by processor
+; Nota: el resultado de «push sp» varia segun el procesador.
 HEADING 'SP@'			; ( -- a )
   sp_fetch:     dw      $ + 2
 	mov ax,sp
@@ -545,7 +542,7 @@ HEADING 'SWAP'			; ( n1 n2 -- n2 n1 )
 	push ax
 	NEXT
 
-; Return stack manipulation
+; Manipulacion de la pila de retorno
 
 HEADING 'I'			; ( -- n >> [RP] )
   eye:  	dw      $ + 2
@@ -589,8 +586,7 @@ HEADING 'R>'			; ( -- n >> R stack to S stack )
 	push ax
 	NEXT
 
-; Constant replacements
-; CONSTANT takes 66 cycles (8086) to execute
+; Reemplazos de constantes. CONSTANT tarda 66 ciclos en un 8086.
 
 HEADING '0'			; ( -- 0 )
   zero:         dw      $ + 2
@@ -614,7 +610,7 @@ HEADING 'TRUE'			; ( -- t )
 	NEXT
 
 
-; 32-bit (double cell) - standard option
+; 32 bits (doble celda): opcion estandar
 
 HEADING '2!'			; ( d a -- )
   two_store:    dw      $ + 2
@@ -791,8 +787,8 @@ HEADING 'U/MOD'			; ( d u -- r q )
 	NEXT
 
 
-; Long Structures - more efficient code, but extra byte
-; These use a stored address rather than a byte offset
+; Estructuras largas: codigo mas eficiente, pero ocupan un byte adicional.
+; Usan una direccion almacenada en lugar de un desplazamiento de byte.
 
 do_branch:	dw $ + 2
   branch:
@@ -800,7 +796,7 @@ do_branch:	dw $ + 2
 	mov si,ax	; XP = goto
 	NEXT
 
-; jump on opposite condition, ie NE IF compiles JE
+; Saltar con la condicion opuesta; por ejemplo, NE IF compila JE.
 q_branch:	dw $ + 2	; ( f -- )
 	pop ax
 	or ax,ax
@@ -881,7 +877,7 @@ do_switch:	dw $ + 2	; ( xx n.input -- xx | xx n.input )
   	NEXT
 
 
-; Runtime for literals
+; Ejecucion de literales
 
 bite:   	dw      $ + 2
 	lodsb                   ; get data byte
@@ -911,7 +907,7 @@ dblwd:		dw       $ + 2	; ( -- d )
 	push dx		; lower stack address (TOS) => high word
 	NEXT
 
-; Program execution
+; Ejecucion de programas
 
 HEADING 'EXECUTE'
   EXECUTE:      dw      $ + 2
@@ -958,7 +954,7 @@ HEADING 'STAY'			; ( f -- >> exit if false )
 	jz exit1
 	NEXT
 
-; Defining words -- define & execution
+; Palabras definidoras: definicion y ejecucion
 
 HEADING ':'
 	dw      colon
@@ -971,20 +967,20 @@ HEADING ':'
 	mov si,di		; exec ptr = new pfa
 	NEXT
 
-; Note - word copies input to here + 2, in case of a new definition
+; La palabra copia la entrada a HERE + 2 por si se crea una definicion nueva.
 HEADING 'CREATE'
   cfa_create       dw      colon	; ( -- )
 	dw      blnk, cfa_word, cfa_dup		; word adr = string adr = na
 	dw      c_fetch, cfa_dup		; ( na count count )
 	dw      zero_eq, abortq
 	db      ct001 - $ - 1
-	db      'No name'
+	db      'Falta el nombre'
   ct001:
 	dw      bite				; ( na count )
 	db      31
 	dw      greater, abortq
 	db      ct002 - $ - 1
-	db      'Name too long!'
+	db      'Nombre demasiado largo.'
   ct002:
 	dw      CURRENT, c_fetch, HASH, FIND_WD	; ( na v -- na lfa,0 )
 	dw      q_DUP, q_branch			; IF name exists in current vocab,
@@ -992,11 +988,11 @@ HEADING 'CREATE'
 	dw      CR, OVER, COUNT, cfa_type
 	dw      dotq
 	db      ct003 - $ - 1
-	db      ' Redefinition of: '
+	db      ' Redefinicion de: '
   ct003:
 	dw      cfa_dup, id_dot, dotq
 	db      ct004 - $ - 1
-	db      'at '
+	db      'en '
   ct004:
 	dw      u_dot
   ct005:					; THEN
@@ -1041,7 +1037,7 @@ HEADING '2CONSTANT'
 	push word [di+4]
 	NEXT
 
-; System-wide constants
+; Constantes globales del sistema
 
 HEADING '0.'			; ( -- 0 0 >> code def is alternative )
   zero_dot:	dw two_con
@@ -1067,7 +1063,7 @@ HEADING 'S0'
   SP0: 	dw	constant, stack0
 
 
-; String, text operators
+; Operadores de cadenas y texto
 
 HEADING '-TEXT'			; ( a1 n a2 -- f,t=different )
 	dw      $ + 2
@@ -1144,7 +1140,7 @@ HEADING 'COUNT'			; ( a -- a+1 n )
 	NEXT
 
 
-; Memory fills
+; Relleno de memoria
 
 HEADING 'FILL'			; ( a n c -- )
 		dw      $ + 2
@@ -1165,7 +1161,7 @@ HEADING 'ERASE'			; ( a n -- )
 	sub ax,ax
 	JMP mem_fill
 
-; Intersegment data moves
+; Transferencias de datos entre segmentos
 
 HEADING 'L!'			; ( n seg off -- )
 		dw      $ + 2
@@ -1248,7 +1244,7 @@ HEADING 'SEGMOVE'		; ( fs fa ts ta #byte -- )
 	mov si,ax
 	NEXT
 
-; Miscellaneous Stuff
+; Rutinas varias
 
 HEADING '><'			; ( n -- n' >> bytes interchanged )
 		dw      $ + 2
@@ -1306,7 +1302,7 @@ HEADING 'L>PFA'			; ( lfa -- pfa )
 	dw	colon
 	dw	l_to_cfa, to_body, EXIT
 
-; 15-bit Square Root of a 31-bit integer
+; Raiz cuadrada de 15 bits de un entero de 31 bits
 HEADING 'SQRT'			; ( d -- n )
 		dw      $ + 2
 	pop dx
@@ -1337,9 +1333,9 @@ HEADING 'SQRT'			; ( d -- n )
 	NEXT
 
 
-; Start Colon Definitions -- non-defining words
-; Best for FORTH compiler to create defining words first -- minimizes forward references
-; Most of these are used in the base dictionary
+; Inicio de definiciones de alto nivel: palabras que no definen otras.
+; Conviene crear primero las palabras definidoras para reducir las referencias
+; adelantadas. La mayoria se usa en el diccionario base.
 
 HEADING 'D<'			; ( d1 d2 -- f )
   d_less:       dw      colon		; CFA
@@ -1489,7 +1485,7 @@ HEADING 'M*/'			; ( d1 n1 n2 -- d )
 	dw      to_r, tr_times, r_from, tr_div
 	dw      EXIT
 
-; No User variables -- all treated as normal variables for single user system
+; Sin variables de usuario: en un sistema monousuario todas son variables normales.
 HEADING 'SPAN'			; actual # chrs rcvd.
   SPAN:	dw	create		; Normal variable
   span1:	dw	0
@@ -1511,7 +1507,7 @@ HEADING 'R_FLG'			; serial receive flags
   rflg1:	db	0
 
 
-; User / System variables
+; Variables de usuario y del sistema
 
 HEADING 'CONTEXT'		; ( -- a >> 2variable )
   CONTEXT:      dw      create
@@ -1521,7 +1517,7 @@ HEADING 'CURRENT'		; ( -- a >> 2variable )
   CURRENT:      dw      create
 		dw      VOC, 0
 
-; Kept variable storage together to make PROTECT and EMPTY easier
+; Agrupar el almacenamiento de variables facilita PROTECT y EMPTY.
 HEADING 'HEADS'
   HEADS:	dw      create			; 'Links to remember'
   hds:          times 16 dw 0
@@ -1534,7 +1530,7 @@ HEADING 'FENCE'
   goldh:	dw      addr_end
   goldl:	dw      GOLDEN_LAST
 
-; Now setup access to array elements as a variable
+; Preparar el acceso a los elementos del arreglo como variables.
 HEADING 'H'
   H:    dw      constant
 	dw	h1      
@@ -1578,8 +1574,8 @@ HEADING '>IN'
   tin:          dw      create
   tin1:         dw      0
   hndl1:        dw      0       ; temporary store before transfer to handle
-				; used like BLK in normal systems
-				; minimum value should be 5, max = FILES - 1
+; Se usa como BLK en otros sistemas.
+; El valor minimo es 5 y el maximo, FILES - 1.
   qend1:        dw      0       ; at end of file for loading
 
 HEADING 'STATE'
@@ -1598,7 +1594,7 @@ HEADING 'ROWS'
 		dw      create
   max_rows:     dw      0
 
-; Include stored interrupt vector(s) for convenience
+; Incluir los vectores de interrupcion guardados para mayor comodidad.
 HEADING 'LINES'
 		dw      create
   max_col:      dw      0
@@ -1667,8 +1663,8 @@ HEADING 'CLS'			; ( -- )
 	NEXT
 
 
-; Polled 'type'
-; Bits 0-3 of T_FLG control transmission; Bit 0 => XON
+; TYPE por consulta periodica.
+; Los bits 0 a 3 de T_FLG controlan la transmision; el bit 0 activa XON.
 
 HEADING 'TYPE'			; ( a n -- )
   cfa_type:	dw	$ + 2
@@ -1714,8 +1710,8 @@ HEADING '/0'			; heading for generate
 	mov di,1		; 80286 will repeat division !
 	iret
 
-; TERMINAL -- NON-VECTORED
-; Note: buffer must be able to contain one more than expected characters.
+; TERMINAL: sin vectores.
+; El bufer debe admitir un caracter mas de lo esperado.
 
 HEADING 'EXPECT'		; ( a n -- )
   EXPECT:       dw      $ + 2
@@ -1820,7 +1816,7 @@ cfa_msg:	dw      colon
 	dw      COUNT, cfa_type
 	dw      EXIT
 
-; Generic CRT Terminal
+; Terminal CRT generico
 
 HEADING 'BELL'
   BELL: dw      msg
@@ -1866,7 +1862,7 @@ HEADING 'PAD'			; ( -- a >> a=here+34, assumes full header )
 	push ax
 	NEXT
 
-; Pictured Number output
+; Salida de numeros con formato
 
 HEADING 'HOLD'			; ( n -- )
   HOLD:         dw      $ + 2
@@ -1965,10 +1961,10 @@ HEADING '.'			; ( n -- )
 	dw      s_to_d, d_dot
 	dw      EXIT
 
-; String output
+; Salida de cadenas
 
-; ( f -- a n >> return to caller if true )
-; ( f --     >> skip caller if false )
+; ( f -- a n >> volver al llamador si es verdadero )
+; ( f --     >> omitir al llamador si es falso )
 q_COUNT: dw      $ + 2
 	MOV di,[bp+0]	; get pointer to forth stream
 	sub ax,ax
@@ -1986,7 +1982,7 @@ q_COUNT: dw      $ + 2
 	push ax
 	NEXT
 
-; ( f --     >> return to caller if false )
+; ( f --     >> volver al llamador si es falso )
 abortq: dw      colon
 	dw      q_COUNT, h_p_2, COUNT, cfa_type
 	dw      SPACE, cfa_type, CR
@@ -1996,7 +1992,7 @@ dotq:   dw      colon
 	dw      one, q_COUNT, cfa_type
 	dw      EXIT
 
-; 32-bit Number input
+; Entrada de numeros de 32 bits
 
 q_DIGIT: dw      $ + 2                           ; ( d a -- d a' n f )
 	sub dx,dx
@@ -2084,11 +2080,11 @@ HEADING 'NUMBER'		; ( a -- n, d )
 	dw      EXIT
 
 
-; Floppy variables
+; Variables del disquete
 
-; Do NOT support DOS functions: Delete or Rename
+; No se admiten las funciones DOS de borrar ni renombrar.
 
-; This construct turns a memory location into a "variable" that fits in other definitions
+; Esta construccion convierte una direccion de memoria en una «variable» utilizable en otras definiciones.
 HEADING 'HNDL'
   HNDL: dw      constant
 	dw      hndl1
@@ -2156,7 +2152,7 @@ del_lf:		dw      $ + 2           ; ( a n -- )
 GET_DISK:       dw      colon   ; ( a n -- )
 	dw      BLANK, SPACE, ABORT
 
-; Interpreter
+; Interprete
 
 do_wrd01:  dw      $ + 2           ; ( c a n -- a=here+2 )
 	pop cx
@@ -2244,7 +2240,7 @@ HEADING 'WORD'			; ( c -- a )
 	dw      GET_DISK		; may abort ( c a0 n )
 	dw      do_wrd01		; EXIT not needed
 
-; Dictionary search
+; Busqueda en el diccionario
 
 HASH:                           ; ( na v -- na offset )
 	dw      $ + 2
@@ -2258,7 +2254,7 @@ HASH:                           ; ( na v -- na offset )
 	push ax
 	NEXT
 
-; Note - no address can be less than 0100h
+; Ninguna direccion puede ser menor que 0100h.
 FIND_WD:			; ( na offset -- na lfa,0 )
 	dw      $ + 2
 	mov [bp-2],si		; temporary save XP - below return
@@ -2288,7 +2284,7 @@ FIND_WD:			; ( na offset -- na lfa,0 )
 	mov si,[bp-2]		; restore execution pointer
 	NEXT
 
-; LFA > 0100h (current lowest value is 0103h), can be used as "found" flag
+; Si LFA > 0100h (el menor valor actual es 0103h), se puede usar como indicador de busqueda exitosa.
 ; HEADING 'FIND'		; ( na -- cfa lfa/f if found || na 0 if not )
   FIND:	dw      colon
 	dw      CONTEXT, two_fetch	; ( na v.d )
@@ -2320,13 +2316,13 @@ HEADING 'DEPTH'			; ( -- n )
 q_STACK: dw      colon
 	dw      DEPTH, zero_less, abortq
 	db      qsk2 - $ - 1
-	db      'Stack Empty'
+	db      'Pila vacia'
   qsk2:
 	dw      EXIT
 
 
-; Interpreter control - notice that this is not reentrant
-;  uses variables - #TIB, >IN & HNDL - to manipulate input (text or disk)
+; Control del interprete: no es reentrante.
+; Usa #TIB, >IN y HNDL para procesar la entrada (texto o disco).
 
 HEADING 'INTERPRET'
   INTERPRET:    dw      colon
@@ -2379,10 +2375,10 @@ HEADING 'QUIT'			; ( -- )
 	dw	R_RESET, QUERY, INTERPRET
 	dw	OK, CR
 	dw	do_branch, qt02		; AGAIN => Endless loop
-					; Note no Exit needed
+; No hace falta EXIT.
 
 
-; Vocabulary lists
+; Listas de vocabularios
 
 HEADING 'ID.'			; ( lfa -- >> prints name of word at link addr )
   id_dot:       dw      colon
@@ -2407,7 +2403,7 @@ HEADING 'ID.'			; ( lfa -- >> prints name of word at link addr )
 	dw      EXIT
 
 
-; Compiler
+; Compilador
 
 HEADING 'IMMEDIATE'
 	dw      colon
@@ -2422,7 +2418,7 @@ HEADING 'ALLOT'			; ( n -- )
 	db	178				; full head(34) + pad(80) + min stack(64)
 	dw	plus, u_less, abortq
 	db	alt3 - $ - 1
-	db	'Dictionary full'
+	db	'Diccionario lleno'
   alt3:
 	dw	H, plus_store, EXIT
 
@@ -2514,19 +2510,15 @@ HEADING ';'
 	dw	l_bracket, UNSMUDGE
 	dw      EXIT
 
-; Chains increase speed of compilation and
-;  allow multiple vocabularies without special code.
-; User vocabularies can also have separate chains to keep definitions separate.
-; 4 chains would be sufficient for a minimum kernel,
-;  but vocabularies would be limited to max. of 4
-; 8 chains => maximum of 8 vocabularies, good for small systems
-; 16 chains best choice for medium to large systems and for cross compiling
-; 32 chains are marginally better for larger systems, but more is not always best
-; Each vocabulary = nibble size => maximum number of 7 vocabularies,
-;  15 (if pre-multiply*2)
-; nibble in cell => maximum search path of 4 vocabularies
-; dword => 8 nibbles => 8 search vocabularies
-; Note: can "seal" portion of dictionary by eliminating FORTH from search string
+; Las cadenas aceleran la compilacion y permiten varios vocabularios sin codigo especial.
+; Los vocabularios de usuario tambien pueden tener cadenas separadas.
+; Cuatro cadenas bastan para un kernel minimo, pero limitan a cuatro vocabularios.
+; Ocho cadenas admiten ocho vocabularios y sirven para sistemas pequenos.
+; Dieciseis son adecuadas para sistemas medianos y grandes y para compilacion cruzada.
+; Treinta y dos mejoran un poco sistemas grandes, pero mas no siempre es mejor.
+; Cada vocabulario ocupa un nibble: hasta 15 vocabularios (si se multiplica por 2).
+; Un nibble por celda permite buscar hasta cuatro vocabularios; un dword, ocho.
+; Se puede «sellar» una parte del diccionario quitando FORTH de la cadena de busqueda.
 
 HEADING 'VOCABULARY'		; ( d -- )
 	dw      colon
@@ -2594,13 +2586,12 @@ HEADING 'ARRAY'			; ( #bytes -- )
 	dw      EXIT
 
 
-; Compiler directives - conditionals
+; Directivas del compilador: condicionales
 
-; Absolute [long] structures
-; Short structures did not save that much space, longer execution time
-; Note: the code contains 47 Forth ?branch (IF) statements
-;       19 do_branch -- other conditionals such as THEN and REPEAT
-;       9 normal loops, 3 /loops and 1 +loop
+; Estructuras absolutas (largas).
+; Las estructuras cortas ahorraban poco espacio y tardaban mas en ejecutarse.
+; El codigo contiene 47 instrucciones Forth ?branch (IF), 19 do_branch
+; para condicionales como THEN y REPEAT, 9 bucles normales, 3 /loops y 1 +loop.
 
 IMMEDIATE
 HEADING 'IF'			; ( -- a )
@@ -2652,7 +2643,7 @@ HEADING 'REPEAT'
 	dw      AGAIN, THEN
 	dw      EXIT
 
-; Switch Support - part 2 (compiling)
+; Compatibilidad con SWITCH: parte 2 (compilacion)
 
 IMMEDIATE
 HEADING 'SWITCH'
@@ -2690,7 +2681,7 @@ HEADING 'ENDSWITCH'
 	dw      DROP, THEN
 	dw      EXIT
 
-; Compiler directives - looping
+; Directivas del compilador: bucles
 
 IMMEDIATE
 HEADING 'DO'			; ( -- a )
@@ -2717,7 +2708,7 @@ HEADING '/LOOP'			; ( a -- )
 	dw      comma, EXIT
 
 
-; Miscellaneous
+; Varios
 
 IMMEDIATE
 HEADING 'DOES>'
@@ -2735,7 +2726,7 @@ HEADING 'EMPTY'			; ( -- )
 	dw      front_cmove
 	dw      EXIT
 
-; Updates HERE and HEADS, but not LAST
+; Actualiza HERE y HEADS, pero no LAST.
 HEADING 'FORGET'
 	dw      colon
 	dw      blnk, cfa_word, CURRENT, c_fetch, HASH, FIND_WD	; ( na v -- na lfa,0 )
@@ -2816,7 +2807,7 @@ HEADING '?'			; ( a -- )
 	dw      EXIT
 
 
-; Set operating bases
+; Establecer las bases numericas
 
 HEADING 'BASE!'			; ( n -- )
   base_store:   dw      colon
@@ -2893,7 +2884,7 @@ HEADING '('
 	dw      EXIT
 
 
-; String operators, help with Screen Editor
+; Operadores de cadenas que usa el editor de pantalla
 
 HEADING '-MATCH'		; ( a n s n -- a t )
 	dw      $ + 2
@@ -2948,7 +2939,7 @@ HEADING '\'
 	dw      EXIT
 
 
-; Vocabulary lists
+; Listas de vocabularios
 
 HEADING 'H-LIST'		; ( n -- )
   hlist:	dw      colon
@@ -2967,8 +2958,8 @@ HEADING 'H-LIST'		; ( n -- )
   hlst3:
 	dw      EXIT
 
-; Headerless, only used by WORDS below
-; returns highest lfa contained in copy of HEADS at PAD
+; Sin cabecera; solo lo usa WORDS mas abajo.
+; Devuelve el LFA mas alto de la copia de HEADS en PAD.
 MAX_HEADER:     dw      colon   ; ( -- index max.lfa )
 	dw      zero_dot
 	dw      B_HDR, zero, two_to_r
@@ -3012,7 +3003,7 @@ HEADING 'VLIST'			; ( -- >> lists the words in the context vocabulary )
 	dw      EXIT
 
 
-; Miscellaneous extensions
+; Extensiones varias
 
 HEADING '.S'
   dot_s:        dw      colon
@@ -3196,13 +3187,13 @@ HEADING 'MS'			; ( n -- )
 	dw      EXIT
 	NEXT
 
-; End of the dictionary (lfa) that will be retained (PROTECTED)
+; Fin del diccionario (LFA) que se conservara (PROTECTED).
 GOLDEN_LAST:		; dictionary 'protected' below this definition
 
 addr_end:		; Used for EMPTY after startup
 
-; Initial program entry and start up code
-; If startup modified, modify the GEN.4th script
+; Punto de entrada inicial y codigo de arranque.
+; Si se modifica el arranque, actualizar tambien el script GEN.4th.
 do_startup:
 	mov ax,cs		; init segments
 	mov ds,ax
@@ -3270,8 +3261,8 @@ do_startup:
 	MOV si, start_forth	; forward reference, may be modified when new GEN.4th
 	NEXT			; goto FORTH start, begin following pointers
 
-; When generating a new file, VERSION may be FORGOTTEN and new created
-;   Set address of new start_forth in above script
+; Al generar un archivo nuevo, VERSION puede olvidarse y recrearse.
+;   Actualizar en el script anterior la direccion de start_forth.
 LAST_HERE:			; Last definition that will be 'remembered' (with a header)
 HEADING 'VERSION'
   VERSION:      dw      colon
@@ -3281,8 +3272,8 @@ HEADING 'VERSION'
   vr01:
 	dw      EXIT
 	
-; Break a long, single chain of definitions into separate hash lists
-; Generate can save modified dictionary for faster startup
+; Dividir una cadena larga de definiciones en listas hash separadas.
+; Generate puede guardar el diccionario modificado para acelerar el inicio.
 N_HASH: dw      colon				; create hash lists
 	dw	PAD, B_HDR, ERASE		; temporary buffer for pointers
 	dw	cell, LAST_HERE, cfa_dup	; set last link field to VERSION
@@ -3314,21 +3305,21 @@ N_HASH: dw      colon				; create hash lists
   nh05:
 	dw      EXIT
 
-; High level Start-up
-; Headerless. Will be FORGOTTEN. GEN.4th must create a replacement
+; Arranque de alto nivel.
+; Sin cabecera; se olvidara. GEN.4th debe crear un reemplazo.
 start_forth:
 	dw      CR, CR, dotq
 	db      sf01 - $ - 1
-	db      'Copyright (C) 2014 MikeOS Developers -- see doc/LICENSE.TXT'
+	db      'Copyright (C) 2014 MikeOS Developers -- consulte doc/LICENSE.TXT'
   sf01:
 	dw      CR, dotq
 	db      sf02 - $ - 1
-	db      'FORTH version '
+	db      'Version de FORTH '
   sf02:
 	dw      VERSION
 	dw      CR, dotq
 	db      sf03 - $ - 1
-	db      'DOS version '
+	db      'Version del sistema '
   sf03:
 	dw      D_VER, one_plus, c_fetch, zero, st_num
 	dw      add_num, add_num, cell, 46, HOLD, two_drop

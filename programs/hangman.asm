@@ -1,17 +1,15 @@
 ; ------------------------------------------------------------------
-; Geography-based hangman game for MikeOS
+; Juego del ahorcado con nombres de ciudades para YogiOS.
 ;
-; At the end of this file you'll see a list of 256 cities (in
-; lower-case to make the game code simpler). We get one city at
-; random from the list and store it in a string.
+; Al final del archivo hay una lista de 256 ciudades en minusculas.
+; Se elige una al azar y se guarda en una cadena.
 ;
-; Next, we create another string of the same size, but with underscore
-; characters instead of the real ones. We display this 'work' string to
-; the player, who tries to guess characters. If s/he gets a char right,
-; it is revealed in the work string.
+; Luego se crea otra cadena del mismo tamano, con guiones bajos en lugar
+; de las letras. El jugador intenta adivinarlas y las correctas aparecen
+; en esta cadena de trabajo.
 ;
-; If s/he gets gets a char wrong, we add it to a list of misses, and
-; draw more of the hanging man. Poor bloke.
+; Cada letra incorrecta se agrega a la lista de fallos y se dibuja otra
+; parte del ahorcado.
 ; ------------------------------------------------------------------
 
 
@@ -24,7 +22,7 @@ start:
 	call os_hide_cursor
 
 
-	; First, reset values in case user is playing multiple games
+	; Restablecer los valores por si el usuario juega varias partidas.
 
 	mov di, real_string			; Full city name
 	mov al, 0
@@ -202,7 +200,7 @@ add_underscores:				; Create string of underscores
 
 
 
-	; Copy any spaces from the real string into the work string
+	; Copiar los espacios de la cadena original a la cadena de trabajo.
 
 fix_spaces:
 	mov si, real_string
@@ -222,8 +220,8 @@ fix_spaces:
 
 
 
-	; Here we check the list of wrong chars that the player entered previously,
-	; and see if the latest addition is already in there...
+	; Comprobar si la ultima letra introducida ya aparece en la lista
+	; de letras incorrectas.
 
 update_tried_chars:
 	mov si, tried_chars
@@ -339,7 +337,7 @@ show_win_msg:
 	ret
 
 
-	.win_msg	db 'Yay! Hit enter to play again', 0
+	.win_msg	db 'Ganaste. Intro para jugar otra vez.', 0
 
 
 
@@ -367,11 +365,11 @@ show_lose_msg:
 	ret
 
 
-	.lose_msg	db 'Doh! Hit enter to play again', 0
+	.lose_msg	db 'Perdiste. Intro para jugar otra vez.', 0
 
 
 
-	; Draw the hangman box and appropriate bits depending on the number of misses
+	; Dibujar el marco y las partes del ahorcado segun los fallos.
 
 show_hangman:
 	pusha
@@ -530,21 +528,21 @@ show_hangman:
 
 
 
-	title_msg	db 'MikeOS Hangman', 0
-	footer_msg	db 'Press Esc to exit', 0
+	title_msg	db 'Ahorcado de YogiOS', 0
+	footer_msg	db 'Pulse Esc para salir', 0
 
-	hint_msg_1	db 'Short word this time, so you', 0
-	hint_msg_2	db 'get the first letter for free!', 0
+	hint_msg_1	db 'La palabra es corta, asi que', 0
+	hint_msg_2	db 'recibiras la primera letra gratis.', 0
 
-	help_msg_1	db 'Can you guess the city name', 0
-	help_msg_2	db 'that fits the spaces beneath?', 0
-	help_msg_3	db 'Press keys to guess letters,', 0
-	help_msg_4	db 'but you only have 10 chances!', 0
+	help_msg_1	db 'Adivina el nombre de la ciudad', 0
+	help_msg_2	db 'que corresponde a los espacios.', 0
+	help_msg_3	db 'Pulse teclas para probar letras:', 0
+	help_msg_4	db 'solo tiene 10 oportunidades.', 0
 
 	real_string	times 50 db 0
 	work_string	times 50 db 0
 
-	tried_chars_msg	db 'Tried characters...', 0
+	tried_chars_msg	db 'Letras probadas...', 0
 	tried_chars_pos	db 0
 	tried_chars	times 255 db 0
 

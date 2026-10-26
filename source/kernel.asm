@@ -1,11 +1,11 @@
 ; =============================================================================
-; YogiOS -- El kernel del Yogi Operating System
+; YogiOS -- Kernel del sistema operativo Yogi
 ; Copyright (C) 2026 FAEH Premium
 ;
-; Esto es cargado desde el drive por BOOTLOAD.BIN, como KERNEL.BIN.
-; Primero tenemos los system call vectors, que inician en un punto estático
-; para que usen los programas. Siguiendo lo que es el código del kernel
-; principal y también código adicional de llamadas al sistema es incluído.
+; BOOTLOAD.BIN carga este archivo desde la unidad como KERNEL.BIN.
+; Al principio están los vectores de llamadas al sistema, ubicados en
+; posiciones fijas para que los usen los programas. Después vienen el código
+; principal del kernel y las rutinas adicionales de llamadas al sistema.
 ; =============================================================================
 
 
@@ -23,13 +23,12 @@
 
 
 ; ------------------------------------------------------------------
-; OS CALL VECTORS -- Ubicaciones estáticas para system call vectors
-; Nota: estos no pueden ser movidos, o romperán las calls!
+; VECTORES DE LLAMADAS AL SISTEMA: ubicaciones fijas
+; Nota: no se deben mover, porque se romperían las llamadas.
 
-; Los comentarios muestran ubicaciones exactas de instrucciones en esta
-; sección, y son usados en programas/yogidev.inc así que un programa externo
-; puede usar una llamada al sistema de YogiOS sin tener que conocer su posición
-; exacta en el código fuente del kernel...
+; Los comentarios indican las posiciones exactas de las instrucciones de esta
+; sección. Se usan en programs/yogidev.inc para que los programas externos
+; puedan invocar llamadas al sistema sin conocer su posición en el código.
 
 os_call_vectors:
 	jmp os_main			; 0000h -- Called from bootloader
@@ -143,8 +142,7 @@ no_change:
 	call os_seed_random		; Generador de número aleatorio por semilla
 
 
-	; Vamos a ver si hay un archivo llamado AUTORUN.BIN y ejecutarlo si es que sí,
-	; antes de ir al menú de lanzador de programas
+	; Si existe AUTORUN.BIN, ejecutarlo antes de mostrar el menú de programas.
 
 	mov ax, autorun_bin_file_name
 	call os_file_exists
@@ -155,7 +153,7 @@ no_change:
 	jmp execute_bin_program		; ...y moverlo a la parte ejecutable
 
 
-	; O más bien habrá un archivo AUTORUN.BAS?
+	; Si no, comprobar si existe AUTORUN.BAS.
 
 no_autorun_bin:
 	mov ax, autorun_bas_file_name
@@ -171,8 +169,7 @@ no_autorun_bin:
 	jmp app_selector		; E ir al menú selector de aplicaciones cuando BASIC termine
 
 
-	; Ahora mostramos una caja de diálogo ofreciendo al usuario la opción de
-	; un selector de progrmaas menu-driven, o una interfaz a línea de comando
+	; Ofrecer al usuario un selector de programas o una línea de comandos.
 
 option_screen:
 	mov ax, os_init_msg		; Poner la pantalla de bienvenida
@@ -195,14 +192,14 @@ option_screen:
 	jmp option_screen		; Ofrecer menu/CLI opciones después CLI haya salido.
 
 
-	; Data for the above code...
+	; Datos para el código anterior.
 
 	os_init_msg		db 'Bienvenido a YogiOS', 0
 	os_version_msg		db 'Version ', YOGIOS_VER, 0
 
- dialog_string_1		db 'Gracias por probar YogiOS! Por favor, se-', 0
-	dialog_string_2		db 'leccionar una opcion: OK para el menu de', 0
-	dialog_string_3		db 'programas, Cancelar para lineas de comando', 0
+	 dialog_string_1		db 'Gracias por probar YogiOS. Seleccione una opcion:', 0
+	dialog_string_2		db 'Aceptar para abrir el menu de programas,', 0
+	dialog_string_3		db 'o Cancelar para usar la linea de comandos.', 0
 
 
 app_selector:
@@ -223,8 +220,7 @@ app_selector:
 	jc no_kernel_execute		; Mostrar un mensaje de error si es que sí.
 
 
-	; Luego, necesitamos chequear que el programa que estamos tratando de correr es
-	; válido -- en otras palabras, que tiene la extensión .BIN
+	; Comprobar que el programa que se va a ejecutar tenga la extension .BIN.
 
 	push si				; Guardar nombre de archivo temporalmente
 
@@ -334,7 +330,7 @@ not_bas_extension:
 	jmp app_selector		; Iniciar de nuevo...
 
 
-	; Y ahora datos para el código antes mencionado...
+	; Datos para el código anterior.
 
 	kern_file_name		db 'KERNEL.BIN', 0
 
@@ -345,11 +341,11 @@ not_bas_extension:
 	bas_ext			db 'BAS'
 
 	kerndlg_string_1	db 'No se pudo cargar y ejecutar el kernel de YogiOS!', 0
-	kerndlg_string_2	db 'KERNEL.BIN es el corazón de YogiOS, y', 0
+	kerndlg_string_2	db 'KERNEL.BIN es el nucleo de YogiOS y', 0
 	kerndlg_string_3	db 'no es un programa normal.', 0
 
-	ext_string_1		db 'Extensión del archivo inválido! Solo', 0
-	ext_string_2		db 'puedes ejecutar programas .BIN o .BAS.', 0
+	ext_string_1		db 'La extension del archivo no es valida.', 0
+	ext_string_2		db 'Solo se admiten programas .BIN o .BAS.', 0
 
 	basic_finished_msg	db '>>> Programa BASIC terminado -- presionar una tecla', 0
 
@@ -368,7 +364,7 @@ not_bas_extension:
 
 
 ; ------------------------------------------------------------------
-; FEATURES -- Code to pull into the kernel
+; COMPONENTES INCLUIDOS EN EL KERNEL
 
 
 	%INCLUDE "features/cli.asm"
