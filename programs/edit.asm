@@ -1,5 +1,5 @@
 ; ------------------------------------------------------------------
-; MikeOS Text Editor
+; Editor de texto de YogiOS
 ; ------------------------------------------------------------------
 
 
@@ -49,7 +49,7 @@ file_chosen:
 	call os_string_copy
 
 
-	; Now we need to make sure that the file extension is TXT or BAS...
+	; Comprobar que la extension del archivo sea TXT o BAS.
 
 	mov di, ax
 	call os_string_length
@@ -91,8 +91,8 @@ file_load_success:
 	mov word [filesize], bx
 
 
-	; Now BX contains the number of bytes in the file, so let's add
-	; the load offset to get the last byte of the file in RAM
+	; BX contiene el tamano del archivo en bytes. Sumar el desplazamiento
+	; de carga para obtener la direccion de su ultimo byte en RAM.
 
 	add bx, 36864
 
@@ -114,8 +114,8 @@ file_load_success:
 	mov byte [cursor_y], 2			; The file starts being displayed on line 2 of the screen
 
 
-	; Now we need to display the text on the screen; the following loop is called
-	; whenever the screen scrolls, but not just when the cursor is moved
+	; Mostrar el texto en pantalla. El bucle siguiente se ejecuta cuando
+	; la pantalla se desplaza, pero no cada vez que se mueve el cursor.
 
 render_text:
 	call setup_screen
@@ -173,12 +173,11 @@ skip_return:
 
 
 
-	; When we get here, now we've displayed the text on the screen, and it's time
-	; to put the cursor at the position set by the user (not where it has been
-	; positioned after the text rendering), and get input
+	; El texto ya se mostro. Colocar el cursor en la posicion elegida por el
+	; usuario (no donde quedo tras dibujar el texto) y leer la entrada.
 
 get_input:
-;	call showbytepos			; USE FOR DEBUGGING (SHOWS CURSOR INFO AT TOP-RIGHT)
+;	call showbytepos			; DEPURACION: muestra la posicion del cursor arriba a la derecha.
 
 	mov byte dl, [cursor_x]			; Move cursor to user-set position
 	mov byte dh, [cursor_y]
@@ -202,7 +201,7 @@ get_input:
 
 
 ; ------------------------------------------------------------------
-; Move cursor left on the screen, and backward in data bytes
+; Mover el cursor a la izquierda y retroceder un byte en los datos.
 
 go_left:
 	cmp byte [cursor_x], 0			; Are we at the start of a line?
@@ -215,7 +214,7 @@ go_left:
 
 
 ; ------------------------------------------------------------------
-; Move cursor right on the screen, and forward in data bytes
+; Mover el cursor a la derecha y avanzar un byte en los datos.
 
 go_right:
 	pusha
@@ -246,11 +245,11 @@ go_right:
 
 
 ; ------------------------------------------------------------------
-; Move cursor down on the screen, and forward in data bytes
+; Mover el cursor hacia abajo y avanzar en los datos.
 
 go_down:
-	; First up, let's work out which character in the RAM file data
-	; the cursor will point to when we try to move down
+	; Determinar a que caracter de los datos del archivo en RAM apuntara
+	; el cursor al bajar.
 
 	pusha
 
@@ -294,7 +293,7 @@ go_down:
 
 
 ; ------------------------------------------------------------------
-; Move cursor up on the screen, and backward in data bytes
+; Mover el cursor hacia arriba y retroceder en los datos.
 
 go_up:
 	pusha
@@ -328,8 +327,8 @@ go_up:
 	cmp byte [si-2], 0Ah
 	jne .go_to_start_of_line
 
-	; If so, it means that the user pressed up on a newline char with another newline
-	; char above, so we just want to move back to that one, and do nothing else
+	; Si es asi, el usuario subio desde un salto de linea que tiene otro encima:
+	; retroceder hasta ese salto y no hacer nada mas.
 
 	dec word [cursor_byte]
 	jmp .display_move
@@ -404,7 +403,7 @@ go_up:
 
 
 ; ------------------------------------------------------------------
-; When an key (other than cursor keys or Esc) is pressed...
+; Cuando se pulsa una tecla distinta de las flechas o Esc...
 
 text_entry:
 	pusha
@@ -625,13 +624,13 @@ text_entry:
 	jmp render_text
 
 
-	.basic_finished_msg	db ">>> BASIC finished - hit a key to return to the editor", 0
-	.fail1_msg		db 'Not enough BASIC code to execute!', 0
-	.fail2_msg		db 'You need at least an END command.', 0
+	.basic_finished_msg	db ">>> BASIC termino; pulse una tecla para volver al editor", 0
+	.fail1_msg		db 'No hay suficiente codigo BASIC para ejecutar.', 0
+	.fail2_msg		db 'El programa necesita al menos un comando END.', 0
 
 
 ; ------------------------------------------------------------------
-; Move data from current cursor one character ahead
+; Desplazar un caracter de datos hacia adelante desde el cursor.
 
 move_all_chars_forward:
 	pusha
@@ -659,7 +658,7 @@ move_all_chars_forward:
 
 
 ; ------------------------------------------------------------------
-; Move data from current cursor + 1 to end of file back one char
+; Desplazar un caracter hacia atras desde el cursor + 1 hasta el final.
 
 move_all_chars_backward:
 	pusha
@@ -683,7 +682,7 @@ move_all_chars_backward:
 
 
 ; ------------------------------------------------------------------
-; SAVE FILE
+; GUARDAR ARCHIVO
 
 save_file:
 	mov ax, filename			; Delete the file if it already exists
@@ -718,7 +717,7 @@ save_file:
 
 
 ; ------------------------------------------------------------------
-; NEW FILE
+; ARCHIVO NUEVO
 
 new_file:
 	mov ax, confirm_msg
@@ -781,7 +780,7 @@ new_file:
 
 
 ; ------------------------------------------------------------------
-; Quit
+; Salir
 
 close:
 	call os_clear_screen
@@ -789,7 +788,7 @@ close:
 
 
 ; ------------------------------------------------------------------
-; Setup screen with colours, titles and horizontal lines
+; Preparar la pantalla con colores, titulos y lineas horizontales.
 
 setup_screen:
 	pusha
@@ -815,8 +814,8 @@ setup_screen:
 
 
 ; ------------------------------------------------------------------
-; DEBUGGING -- SHOW POSITION OF BYTE IN FILE AND CHAR UNDERNEATH CURSOR
-; ENABLE THIS IN THE get_input SECTION ABOVE IF YOU NEED IT
+; DEPURACION: mostrar la posicion del byte en el archivo y el caracter bajo el cursor.
+; Activar esta opcion en la seccion get_input anterior si hace falta.
 
 showbytepos:
 	pusha
@@ -849,21 +848,21 @@ showbytepos:
 
 
 ; ------------------------------------------------------------------
-; Data section
+; Seccion de datos
 
-	txt_title_msg	db 'MikeOS Text Editor', 0
-	txt_footer_msg	db '[Esc] Quit  [F1] Help  [F2] Save  [F3] New  [F5] Delete line  [F8] Run BASIC', 0
+	txt_title_msg	db 'Editor de texto YogiOS', 0
+	txt_footer_msg	db 'Esc: salir F1: ayuda F2: guardar F3: nuevo F5: borrar F8: ejecutar', 0
 
 	txt_extension	db 'TXT', 0
 	bas_extension	db 'BAS', 0
-	wrong_ext_msg	db 'You can only load .TXT or .BAS files!', 0
-	confirm_msg	db 'Are you sure? Unsaved data will be lost!', 0
+	wrong_ext_msg	db 'Solo se pueden cargar archivos .TXT o .BAS.', 0
+	confirm_msg	db 'Esta seguro? Se perderan los cambios sin guardar.', 0
 
-	file_load_fail_msg	db 'Could not load file! Does it exist?', 0
-	new_file_msg		db 'Enter a new filename:', 0
-	file_save_fail_msg1	db 'Could not save file!', 0
-	file_save_fail_msg2	db '(Write-only media or bad filename?)', 0
-	file_save_succeed_msg	db 'File saved.', 0
+	file_load_fail_msg	db 'No se pudo cargar el archivo. Existe?', 0
+	new_file_msg		db 'Nombre del archivo nuevo:', 0
+	file_save_fail_msg1	db 'No se pudo guardar el archivo.', 0
+	file_save_fail_msg2	db '(Medio protegido o nombre incorrecto)', 0
+	file_save_succeed_msg	db 'Archivo guardado.', 0
 
 	skiplines	dw 0
 
@@ -875,7 +874,7 @@ showbytepos:
 	last_byte	dw 0			; Location in RAM of final byte in file
 
 	filename	times 32 db 0		; 12 would do, but the user
-						; might enter something daft
+						; podria introducir un valor incorrecto.
 	filesize	dw 0
 
 

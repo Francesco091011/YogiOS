@@ -1,8 +1,8 @@
-rem Cosmic Flight (CF.BAS)
-rem Created by Joshua Beck
+rem Vuelo cosmico (CF.BAS)
+rem Creado por Joshua Beck
 rem Version 2.0.2
-rem Released under the GNU General Public Licence v3
-rem mail: mikeosdeveloper@gmail.com
+rem Publicado bajo la Licencia Publica General de GNU v3
+rem Correo: mikeosdeveloper@gmail.com
 goto start
     
 This program is free software: you can redistribute it and/or modify
@@ -21,15 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 start:
   cls
 
-  rem ***Cool Intro Text***
+  rem ***Texto de introduccion***
   gosub intro  
 
   cls
 
-  rem ***draw the borders***
+  rem ***Dibujar los bordes***
   gosub drawscreen
 
-  rem ***print the character***
+  rem ***Mostrar el caracter***
   ink 8
   move 40 24
   print chr 202 ;
@@ -38,125 +38,125 @@ start:
   e = 0
   f = 0
 
-  rem ***get the start time***
+  rem ***Obtener la hora de inicio***
   t = timer
 
-  rem ***set the character position to the same as we printed***
+  rem ***Ubicar el caracter donde se imprimio***
   p = 40
 
-  rem ***start off with a grey ship***
+  rem ***Comenzar con una nave gris***
   c = 8
   cursor off
 
 play:
   do
-    rem ***main gameplay loop***
+    rem ***Bucle principal del juego***
     do
-      rem ***we scroll the screen every 0.5 seconds or 10th tick***
+      rem ***Desplazar la pantalla cada 0,5 segundos o 10 pulsos***
       n = timer
       n = n - 6 
 
-      rem ***while waiting we process movement***
-      rem ***this makes the character responsive***
+      rem ***Procesar el movimiento mientras esperamos***
+      rem ***Asi el personaje responde rapidamente***
       getkey k
 
-      rem ***if the escape key is presses then end***
+      rem ***Terminar si se pulsa Esc***
       if k = 27 then goto endgame
 
-      rem ***if a capital letter is pressed, make it lowercase***
+      rem ***Convertir a minuscula la letra mayuscula***
       if k > 64 and k < 91 then k = k + 32
 
-      rem ***if a movement key was pressed move the character***
+      rem ***Mover el personaje si se pulsa una tecla de direccion***
       if k = 'a' then gosub goleft
       if k = 'd' then gosub goright
 
       if k = ' ' then gosub fireweapon
 
-      rem ***loop until we need to scroll***
+      rem ***Repetir hasta que haya que desplazar la pantalla***
       n = n + 1
     loop until n > t
 
-    rem ***get the next starting time***
+    rem ***Obtener la hora del siguiente ciclo***
     t = timer
 
-    rem ***scroll the game area down a line***
+    rem ***Desplazar el area de juego una linea hacia abajo***
     gosub scrollscreen
 
-    rem ***display the new score and modifiers***
+    rem ***Mostrar el nuevo puntaje y los modificadores***
     gosub printscore
 
-    rem ***place a new item on the blank line created***
+    rem ***Colocar un objeto en la linea vacia***
     y = 0
     gosub placebonus
 
-    rem ***add more depending on the score***
-    rem ***note that these will be mostly bad***
+    rem ***Agregar objetos segun el puntaje***
+    rem ***La mayoria seran perjudiciales***
     if s > 1999 then gosub placebonus
     if s > 4999 then gosub placebonus
     if s > 9999 then gosub placebonus
 
-    rem ***change colour of character for score***
+    rem ***Cambiar el color del personaje segun el puntaje***
     gosub colourchange
 
-    rem ***reprint character***
+    rem ***Volver a mostrar el personaje***
     ink c
     move p 24
     print chr 202 ;
     ink 7
 
-    rem ***reduce benefits (if any)***
+    rem ***Reducir los beneficios, si los hay***
     if e > 0 then e = e - 1
     if f > 0 then f = f - 1
 
-    rem ***loop until exited or lost***
+    rem ***Repetir hasta salir o perder***
   loop endless
   cursor on
 end
 
 goleft:
-  rem ***make sure character is on the screen***
+  rem ***Asegurarse de que el personaje siga en pantalla***
   if p < 31 then return
 
-  rem ***erase current position*** 
+  rem ***Borrar la posicion actual***
   move p 24
   print " " ;
 
-  rem ***move to new position***
+  rem ***Moverse a la nueva posicion***
   p = p - 1
   move p 24
   curschar b
   gosub checkbonus
 
-  rem ***print character in correct colour***
+  rem ***Mostrar el personaje con el color correcto***
   ink c
   print chr 202 ;
   ink 7
 return
 
 goright:
-  rem ***make sure that character is on the screen***
+  rem ***Asegurarse de que el personaje permanezca en pantalla***
   if p > 49 then return
 
-  rem ***erase current position***
+  rem ***Borrar la posicion actual***
   move p 24
   print " " ;
 
-  rem ***move to new position***
+  rem ***Moverse a la nueva posicion***
   p = p + 1
   move p 24
 
-  rem ***check for items there, apply effects***
+  rem ***Buscar objetos y aplicar sus efectos***
   curschar b
   gosub checkbonus
 
-  rem ***print character in correct colour***
+  rem ***Mostrar el personaje con el color correcto***
   ink c
   print chr 202 ;
   ink 7
 return
 
 colourchange:
-  rem ***set the colour depending on how many point have been scored***
+  rem ***Elegir el color segun los puntos obtenidos***
   if s < 100 then c = 8
   if s > 99 then c = 7
   if s > 199 then c = 15
@@ -247,15 +247,15 @@ extrawp:
 return
 
 checkbonus:
-  rem ***make sure an item exists***
+  rem ***Asegurarse de que exista un objeto***
   if b = 0 then return
   if b = 32 then return
 
-  rem ***check the effect of the item***
+  rem ***Comprobar el efecto del objeto***
   i = 0
   j = 0
 
-  rem ***positive items***
+  rem ***Objetos beneficiosos***
   if b = 224 then j = 10
   if b = 225 then j = 20
   if b = 227 then j = 50
@@ -265,7 +265,7 @@ checkbonus:
   if b = 252 then j = 1000
   if b = 253 then j = 2000
 
-  rem ***negative items***
+  rem ***Objetos perjudiciales***
   if b = 35 then i = 50
   if b = 168 then i = 100
   if b = 254 then i = 200
@@ -273,7 +273,7 @@ checkbonus:
   if b = 33 then i = 1000
   if b = 19 then i = 2000
 
-  rem ***change amount for current modifiers***
+  rem ***Cambiar la cantidad de modificadores activos***
   if m = 1 then j = j + 10
   if m = 2 then j = j + 20
   if m = 3 then j = j + 50
@@ -282,16 +282,16 @@ checkbonus:
   if m = 5 then j = j * 2
   if m = 5 then i = i * 3
 
-  rem ***if a modifer is active reduce is by one use***
+  rem ***Si hay un modificador activo, reducir sus usos en uno***
   if m > 0 then l = l - 1
 
-  rem ***if it gets to zero remove the modifier***
+  rem ***Eliminar el modificador cuando sus usos lleguen a cero***
   if l = 0 then m = 0
 
-  rem ***if there is a negative item remove the modifer***
+  rem ***Eliminar el modificador si se recoge un objeto negativo***
   if i > 0 then m = 0
 
-  rem ***check for new powerups and create modifiers***
+  rem ***Buscar mejoras y crear modificadores***
   if b = 43 then m = 2
   if b = 43 then l = 10
   if b = 36 then m = 3
@@ -299,20 +299,20 @@ checkbonus:
   if b = 42 then m = 5
   if b = 42 then l = 20
 
-  rem ***weapons bonuses***
+  rem ***Bonificaciones de armas***
   if b = 94 then e = e + 5
 
-  rem ***shield bonuses***
+  rem ***Bonificaciones de escudo***
   if b = 62 then f = f + 50
 
-  rem ***add positive total to the score***
+  rem ***Sumar al puntaje el total positivo***
   if i = 0 then s = s + j
 
-  rem ***check score is more than negative total***
-  rem ***if not the player looses***
+  rem ***Comprobar que el puntaje supere el total negativo***
+  rem ***Si no, el jugador pierde***
   if i > s then goto gameover
 
-  rem ***remove negative total from score***
+  rem ***Restar del puntaje el total negativo***
   if i > 0 then s = s - i
 return
 
@@ -320,7 +320,7 @@ gameoverani:
   219 178 177 176 32
 
 gameover:
-  rem ***display death animation***
+  rem ***Mostrar la animacion de derrota***
   ink 4
   v = p - 1
   p = p + 1
@@ -335,23 +335,23 @@ gameover:
     pause 1
   next t
 
-  rem ***print game over message***
+  rem ***Mostrar el mensaje de fin de partida***
   ink 7
   move 0 4
-  print "Game Over"
+  print "Fin del juego"
 
-  rem ***calculator how far negative the score is***
+  rem ***Calcular cuanto quedo por debajo de cero el puntaje***
   i = i - s
 
-  rem ***display it in red***
+  rem ***Mostrarlo en rojo***
   move 0 0
   ink 4
-  print "Energy : -" ;
+  print "Energia: -" ;
   number i $1
   print $1
   waitkey k
 
-  rem ***return everything to normal and exit***
+  rem ***Restablecer los valores y salir***
   ink 7
   cls
   cursor on
@@ -359,7 +359,7 @@ end
 
 endgame:
   move 0 4
-  print "Game Over"
+  print "Fin del juego"
   waitkey k
   ink 7
   cls
@@ -367,24 +367,23 @@ endgame:
 end 
 
 scrollscreen:
-  rem ***scroll down one line***
+  rem ***Desplazar una linea hacia abajo***
   for r = 0 to 23
 
-    rem ***uses lines in opposite direction (23-0)
+    rem ***Recorrer las lineas en orden inverso (23 a 0)***
     y = 23 - r
 
     for w = 30 to 50
-      rem ***collect character***
+      rem ***Guardar el caracter***
       move w y
       curschar b
       curscol v
       
-      rem ***if it's the player character then don't go over it***
-      rem ***also collect the previous character as bonus***
+      rem ***No sobrescribir al jugador; guardar el caracter anterior como bono***
       if w = p and y = 23 then gosub checkbonus
       if w = p and y = 23 then goto noscroll
 
-      rem ***move down one line and print character***
+      rem ***Bajar una linea y mostrar el caracter***
       y = y + 1
       move w y
       ink v
@@ -393,7 +392,7 @@ scrollscreen:
       noscroll:
     next w
 
-    rem ***blank line after moving***
+    rem ***Dejar vacia la linea despues del desplazamiento***
     move 30 y
     print "                     " ;
   next r
@@ -402,37 +401,37 @@ return
 
 drawscreen:
   for y = 0 to 24
-    rem ***print borders***
+    rem ***Dibujar los bordes***
     move 29 y
     print chr 221 ;
     move 51 y
     print chr 222 ;
 
-    rem ***randomly place items***
+    rem ***Colocar objetos al azar***
     rand x 1 5
     if y < 10 and x = 1 then gosub placebonus
   next y
 
-  rem ***print the basic information***
+  rem ***Mostrar la informacion basica***
   move 0 0
-  print "Energy : 0"
-  print "Highest: 0"
-  print "Modifier: None"
-  print "No Weapon"
+  print "Energia: 0"
+  print "Record: 0"
+  print "Modificador: Ninguno"
+  print "Sin arma"
 return
 
 placebonus:
-  rem ***move to a random position on y line***
+  rem ***Elegir una posicion vertical aleatoria***
   rand w 30 50
   move w y
 
-  rem ***vary the amount of good and bad items depending on the score***
+  rem ***Ajustar la cantidad de objetos buenos y malos segun el puntaje***
   if s = 0 then goto goodbonus
   d = s / 10
-  rem ***max out at 80% bad (800 points)***
+  rem ***Llegar hasta un 80 por ciento de objetos malos (800 puntos)***
   if d > 80 then d = 80
 
-  rem ***increase for futher scores***
+  rem ***Aumentar aun mas para puntajes superiores***
   if s > 5000 then d = 90
   if s > 10000 then d = 95
 
@@ -440,9 +439,9 @@ placebonus:
   if w < d then goto badbonus
 
 goodbonus:
-  rem ***pick a item***
-  rem ***the rarer ones are more valueable***
-  rem ***if the player has more point, get rarer items***
+  rem ***Elegir un objeto***
+  rem ***Los objetos menos comunes valen mas***
+  rem ***A mayor puntaje, aparecen objetos mas raros***
   rand w 1 88
   if s > 999 then rand w 26 92
   if s > 1999 then rand w 51 100
@@ -452,7 +451,7 @@ goodbonus:
   if s > 9999 and w > 95 then rand w 91 100
   if s > 9999 and w > 95 then rand w 91 100
 
-  rem ***good bonuses (increasing value)***
+  rem ***Bonificaciones positivas, de valor creciente***
   if w < 51 then v = 224
   if w > 50 and w < 76 then v = 225
   if w > 75 and w < 86 then v = 227
@@ -462,30 +461,30 @@ goodbonus:
   if w = 94 then v = 252
   if w = 95 then v = 253
 
-  rem ***the last five are powerups***
+  rem ***Los ultimos cinco son mejoras***
   if w = 96 then v = 43
   if w = 97 then v = 62
   if w = 98 then v = 36
   if w = 99 then v = 94
   if w = 100 then v = 42
 
-  rem ***print good items/powerups in green***
+  rem ***Mostrar los objetos buenos y las mejoras en verde***
   ink 2
   print chr v ;
   ink 7
 return
 
 badbonus:
-  rem ***pick an item***
-  rem ***the rarer ones are more dangerous***
-  rem ***if a player has more point, make more dangerous items***
+  rem ***Elegir un objeto***
+  rem ***Los objetos menos comunes son mas peligrosos***
+  rem ***A mayor puntaje, aparecen objetos mas peligrosos***
   rand w 1 50
   if s > 999 then rand w 46 75
   if s > 1999 then rand w 51 100
   if s > 4999 then rand w 76 100
   if s > 9999 then rand w 91 100
 
-  rem ***bad items (increasing energy loss)***
+  rem ***Objetos malos, con perdida de energia creciente***
   if w < 51 then v = 35
   if w > 50 and w < 76 then v = 168
   if w > 75 and w < 86 then v = 254
@@ -493,14 +492,14 @@ badbonus:
   if w > 95 and w < 100 then v = 33
   if w = 100 then v = 19
 
-  rem ***print bad items in red***
+  rem ***Mostrar los objetos malos en rojo***
   ink 4
   print chr v ;
   ink 7
 return
 
 printscore:
-  rem ***print current score***
+  rem ***Mostrar el puntaje actual***
   if s > g then ink 2
   if s = g then ink 7
   if s < g then ink 4
@@ -518,19 +517,19 @@ printscore:
   print h
   ink 7
 
-  rem ***print current modifier + uses remaining***
+  rem ***Mostrar el modificador y los usos restantes***
   move 10 2
   print "                  " ;
   move 10 2
-  if m = 0 then print "None" ;
+  if m = 0 then print "Ninguno" ;
   if m = 2 then print "+20" ;
   if m = 3 then print "+50" ;
-  if m = 5 then print "Double" ;
+  if m = 5 then print "Doble" ;
   if m > 0 then print " (" ;
   if m > 0 then print l ;
-  if m > 0 then print " uses)"
+  if m > 0 then print " usos)"
 
-  rem ***find out weapon***
+  rem ***Determinar el arma actual***
   q = 0
   if s > 99 then q = q + 1
   if s > 199 then q = q + 1
@@ -541,19 +540,19 @@ printscore:
   if s > 9999 then q = q + 1
   if e > 0 then q = q + 1
   
-  rem ***now print it***
+  rem ***Mostrar el arma***
   gosub colourchange
   ink c
   move 0 3
-  if q = 0 then print "No Weapon      "
-  if q = 1 then print "Mini Laser     "
-  if q = 2 then print "Standard Laser "
-  if q = 3 then print "Power Laser    "
-  if q = 4 then print "Fire Laser     "
-  if q = 5 then print "Mega Beam      "
-  if q = 6 then print "Giga Beam      "
+  if q = 0 then print "Sin arma       "
+  if q = 1 then print "Laser pequeno  "
+  if q = 2 then print "Laser normal   "
+  if q = 3 then print "Laser potente  "
+  if q = 4 then print "Laser de fuego "
+  if q = 5 then print "Rayo mega      "
+  if q = 6 then print "Rayo giga      "
   if q > 6 then ink 71
-  if q > 6 then print "Death Ray      "
+  if q > 6 then print "Rayo mortal    "
   if q > 6 then ink 7
   ink 7
 return
@@ -676,93 +675,93 @@ intro:
   w = y + 12
   v = x - 1
   move v w
-  print "Cosmic Flight is a fast paced"
+  print "Vuelo cosmico es un juego rapido"
   gosub newline
-  print "adventure game, in which you must"
+  print "de aventura en el que debes guiar"
   gosub newline
-  print "guide your small ship through a"
+  print "tu pequena nave por una galaxia"
   gosub newline
-  print "dangerous galaxy, collecting as"
+  print "peligrosa y recoger tanta energia"
   gosub newline
-  print "much energy as possible."
+  print "como puedas."
   gosub newline
   gosub newline
-  print "Use 'A' and 'D' to move and space"
+  print "Usa A y D para moverte; espacio"
   gosub newline
-  print "to fire your laser weapon."
+  print "para disparar tu arma laser."
   gosub newline
-  print "Collect " ;
+  print "Recoge objetos " ;
   ink 18
-  print "green" ;
+  print "verdes" ;
   ink 31 
-  print " items and avoid " ;
+  print " y evita los " ;
   ink 20
-  print "red" ; 
+  print "rojos" ; 
   ink 31
   gosub newline
-  print " ones. As you get more powerful,"
+  print ". Cuanto mas poderoso seas,"
   gosub newline
-  print "the game will become much harder."
+  print "mas dificil sera el juego."
 
   v = x - 21
   w = y + 12
   ink 2
   move v w
-  print "Good Items:"
+  print "Objetos buenos:"
   gosub newline
   print chr 224 ;
-  print " =   10 Energy"
+  print " =   10 energia"
   gosub newline
   print chr 225 ;
-  print " =   20 Energy"
+  print " =   20 energia"
   gosub newline
   print chr 227 ;
-  print " =   50 Energy"
+  print " =   50 energia"
   gosub newline
   print chr 228 ;
-  print " =  100 Energy"
+  print " =  100 energia"
   gosub newline
   print chr 172 ;
-  print " =  250 Energy"
+  print " =  250 energia"
   gosub newline
   print chr 171 ;
-  print " =  500 Energy"
+  print " =  500 energia"
   gosub newline
   print chr 252 ;
-  print " = 1000 Energy"
+  print " = 1000 energia"
   gosub newline
   print chr 253 ;
-  print " = 2000 Energy"
+  print " = 2000 energia"
 
   v = x + 36
   w = y + 12
   move v w
   ink 4
-  print "Bad Items:"
+  print "Objetos malos:"
   gosub newline
   print chr 35 ;
-  print " =   -50 Energy"
+  print " =   -50 energia"
   gosub newline
   print chr 168 ;
-  print " =  -100 Energy"
+  print " =  -100 energia"
   gosub newline
   print chr 254 ;
-  print " =  -200 Energy"
+  print " =  -200 energia"
   gosub newline
   print chr 15 ;
-  print " =  -500 Energy"
+  print " =  -500 energia"
   gosub newline
   print chr 33 ;
-  print " = -1000 Energy"
+  print " = -1000 energia"
   gosub newline
   print chr 19 ;
-  print " = -2000 Energy"  
+  print " = -2000 energia"  
 
   v = x - 1
   w = y + 23
   move v w
   ink 31
-  print "Press any key to start... " ;
+  print "Pulsa una tecla para comenzar... " ;
   v = v + 25
   move v w
   cursor on

@@ -7,7 +7,7 @@
 
 ; ------------------------------------------------------------------
 ; os_seed_random -- Semilla del generador de números aleatorios basado en el reloj
-; IN: Nothing; OUT: Nothing (registros preservados)
+; ENTRADA/SALIDA: ninguna (se conservan los registros).
 
 os_seed_random:
 	push bx
@@ -82,10 +82,10 @@ os_bcd_to_int:
 
 	mov bl, al			; Guarda el número entero por ahora
 
-	and ax, 0Fh			; Zero-out high bits
+	and ax, 0Fh			; Poner en cero los bits altos.
 	mov cx, ax			; CH/CL = bajo número BCD, cero extendido
 
-	shr bl, 4			; Mover número BCD más alto en los bits más bajos, zero fill msb
+	shr bl, 4			; Pasar el dígito BCD alto a los bits bajos y rellenar con ceros.
 	mov al, 10
 	mul bl				; AX = 10 * BL
 
@@ -101,8 +101,8 @@ os_bcd_to_int:
 
 
 ; ------------------------------------------------------------------
-; os_long_int_negate -- Valor múltiplo en DX:AX by -1
-; IN: DX:AX = entero largo; OUT: DX:AX = -(initial DX:AX)
+; os_long_int_negate -- Multiplicar por -1 el valor de DX:AX.
+; ENTRADA: DX:AX = entero largo. SALIDA: DX:AX = opuesto del valor inicial.
 
 os_long_int_negate:
 	neg ax

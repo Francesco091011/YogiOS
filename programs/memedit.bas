@@ -1,23 +1,23 @@
-rem Memory Manipulator (MEMEDIT.BAS), version 3.1.1
-rem An advanced memory modification tool for MikeOS
+rem Manipulador de memoria (MEMEDIT.BAS), version 3.1.1
+rem Herramienta avanzada para modificar la memoria de YogiOS
 rem Copyright (C) Joshua Beck
-rem Email: mikeosdeveloper@gmail.com
-rem Licenced under the GNU General Public Licence v3, see LICENCE
+rem Correo: mikeosdeveloper@gmail.com
+rem Licencia GNU GPL v3; consulte LICENCE
 
-rem Requires the MB++ library, version 3.2.3 recommended
+rem Requiere la biblioteca MB++; se recomienda la version 3.2.3
 include "mbpp.bas"
 
 parameters:
   if $1 = "" then goto init
   size $1
-  if r = 1 then print "File does not exist." 
+  if r = 1 then print "El archivo no existe."
   if r = 1 then end
   x = ramstart
   x = x / 16
   x = x + 1
   x = x * 16
   y = 65535 - x
-  if s > y then print "File too big."
+  if s > y then print "El archivo es demasiado grande."
   if s > y then end
   load $1 x
   d = x
@@ -26,7 +26,7 @@ parameters:
 init:
   gosub startprg
   z = 9
-  $T = "Memory Manipulator"
+  $T = "Manipulador de memoria"
   gosub settitle
   cls
   cursor off
@@ -47,12 +47,12 @@ init:
   v = 0 - x
   x = x - y
 
-  $T = "              About"
-  $5 = "Memory Manipulator, version 3.1.1"
+  $T = "              Acerca de"
+  $5 = "Manipulador de memoria, version 3.1.1"
   $6 = "Copyright (C) Joshua Beck 2012"
-  $7 = "Licenced under the GNU GPLv3"
-  $8 = "Program Memory: " + x + " bytes"
-  $9 = "Avaliable Memory: " + v + " bytes"
+  $7 = "Licencia GNU GPL v3"
+  $8 = "Memoria del programa: " + x + " bytes"
+  $9 = "Memoria disponible: " + v + " bytes"
   gosub mesbox
 goto main
 
@@ -175,9 +175,9 @@ return
 
 go_location:
   t = 2
-  $T = "Goto - Location"
-  $5 = "Enter a hexdecimal memory address to"
-  $6 = "go to between 0000 and FFFF."
+  $T = "Ir a una direccion"
+  $5 = "Ingrese una direccion hexadecimal"
+  $6 = "entre 0000 y FFFF."
   v = 1
   gosub inpbox
   $4 = $I
@@ -243,16 +243,16 @@ return
   
 load_file:
   t = 14
-  $T = "Load"
-  $5 = "Enter a filename to load at the"
-  $6 = "selected location (blank to cancel)"
+  $T = "Cargar"
+  $5 = "Nombre del archivo que se cargara"
+  $6 = "en la direccion elegida (vacio cancela)"
   v = 1
   gosub inpbox
   $4 = $I
   if $4 = "" then return
   
   load $4 d
-  if r = 1 then $E = "File does not exist!"
+  if r = 1 then $E = "El archivo no existe."
   if r = 1 then goto errbox
 
   gosub highlight_off
@@ -262,9 +262,9 @@ return
 
 save_file:
   t = 13
-  $T = "Save"
-  $5 = "What filename do you want to use?"
-  $6 = "How many bytes to save (hex)?"
+  $T = "Guardar"
+  $5 = "Que nombre desea usar?"
+  $6 = "Cuantos bytes guardar (hex)?"
   v = 1
   gosub dinbox
   
@@ -274,7 +274,7 @@ save_file:
   delete $7
   save $7 d v
   
-  if r = 1 then $E = "Read-only disk!"
+  if r = 1 then $E = "Disco protegido contra escritura."
   if r = 1 then goto errbox
 return
 
@@ -364,7 +364,7 @@ content:
   gosub savevar
   move 59 1
   ink 9
-  print "Selected Byte: 0000"
+  print "Byte seleccionado: 0000"
   ink 3
   move 5 3
   print "0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F        0123456789ABCDEF"
@@ -397,9 +397,9 @@ content:
   print chr 180 ;
   ink 3
   move 2 22
-  print "Use the arrow keys to move around, G for GOTO, Enter to change a value,"
+  print "Flechas: moverse; G: ir a direccion; Intro: cambiar valor;"
   move 2 23
-  print "Q for page up, Z for page down, O to Save and L to load files into memory."
+  print "Q: pagina anterior; Z: pagina siguiente; O: guardar; L: cargar archivo."
 return
 
 

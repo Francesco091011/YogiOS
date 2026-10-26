@@ -7,7 +7,7 @@
 
 ; ------------------------------------------------------------------
 ; os_port_byte_out -- Mandar byte a un  puerto
-; IN: DX = dirección del puerto, AL = byte por mandar
+; ENTRADA: DX = dirección del puerto, AL = byte que se enviará.
 
 os_port_byte_out:
 	pusha
@@ -20,8 +20,7 @@ os_port_byte_out:
 
 ; ------------------------------------------------------------------
 ; os_port_byte_in -- Recibe byte de un puerto
-; IN: DX = dirección de puerto
-; OUT: AL = byte de puerto
+; ENTRADA: DX = dirección del puerto. SALIDA: AL = byte leído.
 
 os_port_byte_in:
 	pusha
@@ -39,7 +38,7 @@ os_port_byte_in:
 
 ; ------------------------------------------------------------------
 ; os_serial_port_enable -- Poner el puerto serial para trasmitir datos
-; IN: AX = 0 para modo normal (9600 baud), or 1 para modo lento (1200 baud)
+; ENTRADA: AX = 0 para modo normal (9600 baudios) o 1 para modo lento (1200 baudios).
 
 os_serial_port_enable:
 	pusha
@@ -49,12 +48,12 @@ os_serial_port_enable:
 	je .slow_mode
 
 	mov ah, 0
-	mov al, 11100011b		; 9600 baud, no parity, 8 data bits, 1 stop bit
+	mov al, 11100011b		; 9600 baudios, sin paridad, 8 bits de datos y 1 bit de parada.
 	jmp .finish
 
 .slow_mode:
 	mov ah, 0
-	mov al, 10000011b		; 1200 baud, no parity, 8 data bits, 1 stop bit	
+	mov al, 10000011b		; 1200 baudios, sin paridad, 8 bits de datos y 1 bit de parada.
 
 .finish:
 	int 14h
@@ -65,7 +64,7 @@ os_serial_port_enable:
 
 ; ------------------------------------------------------------------
 ; os_send_via_serial -- Mandar un byte via el puerto serial
-; IN: AL = byte para mandar via serial; OUT: AH = Bit 7 limpio en éxito
+; ENTRADA: AL = byte que se enviará. SALIDA: el bit 7 de AH queda limpio si tuvo éxito.
 
 os_send_via_serial:
 	pusha
@@ -89,7 +88,7 @@ os_send_via_serial:
 
 ; ------------------------------------------------------------------
 ; os_get_via_serial -- Recibir un byte desde el puerto serial
-; OUT: AL = byte que fue recibido; OUT: AH = Bit 7 limpio en éxito
+; SALIDA: AL = byte recibido. El bit 7 de AH queda limpio si tuvo éxito.
 
 os_get_via_serial:
 	pusha

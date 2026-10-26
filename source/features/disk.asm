@@ -6,8 +6,8 @@
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_get_file_list -- Generate comma-separated string of files on floppy
-; IN/OUT: AX = location to store zero-terminated filename string
+; os_get_file_list -- Generar una lista separada por comas de archivos del disquete
+; ENTRADA/SALIDA: AX = dirección donde se guardará el nombre terminado en cero.
 
 os_get_file_list:
 	pusha
@@ -139,9 +139,9 @@ os_get_file_list:
 
 
 ; ------------------------------------------------------------------
-; os_load_file -- Load file into RAM
-; IN: AX = location of filename, CX = location in RAM to load file
-; OUT: BX = file size (in bytes), carry set if file not found
+; os_load_file -- Cargar un archivo en la RAM
+; ENTRADA: AX = dirección del nombre, CX = dirección de carga en RAM.
+; SALIDA: BX = tamaño en bytes; acarreo activado si no se encuentra el archivo.
 
 os_load_file:
 	call os_string_uppercase
@@ -307,7 +307,7 @@ os_load_file:
 	or dx, dx			; If DX = 0 [CLUSTER] = even, if DX = 1 then odd
 
 	jz .even			; If [CLUSTER] = even, drop last 4 bits of word
-					; with next cluster; if odd, drop first 4 bits
+					; con el siguiente clúster; si es impar, descartar los 4 primeros bits.
 
 .odd:
 	shr ax, 4			; Shift out first 4 bits (belong to another entry)
@@ -342,13 +342,13 @@ os_load_file:
 
 	.string_buff	times 12 db 0	; For size (integer) printing
 
-	.err_msg_floppy_reset	db 'os_load_file: Floppy failed to reset', 0
+	.err_msg_floppy_reset	db 'os_load_file: no se pudo reiniciar la disquetera', 0
 
 
 ; --------------------------------------------------------------------------
-; os_write_file -- Save (max 64K) file to disk
-; IN: AX = filename, BX = data location, CX = bytes to write
-; OUT: Carry clear if OK, set if failure
+; os_write_file -- Guardar en disco un archivo (máximo 64 KiB)
+; ENTRADA: AX = nombre, BX = dirección de los datos, CX = bytes por escribir.
+; SALIDA: acarreo desactivado si termina bien; activado si falla.
 
 os_write_file:
 	pusha
@@ -371,7 +371,7 @@ os_write_file:
 	jnc near .failure
 
 
-	; First, zero out the .free_clusters list from any previous execution
+	; Primero, borrar la lista .free_clusters de ejecuciones anteriores.
 	pusha
 
 	mov di, .free_clusters
@@ -385,7 +385,7 @@ os_write_file:
 	popa
 
 
-	; Next, we need to calculate now many 512 byte clusters are required
+	; Calcular cuántos clústeres de 512 bytes se necesitan.
 
 	mov ax, cx
 	mov dx, 0
@@ -470,9 +470,9 @@ os_write_file:
 
 .finished_list:
 
-	; Now the .free_clusters table contains a series of numbers (words)
-	; that correspond to free clusters on the disk; the next job is to
-	; create a cluster chain in the FAT for our file
+	; Ahora la tabla .free_clusters contiene una serie de números (palabras)
+	; que corresponden a clústeres libres del disco; ahora hay que crear
+	; en la FAT la cadena de clústeres del archivo.
 
 	mov cx, 0			; .free_clusters offset counter
 	mov word [.count], 1		; General cluster counter
@@ -569,7 +569,7 @@ os_write_file:
 	call disk_write_fat		; Save our FAT back to disk
 
 
-	; Now it's time to save the sectors to disk!
+	; Ahora guardamos los sectores en el disco.
 
 	mov cx, 0
 
@@ -604,8 +604,8 @@ os_write_file:
 
 .write_root_entry:
 
-	; Now it's time to head back to the root directory, find our
-	; entry and update it with the cluster in use and file size
+	; Volver al directorio raíz para buscar nuestro
+	; entrada y actualizarla con el clúster utilizado y el tamaño del archivo.
 
 	call disk_read_root_dir
 
@@ -648,8 +648,8 @@ os_write_file:
 
 
 ; --------------------------------------------------------------------------
-; os_file_exists -- Check for presence of file on the floppy
-; IN: AX = filename location; OUT: carry clear if found, set if not
+; os_file_exists -- Comprobar si el archivo existe en el disquete
+; ENTRADA: AX = dirección del nombre. SALIDA: acarreo desactivado si existe.
 
 os_file_exists:
 	call os_string_uppercase
@@ -679,8 +679,8 @@ os_file_exists:
 
 
 ; --------------------------------------------------------------------------
-; os_create_file -- Creates a new 0-byte file on the floppy disk
-; IN: AX = location of filename; OUT: Nothing
+; os_create_file -- Crear un archivo vacío en el disquete
+; ENTRADA: AX = dirección del nombre de archivo. SALIDA: ninguna.
 
 os_create_file:
 	clc
@@ -695,7 +695,7 @@ os_create_file:
 	jnc .exists_error
 
 
-	; Root dir already read into disk_buffer by os_file_exists
+	; os_file_exists ya leyó el directorio raíz en disk_buffer.
 
 	mov di, disk_buffer		; So point DI at it!
 
@@ -763,8 +763,8 @@ os_create_file:
 
 
 ; --------------------------------------------------------------------------
-; os_remove_file -- Deletes the specified file from the filesystem
-; IN: AX = location of filename to remove
+; os_remove_file -- Eliminar del sistema de archivos el archivo indicado
+; ENTRADA: AX = dirección del nombre del archivo que se eliminará.
 
 os_remove_file:
 	pusha
@@ -823,7 +823,7 @@ os_remove_file:
 	or dx, dx			; If DX = 0 [.cluster] = even, if DX = 1 then odd
 
 	jz .even			; If [.cluster] = even, drop last 4 bits of word
-					; with next cluster; if odd, drop first 4 bits
+					; con el siguiente clúster; si es impar, descartar los 4 primeros bits.
 .odd:
 	push ax
 	and ax, 000Fh			; Set cluster data to zero in FAT in RAM
@@ -868,9 +868,9 @@ os_remove_file:
 
 
 ; --------------------------------------------------------------------------
-; os_rename_file -- Change the name of a file on the disk
-; IN: AX = filename to change, BX = new filename (zero-terminated strings)
-; OUT: carry set on error
+; os_rename_file -- Cambiar el nombre de un archivo del disco
+; ENTRADA: AX = nombre actual, BX = nombre nuevo (cadenas terminadas en cero).
+; SALIDA: acarreo activado si ocurre un error.
 
 os_rename_file:
 	push bx
@@ -919,9 +919,9 @@ os_rename_file:
 
 
 ; --------------------------------------------------------------------------
-; os_get_file_size -- Get file size information for specified file
-; IN: AX = filename; OUT: BX = file size in bytes (up to 64K)
-; or carry set if file not found
+; os_get_file_size -- Obtener el tamaño del archivo indicado
+; ENTRADA: AX = nombre. SALIDA: BX = tamaño en bytes (hasta 64 KiB).
+; o acarreo activado si no se encuentra el archivo.
 
 os_get_file_size:
 	pusha
@@ -963,12 +963,12 @@ os_get_file_size:
 
 
 ; ==================================================================
-; INTERNAL OS ROUTINES -- Not accessible to user programs
+; RUTINAS INTERNAS DEL SISTEMA: no están disponibles para los programas.
 
 ; ------------------------------------------------------------------
-; int_filename_convert -- Change 'TEST.BIN' into 'TEST    BIN' as per FAT12
-; IN: AX = filename string
-; OUT: AX = location of converted string (carry set if invalid)
+; int_filename_convert -- Convertir «TEST.BIN» a «TEST    BIN» según FAT12
+; ENTRADA: AX = cadena con el nombre. SALIDA: AX = cadena convertida
+; (acarreo activado si el nombre no es válido).
 
 int_filename_convert:
 	pusha
@@ -1004,8 +1004,8 @@ int_filename_convert:
 	cmp cx, 8
 	je .do_extension		; Skip spaces if first bit is 8 chars
 
-	; Now it's time to pad out the rest of the first part of the filename
-	; with spaces, if necessary
+	; Completar con espacios el resto de la primera parte del nombre
+	; con espacios, si hace falta.
 
 .add_spaces:
 	mov byte [di], ' '
@@ -1014,7 +1014,7 @@ int_filename_convert:
 	cmp cx, 8
 	jl .add_spaces
 
-	; Finally, copy over the extension
+	; Por último, copiar la extensión.
 .do_extension:
 	lodsb				; 3 characters
 	cmp al, 0
@@ -1047,9 +1047,9 @@ int_filename_convert:
 
 
 ; --------------------------------------------------------------------------
-; disk_get_root_entry -- Search RAM copy of root dir for file entry
-; IN: AX = filename; OUT: DI = location in disk_buffer of root dir entry,
-; or carry set if file not found
+; disk_get_root_entry -- Buscar la entrada del archivo en la copia del directorio raíz
+; ENTRADA: AX = nombre. SALIDA: DI = posición de su entrada en disk_buffer,
+; o acarreo activado si no se encuentra el archivo.
 
 disk_get_root_entry:
 	pusha
@@ -1099,8 +1099,8 @@ disk_get_root_entry:
 
 
 ; --------------------------------------------------------------------------
-; disk_read_fat -- Read FAT entry from floppy into disk_buffer
-; IN: Nothing; OUT: carry set if failure
+; disk_read_fat -- Leer la FAT del disquete en disk_buffer
+; ENTRADA: ninguna. SALIDA: indicador de acarreo activado si falla.
 
 disk_read_fat:
 	pusha
@@ -1147,8 +1147,8 @@ disk_read_fat:
 
 
 ; --------------------------------------------------------------------------
-; disk_write_fat -- Save FAT contents from disk_buffer in RAM to disk
-; IN: FAT in disk_buffer; OUT: carry set if failure
+; disk_write_fat -- Escribir en disco la FAT almacenada en disk_buffer
+; ENTRADA: FAT en disk_buffer. SALIDA: acarreo activado si falla.
 
 disk_write_fat:
 	pusha
@@ -1180,8 +1180,8 @@ disk_write_fat:
 
 
 ; --------------------------------------------------------------------------
-; disk_read_root_dir -- Get the root directory contents
-; IN: Nothing; OUT: root directory contents in disk_buffer, carry set if error
+; disk_read_root_dir -- Leer el contenido del directorio raíz
+; ENTRADA: ninguna. SALIDA: directorio raíz en disk_buffer; acarreo si hay error.
 
 disk_read_root_dir:
 	pusha
@@ -1229,8 +1229,8 @@ disk_read_root_dir:
 
 
 ; --------------------------------------------------------------------------
-; disk_write_root_dir -- Write root directory contents from disk_buffer to disk
-; IN: root dir copy in disk_buffer; OUT: carry set if error
+; disk_write_root_dir -- Escribir en disco el directorio raíz de disk_buffer
+; ENTRADA: copia del directorio raíz en disk_buffer. SALIDA: acarreo si hay error.
 
 disk_write_root_dir:
 	pusha
@@ -1261,7 +1261,7 @@ disk_write_root_dir:
 
 
 ; --------------------------------------------------------------------------
-; Reset floppy disk
+; Reiniciar el disquete
 
 disk_reset_floppy:
 	push ax
@@ -1278,8 +1278,8 @@ disk_reset_floppy:
 
 
 ; --------------------------------------------------------------------------
-; disk_convert_l2hts -- Calculate head, track and sector for int 13h
-; IN: logical sector in AX; OUT: correct registers for int 13h
+; disk_convert_l2hts -- Calcular cabezal, pista y sector para int 13h
+; ENTRADA: AX = sector lógico. SALIDA: registros preparados para int 13h.
 
 disk_convert_l2hts:
 	push bx

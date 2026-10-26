@@ -1,35 +1,38 @@
 YogiOS
 ======
 
-Sistema operativo a 16 bits de código abierto para PCs x86
------------------------------------------------
+Sistema operativo de código abierto de 16 bits para PC x86.
+----------------------------------------------------------
 
-```
-Copyright (C) 2006 - 2014 MikeOS Developers -- en doc/LICENSE.TXT respetado. 
-Copyright (C) 2026 FAEH Premium. Uso libre con créditos de creador.
-```
+Copyright (C) 2006–2014 MikeOS Developers. Consulte doc/LICENSE.TXT.
+Copyright (C) 2026 FAEH Premium. Uso libre con atribución al creador.
 
-YogiOS es un sistema operativo a 16 bits para PCs compatibles con x86, escritos enteramente en lenguaje ensamblador, que bootea/arranca desde un diskete,
-CD-ROM o USB. Se caracteriza por su interfaz de diálogo orientado a usuario basado en texto, una línea de comando, soporte para FAT12 (tipo MS-DOS) disketes, sonido (PC speaker), editor de texto, interpretador de BASIC y más.
-The kernel includes over 60 system calls.
+YogiOS es un sistema operativo de 16 bits para PC compatibles con x86, escrito
+enteramente en lenguaje ensamblador. Puede arrancar desde un disquete, un
+CD-ROM o una memoria USB. Incluye una interfaz de diálogos de texto, una línea
+de comandos, compatibilidad con disquetes FAT12, sonido mediante el altavoz
+interno, editor de texto, intérprete de BASIC y más. El kernel ofrece más de
+60 llamadas al sistema.
 
-YogiOS es una herramienta educativa para los que desean entender la construcción de un SO simple y ensamblaje x86. Guía rápida de iniciación: MikeOS puede correr desde un diskete o CD-ROM, y también en un emulador o una PC real. 
-Vea el directorio disk_images/ para archivos que puedas escribir en el medio apropiado o bootear desde VMware, QEMU o VirtualBox.
+YogiOS es una herramienta educativa para quienes desean aprender cómo se
+construye un sistema operativo sencillo y cómo funciona el ensamblador x86.
+Puede ejecutarse en un emulador o en un PC compatible. En disk_images/ hay
+imágenes que se pueden grabar en el medio correspondiente o iniciar con
+VMware, QEMU o VirtualBox.
 
-Puedes encontrar el código fuente en el directorio source/, y programas de ejemplo (incluídos en las imágenes de disco) en el directorio programs/. 
-Vea el directorio doc/  para más información, incluyendo:
+El código fuente está en source/ y los programas de ejemplo, incluidos en las
+imágenes de disco, están en programs/. El directorio doc/ contiene más
+información:
 
-- [handbook-user.html](doc/handbook-user.html) -- How to run and use MikeOS
+- [handbook-user.html](doc/handbook-user.html): cómo iniciar y usar YogiOS.
+- [handbook-appdev-basic.html](doc/handbook-appdev-basic.html): programación en BASIC.
+- [handbook-appdev-asm.html](doc/handbook-appdev-asm.html): programación en ensamblador.
+- [handbook-sysdev.html](doc/handbook-sysdev.html): construcción y modificación del sistema.
+- [LICENSE.TXT](doc/LICENSE.TXT): licencia original de código abierto, similar a BSD.
+- [CHANGES.TXT](doc/CHANGES.TXT): cambios de las versiones anteriores de MikeOS.
+- [CREDITS.TXT](doc/CREDITS.TXT): colaboradores del proyecto MikeOS.
 
-- [handbook-appdev-basic.html](doc/handbook-appdev-basic.html) -- Escribiendo software en BASIC
-- [handbook-appdev-asm.html](doc/handbook-appdev-asm.html) -- Escribiendo software en assembly
-- [handbook-sysdev.html](doc/handbook-sysdev.html) -- Construcción y modificación del SO
-
-- [LICENSE.TXT](doc/LICENSE.TXT) -- La licencia de código abierto original, tipo BSD respetado. 
-- [CHANGES.TXT](doc/CHANGES.TXT) -- Detallada lista de cambios en lanzamientos previos de MikeOS. 
-- [CREDITS.TXT](doc/CREDITS.TXT) -- Personas involucradas en el proyecto de MikeOS. 
-
-Diviértere, y agradezco al creador de MikeOS: [el sitio web](http://mikeos.sourceforge.net)
+¡Disfrútelo! Gracias a Mike Saunders por crear MikeOS: [sitio web](http://mikeos.sourceforge.net).
 
 [Mike Saunders](mailto:okachi@gmail.com)
 

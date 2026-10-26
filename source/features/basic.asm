@@ -6,7 +6,7 @@
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; Token types
+; Tipos de token
 
 %DEFINE VARIABLE 1
 %DEFINE STRING_VAR 2
@@ -24,9 +24,8 @@
 
 os_run_basic:
 	mov word [orig_stack], sp		; Save stack pointer -- we might jump to the
-						; error printing code and quit in the middle
-						; some nested loops, and we want to preserve
-						; the stack
+						; La rutina de error puede abandonar el intérprete
+						; desde bucles anidados; hay que conservar la pila.
 
 	mov word [load_point], ax		; AX was passed as starting location of code
 
@@ -39,7 +38,7 @@ os_run_basic:
 
 
 	call clear_ram				; Clear variables etc. from previous run
-						; of a BASIC program
+						; de un programa BASIC
 
 	cmp si, 0				; Passed a parameter string?
 	je mainloop
@@ -272,7 +271,7 @@ mainloop:
 
 
 ; ------------------------------------------------------------------
-; CLEAR RAM
+; LIMPIAR RAM
 
 clear_ram:
 	pusha
@@ -312,7 +311,7 @@ clear_ram:
 
 
 ; ------------------------------------------------------------------
-; ASSIGNMENT
+; ASIGNACIONES
 
 assign:
 	cmp ax, VARIABLE			; Are we starting with a number var?
@@ -495,9 +494,8 @@ assign:
 	call set_var
 
 
-	; The assignment could be simply "X = 5" etc. Or it could be
-	; "X = Y + 5" -- ie more complicated. So here we check to see if
-	; there's a delimiter...
+	; La asignacion puede ser sencilla, como "X = 5", o mas compleja,
+	; como "X = Y + 5". Aqui comprobamos si hay un delimitador...
 
 .check_for_more:
 	mov word ax, [prog]			; Save code location in case there's no delimiter
@@ -746,7 +744,7 @@ assign:
 
 
 ; ==================================================================
-; SPECIFIC COMMAND CODE STARTS HERE
+; AQUI COMIENZA EL CODIGO DE LOS COMANDOS
 
 ; ------------------------------------------------------------------
 ; ALERT
@@ -1293,8 +1291,8 @@ do_for:
 	mov al, [token]
 	call get_var
 	
-	; At this stage, we've read something like "FOR X = 1"
-	; so let's store that 1 in the variable table
+	; En este punto ya leimos algo como "FOR X = 1";
+	; guardamos el 1 en la tabla de variables.
 
 .continue:
 	mov bx, ax
@@ -1317,7 +1315,7 @@ do_for:
 	jnc .error
 
 
-	; So now we're at "FOR X = 1 TO"
+	; Ahora estamos en "FOR X = 1 TO".
 
 	call get_token
 
@@ -1351,9 +1349,9 @@ do_for:
 	stosw
 
 
-	; So we've got the variable, assigned it the starting number, and put into
-	; our table the limit it should reach. But we also need to store the point in
-	; code after the FOR line we should return to if NEXT X doesn't complete the loop...
+	; Ya tenemos la variable, su valor inicial y el limite que debe alcanzar.
+	; Tambien guardamos la posicion posterior a FOR para volver alli si NEXT
+	; todavia no termina el bucle.
 
 	mov ax, 0
 	mov byte al, [.tmp_var]
@@ -2466,7 +2464,7 @@ do_page:
 	call os_string_to_int
 	mov byte [disp_page], al	; Set display page variable
 
-	; Change display page -- AL should already be present from the os_string_to_int
+	; Cambiar la pagina de pantalla. AL ya contiene el valor de os_string_to_int.
 	mov ah, 5
 	int 10h
 
@@ -2954,11 +2952,9 @@ do_print:
 
 
 .newline_or_not:
-	; We want to see if the command ends with ';' -- which means that
-	; we shouldn't print a newline after it finishes. So we store the
-	; current program location to pop ahead and see if there's the ';'
-	; character -- otherwise we put the program location back and resume
-	; the main loop
+	; Comprobar si el comando termina en ';', lo que suprime el salto de linea.
+	; Guardamos la posicion actual para mirar el caracter siguiente; si no es
+	; ';', restauramos la posicion y continuamos el bucle principal.
 
 	mov word ax, [prog]
 	mov word [.tmp_loc], ax
@@ -3109,7 +3105,7 @@ do_read:
 
 
 
-	; OK, so now we have all the stuff we need. Let's search for the label
+	; Ya tenemos todos los datos necesarios. Ahora buscamos la etiqueta.
 
 	mov word ax, [prog]			; Store current location
 	mov word [.curr_location], ax
@@ -3819,10 +3815,10 @@ do_waitkey:
 
 
 ; ==================================================================
-; INTERNAL ROUTINES FOR INTERPRETER
+; RUTINAS INTERNAS DEL INTERPRETE
 
 ; ------------------------------------------------------------------
-; Get value of variable character specified in AL (eg 'A')
+; Obtener el valor de la variable cuyo caracter esta en AL (por ejemplo, 'A').
 
 get_var:
 	mov ah, 0
@@ -3835,8 +3831,8 @@ get_var:
 
 
 ; ------------------------------------------------------------------
-; Set value of variable character specified in AL (eg 'A')
-; with number specified in BX
+; Asignar a la variable indicada por AL (por ejemplo, 'A')
+; el valor numerico contenido en BX.
 
 set_var:
 	mov ah, 0
@@ -3851,13 +3847,15 @@ set_var:
 
 
 ; ------------------------------------------------------------------
-; Get token from current position in prog
+; Obtener un token desde la posicion actual de prog.
 
 get_token:
 	mov word si, [prog]
 	lodsb
 
 	cmp al, 10
+	je .newline
+	cmp al, 13
 	je .newline
 
 	cmp al, ' '
@@ -3891,6 +3889,8 @@ get_number_token:
 .loop:
 	lodsb
 	cmp al, 10
+	je .done
+	cmp al, 13
 	je .done
 	cmp al, ' '
 	je .done
@@ -3983,6 +3983,8 @@ get_string_token:
 	lodsb
 	cmp al, 10
 	je .done
+	cmp al, 13
+	je .done
 	cmp al, ' '
 	je .done
 	stosb
@@ -4029,7 +4031,7 @@ get_string_token:
 
 
 ; ------------------------------------------------------------------
-; Set carry flag if AL contains ASCII number
+; Activar el flag de acarreo si AL contiene un digito ASCII.
 
 is_number:
 	cmp al, 48
@@ -4044,7 +4046,7 @@ is_number:
 
 
 ; ------------------------------------------------------------------
-; Set carry flag if AL contains ASCII letter
+; Activar el flag de acarreo si AL contiene una letra ASCII.
 
 is_letter:
 	cmp al, 65
@@ -4060,7 +4062,7 @@ is_letter:
 
 
 ; ------------------------------------------------------------------
-; Print error message and quit out
+; Mostrar el mensaje de error y salir.
 
 error:
 	mov ah, 5			; Revert display page
@@ -4078,9 +4080,8 @@ error:
 	call os_print_string
 
 
-	; And now print the line number where the error occurred. We do this
-	; by working from the start of the program to the current point,
-	; counting the number of newline characters along the way
+	; Mostrar el numero de linea del error. Recorremos el programa desde
+	; el inicio hasta la posicion actual y contamos los saltos de linea.
 
 	mov word si, [load_point]
 	mov word bx, [prog]
@@ -4110,26 +4111,26 @@ error:
 	ret				; And finish
 
 
-	; Error messages text...
+	; Mensajes de error.
 
-	err_char_in_num		db "Error: unexpected char in number", 0
-	err_cmd_unknown		db "Error: unknown command", 0
-	err_divide_by_zero	db "Error: attempt to divide by zero", 0
-	err_doloop_maximum	db "Error: DO/LOOP nesting limit exceeded", 0
-	err_file_notfound	db "Error: file not found", 0
-	err_goto_notlabel	db "Error: GOTO or GOSUB not followed by label", 0
-	err_label_notfound	db "Error: label not found", 0
-	err_nest_limit		db "Error: FOR or GOSUB nest limit exceeded", 0
-	err_next		db "Error: NEXT without FOR", 0
-	err_loop		db "Error: LOOP without DO", 0
-	err_print_type		db "Error: PRINT not followed by quoted text or variable", 0
-	err_quote_term		db "Error: quoted string or char not terminated correctly", 0
-	err_return		db "Error: RETURN without GOSUB", 0
-	err_string_range	db "Error: string location out of range", 0
-	err_syntax		db "Error: syntax error", 0
-	err_break		db "BREAK CALLED", 0
+	err_char_in_num		db "Error: caracter inesperado en un numero", 0
+	err_cmd_unknown		db "Error: comando desconocido", 0
+	err_divide_by_zero	db "Error: division entre cero", 0
+	err_doloop_maximum	db "Error: limite de anidamiento DO/LOOP excedido", 0
+	err_file_notfound	db "Error: archivo no encontrado", 0
+	err_goto_notlabel	db "Error: GOTO o GOSUB debe ir seguido de una etiqueta", 0
+	err_label_notfound	db "Error: etiqueta no encontrada", 0
+	err_nest_limit		db "Error: limite de anidamiento FOR/GOSUB excedido", 0
+	err_next		db "Error: NEXT sin FOR", 0
+	err_loop		db "Error: LOOP sin DO", 0
+	err_print_type		db "Error: PRINT requiere texto entre comillas o una variable", 0
+	err_quote_term		db "Error: cadena o caracter sin cerrar correctamente", 0
+	err_return		db "Error: RETURN sin GOSUB", 0
+	err_string_range	db "Error: posicion de cadena fuera de rango", 0
+	err_syntax		db "Error: error de sintaxis", 0
+	err_break		db "BREAK EJECUTADO", 0
 
-	line_num_starter	db " - line ", 0
+	line_num_starter	db " - linea ", 0
 
 
 ; ==================================================================
@@ -4154,7 +4155,7 @@ vars_loc:
 	do_loop_store		times 10 dw 0	; Storage for DO loops
 	loop_in			db 0		; Loop level
 
-	last_if_true		db 1		; Checking for 'ELSE'
+	last_if_true		db 1		; Comprobar si sigue «ELSE».
 
 	ink_colour		db 0		; Text printing colour
 	work_page		db 0		; Page to print to

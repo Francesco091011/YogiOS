@@ -1,12 +1,12 @@
 ; =============================================================================
-; El arrancador del Yogi Operating System (Sistema Operativo YOGI)
+; Cargador de arranque del sistema operativo YogiOS
 ; Copyright (C) 2026 FAEH Premiu,
 ;
 ; Basado en un arrancador libre de E Dehling. Escanea el diskete FAT12 para el
 ; KERNEL.BIN (el kernel de YogiOS), lo carga y lo ejecuta.
-; Esto debería crecer no más que 512 bytes (one sector), con los últimos dos
-; bytes siendo el signo de arranque (AA55h). Note que en FAT12, un cluster es
-; lo mismo que un sector: 512 bytes.
+; No debe superar los 512 bytes (un sector); los dos últimos bytes forman
+; la firma de arranque (AA55h). En FAT12, un clúster equivale a un sector:
+; 512 bytes.
 ; =============================================================================
 
 
@@ -19,8 +19,8 @@
 
 ; ------------------------------------------------------------------
 ; Tabla de descripción del disco, para hacerlo un diskete válido.
-; Nota: algunos de estos valores están hard-coded en el código!
-; Valores son los usados por IBM para disketes de 1.44 MB y 3.5".
+; Nota: algunos de estos valores están escritos directamente en el código.
+; Son los valores usados por IBM para disquetes de 3,5 pulgadas y 1,44 MB.
 
 OEMLabel		db "MIKEBOOT"	; Nombre de disco
 BytesPerSector		dw 512		; Bytes por sector
@@ -45,7 +45,7 @@ FileSystem		db "FAT12   "	; File system tipo: no cambiarlo!
 
 
 ; ------------------------------------------------------------------
-; Main bootloader code
+; Código principal del cargador de arranque
 
 bootloader_start:
 	mov ax, 07C0h			; Poner 4K de espacio stack sobre el
@@ -61,7 +61,7 @@ bootloader_start:
                                         ; cargados.
 	mov ds, ax
 
-	; NOTA: Algunos BIOSes iniciales son repportados de impropiamente poner en DL
+	; Algunos BIOS antiguos pueden establecer DL con un valor incorrecto.
 
 	cmp dl, 0
 	je no_change
@@ -73,17 +73,17 @@ bootloader_start:
 	mov [SectorsPerTrack], cx	; Números de sector inicia en 1
 	movzx dx, dh			; Máximo número de cabecera
 	add dx, 1			; Números de cabecera inicia en 0 -
-                                        ; añadir 1 for total
+                                        ; añadir 1 al total.
 	mov [Sides], dx
 
 no_change:
 	mov eax, 0			; Necesitado para algunos BIOSes viejos.
 
 
-; Primero, necesitamos cargar el directorio root desde el disco. Detalles técnicos:
-; Start of root = ReservedForBoot + NumberOfFats * SectorsPerFat = logical 19
-; Number of root = RootDirEntries * 32 bytes/entry / 512 bytes/sector = 14
-; Start of user data = (start of root) + (number of root) = logical 33
+; Cargar el directorio raíz del disco. Detalles:
+; Inicio de la raíz = ReservedForBoot + NumberOfFats * SectorsPerFat = sector lógico 19
+; Sectores de la raíz = RootDirEntries * 32 bytes/entrada / 512 bytes/sector = 14
+; Inicio de los datos = inicio de la raíz + sectores de la raíz = sector lógico 33
 
 floppy_ok:				; Listo para leer el primer bloque de datos
 	mov ax, 19			; Directorio Root inicia en el sector lógico 19
@@ -196,10 +196,10 @@ read_fat_ok:
 
 
 ; Ahora debemos cargar el FAT desde el disco. Aquí es como encontramos donde inicia:
-; FAT cluster 0 = media descriptor = 0F0h
-; FAT cluster 1 = filler cluster = 0FFh
-; Cluster start = ((cluster number) - 2) * SectorsPerCluster + (start of user)
-;               = (cluster number) + 31
+; Clúster FAT 0 = descriptor del medio = 0F0h
+; Clúster FAT 1 = relleno = 0FFh
+; Inicio del clúster = (número de clúster - 2) * SectorsPerCluster + inicio de datos
+;                    = número de clúster + 31
 
 load_file_sector:
 	mov ax, word [cluster]		; Convertir sector a lógico
@@ -223,10 +223,9 @@ load_file_sector:
 	jmp load_file_sector
 
 
-	; En el FAT, valores de clusteres están guardados en 12 bits, así que tenemos
-	; que hacer un par de mates para descubrir si es que estamos trabajando con un
-	; byte y 4 bits del byte siguiente -- o los últimos 4 bits de un byte y el byte
-	; siguiente!
+	; La FAT guarda cada clúster en 12 bits. Hay que determinar si el valor ocupa
+	; un byte y cuatro bits del siguiente, o los cuatro bits finales de un byte
+	; y el byte siguiente.
 
 calculate_next_cluster:
 	mov ax, [cluster]
@@ -272,7 +271,7 @@ end:					; Ya tenemos el archivo por cargar!
 
 
 ; ------------------------------------------------------------------
-; BOOTLOADER SUBROUTINES
+; SUBRUTINAS DEL CARGADOR DE ARRANQUE
 
 reboot:
 	mov ax, 0
@@ -341,10 +340,10 @@ l2hts:			; Calcular ajustes de cabecera, track y sector para int 13h
 ; ------------------------------------------------------------------
 ; STRINGS AND VARIABLES
 
-	kern_filename	db "KERNEL  BIN"	; YogiOS kernel filename
+	kern_filename	db "KERNEL  BIN"	; Nombre del archivo del kernel
 
-	disk_error	db "Error de diskete! Presionar cualquier tecla...", 0
-	file_not_found	db "KERNEL.BIN no encontrado!", 0
+	disk_error	db "Error de disco...", 0
+	file_not_found	db "Falta KERNEL.BIN", 0
 
 	bootdev		db 0 	; Boot device number
 	cluster		dw 0 	; Cluster del archivo que queremos cargar

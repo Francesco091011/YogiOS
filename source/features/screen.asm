@@ -6,9 +6,9 @@
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_print_string -- Displays text
-; IN: SI = message location (zero-terminated string)
-; OUT: Nothing (registers preserved)
+; os_print_string -- Mostrar texto
+; ENTRADA: SI = dirección del mensaje (cadena terminada en cero).
+; SALIDA: ninguna (se conservan los registros).
 
 os_print_string:
 	pusha
@@ -29,8 +29,8 @@ os_print_string:
 
 
 ; ------------------------------------------------------------------
-; os_clear_screen -- Clears the screen to background
-; IN/OUT: Nothing (registers preserved)
+; os_clear_screen -- Limpiar la pantalla con el color de fondo
+; ENTRADA/SALIDA: ninguna (se conservan los registros).
 
 os_clear_screen:
 	pusha
@@ -51,8 +51,8 @@ os_clear_screen:
 
 
 ; ------------------------------------------------------------------
-; os_move_cursor -- Moves cursor in text mode
-; IN: DH, DL = row, column; OUT: Nothing (registers preserved)
+; os_move_cursor -- Mover el cursor en modo texto
+; ENTRADA: DH, DL = fila y columna. SALIDA: ninguna (se conservan los registros).
 
 os_move_cursor:
 	pusha
@@ -66,8 +66,8 @@ os_move_cursor:
 
 
 ; ------------------------------------------------------------------
-; os_get_cursor_pos -- Return position of text cursor
-; OUT: DH, DL = row, column
+; os_get_cursor_pos -- Obtener la posición del cursor de texto
+; SALIDA: DH, DL = fila y columna.
 
 os_get_cursor_pos:
 	pusha
@@ -86,9 +86,9 @@ os_get_cursor_pos:
 
 
 ; ------------------------------------------------------------------
-; os_print_horiz_line -- Draw a horizontal line on the screen
-; IN: AX = line type (1 for double (-), otherwise single (=))
-; OUT: Nothing (registers preserved)
+; os_print_horiz_line -- Dibujar una línea horizontal en pantalla
+; ENTRADA: AX = tipo de línea (1 para doble; cualquier otro valor para sencilla).
+; SALIDA: ninguna (se conservan los registros).
 
 os_print_horiz_line:
 	pusha
@@ -117,8 +117,8 @@ os_print_horiz_line:
 
 
 ; ------------------------------------------------------------------
-; os_show_cursor -- Turns on cursor in text mode
-; IN/OUT: Nothing
+; os_show_cursor -- Mostrar el cursor en modo texto
+; ENTRADA/SALIDA: ninguna.
 
 os_show_cursor:
 	pusha
@@ -134,8 +134,8 @@ os_show_cursor:
 
 
 ; ------------------------------------------------------------------
-; os_hide_cursor -- Turns off cursor in text mode
-; IN/OUT: Nothing
+; os_hide_cursor -- Ocultar el cursor en modo texto
+; ENTRADA/SALIDA: ninguna.
 
 os_hide_cursor:
 	pusha
@@ -150,7 +150,7 @@ os_hide_cursor:
 
 
 ; ------------------------------------------------------------------
-; os_draw_block -- Render block of specified colour
+; os_draw_block -- Dibujar un bloque del color indicado
 ; IN: BL/DL/DH/SI/DI = colour/start X pos/start Y pos/width/finish Y pos
 
 os_draw_block:
@@ -177,8 +177,8 @@ os_draw_block:
 
 
 ; ------------------------------------------------------------------
-; os_file_selector -- Show a file selection dialog
-; IN: Nothing; OUT: AX = location of filename string (or carry set if Esc pressed)
+; os_file_selector -- Mostrar un cuadro para seleccionar un archivo
+; ENTRADA: ninguna. SALIDA: AX = dirección del nombre (o acarreo si se pulsa Esc).
 
 os_file_selector:
 	pusha
@@ -196,7 +196,7 @@ os_file_selector:
 	jc .esc_pressed
 
 	dec ax				; Result from os_list_box starts from 1, but
-					; for our file list offset we want to start from 0
+					; el desplazamiento de la lista de archivos debe comenzar en 0.
 
 	mov cx, ax
 	mov bx, 0
@@ -245,17 +245,17 @@ os_file_selector:
 
 	.buffer		times 1024 db 0
 
-	.help_msg1	db 'Please select a file using the cursor', 0
-	.help_msg2	db 'keys from the list below...', 0
+	.help_msg1	db 'Seleccione un archivo con las teclas', 0
+	.help_msg2	db 'del cursor de la lista siguiente...', 0
 
 	.filename	times 13 db 0
 
 
 ; ------------------------------------------------------------------
-; os_list_dialog -- Show a dialog with a list of options
-; IN: AX = comma-separated list of strings to show (zero-terminated),
-;     BX = first help string, CX = second help string
-; OUT: AX = number (starts from 1) of entry selected; carry set if Esc pressed
+; os_list_dialog -- Mostrar un cuadro con una lista de opciones
+; ENTRADA: AX = lista de cadenas separadas por comas y terminada en cero,
+;          BX y CX = primer y segundo mensaje de ayuda.
+; SALIDA: AX = número de opción elegida (desde 1); acarreo si se pulsa Esc.
 
 os_list_dialog:
 	pusha
@@ -309,8 +309,8 @@ os_list_dialog:
 	mov word [.list_string], si
 
 
-	; Now that we've drawn the list, highlight the currently selected
-	; entry and let the user move up and down using the cursor keys
+	; Resaltar la opción seleccionada y permitir que el usuario se desplace
+	; por la lista con las teclas de cursor.
 
 	mov byte [.skip_num], 0		; Not skipping any lines at first showing
 
@@ -537,9 +537,9 @@ os_list_dialog:
 
 
 ; ------------------------------------------------------------------
-; os_draw_background -- Clear screen with white top and bottom bars
-; containing text, and a coloured middle section.
-; IN: AX/BX = top/bottom string locations, CX = colour
+; os_draw_background -- Limpiar la pantalla con barras blancas arriba y abajo
+; para el texto y una sección central de color.
+; ENTRADA: AX/BX = direcciones de los textos superior e inferior, CX = color.
 
 os_draw_background:
 	pusha
@@ -604,8 +604,8 @@ os_draw_background:
 
 
 ; ------------------------------------------------------------------
-; os_print_newline -- Reset cursor to start of next line
-; IN/OUT: Nothing (registers preserved)
+; os_print_newline -- Mover el cursor al inicio de la línea siguiente
+; ENTRADA/SALIDA: ninguna (se conservan los registros).
 
 os_print_newline:
 	pusha
@@ -622,8 +622,8 @@ os_print_newline:
 
 
 ; ------------------------------------------------------------------
-; os_dump_registers -- Displays register contents in hex on the screen
-; IN/OUT: AX/BX/CX/DX = registers to show
+; os_dump_registers -- Mostrar en pantalla el contenido hexadecimal de registros
+; ENTRADA: AX/BX/CX/DX = registros que se mostrarán.
 
 os_dump_registers:
 	pusha
@@ -680,8 +680,8 @@ os_dump_registers:
 
 
 ; ------------------------------------------------------------------
-; os_input_dialog -- Get text string from user via a dialog box
-; IN: AX = string location, BX = message to show; OUT: AX = string location
+; os_input_dialog -- Solicitar una cadena al usuario mediante un cuadro de diálogo
+; ENTRADA: AX = dirección de la cadena, BX = mensaje. SALIDA: AX = cadena.
 
 os_input_dialog:
 	pusha
@@ -734,11 +734,11 @@ os_input_dialog:
 
 
 ; ------------------------------------------------------------------
-; os_dialog_box -- Print dialog box in middle of screen, with button(s)
-; IN: AX, BX, CX = string locations (set registers to 0 for no display)
-; IN: DX = 0 for single 'OK' dialog, 1 for two-button 'OK' and 'Cancel'
-; OUT: If two-button mode, AX = 0 for OK and 1 for cancel
-; NOTE: Each string is limited to 40 characters
+; os_dialog_box -- Mostrar un cuadro de diálogo en el centro de la pantalla
+; ENTRADA: AX, BX, CX = direcciones de cadenas (usar 0 para omitir una).
+; ENTRADA: DX = 0 para un cuadro «OK»; 1 para «OK» y «Cancel».
+; SALIDA: en modo de dos botones, AX = 0 para Aceptar y 1 para Cancelar.
+; NOTA: cada cadena admite hasta 40 caracteres.
 
 os_dialog_box:
 	pusha
@@ -944,16 +944,16 @@ os_dialog_box:
 
 
 	.ok_button_string	db 'OK', 0
-	.cancel_button_string	db 'Cancel', 0
+	.cancel_button_string	db 'Cancelar', 0
 	.ok_button_noselect	db '   OK   ', 0
-	.cancel_button_noselect	db '   Cancel   ', 0
+	.cancel_button_noselect	db ' Cancelar   ', 0
 
 	.tmp dw 0
 
 
 ; ------------------------------------------------------------------
-; os_print_space -- Print a space to the screen
-; IN/OUT: Nothing
+; os_print_space -- Imprimir un espacio en pantalla
+; ENTRADA/SALIDA: ninguna.
 
 os_print_space:
 	pusha
@@ -967,8 +967,8 @@ os_print_space:
 
 
 ; ------------------------------------------------------------------
-; os_dump_string -- Dump string as hex bytes and printable characters
-; IN: SI = points to string to dump
+; os_dump_string -- Mostrar una cadena como bytes hexadecimales y caracteres
+; ENTRADA: SI = dirección de la cadena.
 
 os_dump_string:
 	pusha
@@ -1044,9 +1044,9 @@ os_dump_string:
 
 
 ; ------------------------------------------------------------------
-; os_print_digit -- Displays contents of AX as a single digit
-; Works up to base 37, ie digits 0-Z
-; IN: AX = "digit" to format and print
+; os_print_digit -- Mostrar el contenido de AX como un solo dígito
+; Admite bases hasta 37, es decir, dígitos de 0 a Z.
+; ENTRADA: AX = «dígito» que se formateará e imprimirá.
 
 os_print_digit:
 	pusha
@@ -1067,8 +1067,8 @@ os_print_digit:
 
 
 ; ------------------------------------------------------------------
-; os_print_1hex -- Displays low nibble of AL in hex format
-; IN: AL = number to format and print
+; os_print_1hex -- Mostrar en hexadecimal el nibble bajo de AL
+; ENTRADA: AL = número que se formateará e imprimirá.
 
 os_print_1hex:
 	pusha
@@ -1082,7 +1082,7 @@ os_print_1hex:
 
 ; ------------------------------------------------------------------
 ; os_print_2hex -- Displays AL in hex format
-; IN: AL = number to format and print
+; ENTRADA: AL = número que se formateará e imprimirá.
 
 os_print_2hex:
 	pusha
@@ -1100,7 +1100,7 @@ os_print_2hex:
 
 ; ------------------------------------------------------------------
 ; os_print_4hex -- Displays AX in hex format
-; IN: AX = number to format and print
+; ENTRADA: AX = número que se formateará e imprimirá.
 
 os_print_4hex:
 	pusha
@@ -1117,9 +1117,9 @@ os_print_4hex:
 
 
 ; ------------------------------------------------------------------
-; os_input_string -- Take string from keyboard entry
-; IN/OUT: AX = location of string, other regs preserved
-; (Location will contain up to 255 characters, zero-terminated)
+; os_input_string -- Leer una cadena introducida con el teclado
+; ENTRADA/SALIDA: AX = dirección de la cadena; se conservan los demás registros.
+; La ubicación contendrá hasta 255 caracteres y terminará en cero.
 
 os_input_string:
 	pusha
@@ -1165,7 +1165,7 @@ os_input_string:
 	popa
 
 	dec di				; Character position will be overwritten by new
-					; character or terminator at end
+					; carácter o terminador al final.
 
 	dec cx				; Step back counter
 

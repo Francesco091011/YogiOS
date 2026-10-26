@@ -1,18 +1,17 @@
 ;=====================================================================
 ;
-;   Deep Sea Fisher
+;   Pescador de aguas profundas
 ;   
-;   Written by Jasper Ziller (jziller@maine.rr.com)
+;   Escrito por Jasper Ziller (jziller@maine.rr.com)
 ;   Version 1.0
 ;
-;   Try to Catch as many fish as possible before loosing all 10 hooks
+;   Atrapa tantos peces como puedas antes de perder los 10 anzuelos.
 ;      
-;   The behavior of a fish can be altered by changing the behavior
-;   byte bit mask in the object array.  This value is anded with a
-;   one byte counter which is incremented each time through the game
-;   loop.  If the result is 0, the fish does not move that cycle.
+;   El movimiento de cada pez se cambia modificando su mascara de bits
+;   en el arreglo de objetos. Se combina con un contador de un byte que
+;   aumenta en cada ciclo. Si el resultado es 0, el pez no se mueve.
 ;
-;   The value of the fish is also set in the object array 
+;   El valor de cada pez tambien se almacena en el arreglo de objetos.
 ;
 ;=====================================================================
 
@@ -22,15 +21,15 @@
 %define fishcnt 10       ;number of fish
 
 ;---------------------------------------------
-;Change these to position the Catch Log window
-; upper left corner: col 19, row 4 default
+;Cambie estos valores para ubicar la ventana del registro de pesca.
+; Esquina superior izquierda predeterminada: columna 19, fila 4.
 
 %define lbcol 19        ;col        
 %define lbrow 4         ;row
 
 ;--------------------------------
 
-;do not change these
+;No cambiar estos valores.
 %define lbwidth 42      ;width
 %define lbbot lbrow+18  ;height
 
@@ -42,7 +41,7 @@
 
 start:  call init               ;initialize game
 
-        ;game loop
+        ;bucle del juego
 
 loop:   call inp                ;check for keypress
         cmp ax,011Bh            ;was it Esc ?
@@ -61,10 +60,10 @@ loop:   call inp                ;check for keypress
         je gameover             ;game over, exit
         jmp loop                
 
-        ;end game loop
+        ;fin del bucle del juego
 
 ;------------------------------------------------
-;Initialize game
+;Inicializar el juego
 
 init:   
         call os_clear_screen
@@ -77,7 +76,7 @@ init:
 
         call os_clear_screen
 
-        ;draw the sky
+        ;dibujar el cielo
         mov bl,0x70             ;color
         mov dl,2                ;x start
         mov dh,1                ;y start
@@ -85,14 +84,14 @@ init:
         mov di,12               ;y end
         call os_draw_block      ;draw
                 
-        ;print the score message
+        ;mostrar el puntaje
         mov dl,4                ;col
         mov dh,2                ;row
         call os_move_cursor
         mov si,scmsg            
         call os_print_string
 
-        ;print the hooks left message
+        ;mostrar los anzuelos restantes
         mov dl,4                ;col
         mov dh,3                ;row
         call os_move_cursor
@@ -103,18 +102,18 @@ init:
         ret
 
 ;------------------------------------------------
-; Draw the start screen
+; Dibujar la pantalla inicial
 
 start_screen:
 
-        ;screen background
+        ;fondo de la pantalla
         mov ax,boat             ;boat graphic at top  
         add ax,3                ;graphic offset
         mov bx,credit           ;credit at bottom
         mov cx,0x10             ;color
         call os_draw_background
 
-        ;message block background
+        ;fondo del bloque de mensajes
         mov bl,0x70             
         mov dl,15
         mov dh,6
@@ -122,7 +121,7 @@ start_screen:
         mov di,20
         call os_draw_block     
 
-        ;print the instructions
+        ;mostrar las instrucciones
 pmsg:   mov dl,16               ;col
         mov dh,6                ;row
         xor cl,cl
@@ -141,13 +140,13 @@ pmsg:   mov dl,16               ;col
 .exit   ret
 
 ;------------------------------------------------
-;Draw the screen
+;Dibujar la pantalla
 ;
-;This will get run each time through the game loop
+;Se ejecuta en cada ciclo del juego.
 
 drawscreen:
 
-        ;draw the ocean -------------------------
+        ;dibujar el oceano -----------------------
 
         mov bl,0x10
         mov dl,2
@@ -156,7 +155,7 @@ drawscreen:
         mov di,24
         call os_draw_block     
                
-        ;erase line and hook --------------------
+        ;borrar el sedal y el anzuelo ------------
 
         mov bl,0x10             ;ocean color
         mov dl,[boat]           ;boat x
@@ -166,7 +165,7 @@ drawscreen:
         mov di,24               ;to bottom of ocean
         call os_draw_block      ;draw ocean
        
-        ;draw objects in array ------------------
+        ;dibujar los objetos del arreglo ----------
 
 .obs    xor cl,cl               ;loop counter
         mov bx,objects          ;object array
@@ -181,7 +180,7 @@ drawscreen:
         inc cl                  ;loop counter
         jmp .obloop
 
-        ;draw line between boat and hook --------
+        ;dibujar el sedal entre el bote y el anzuelo
 
 .line   mov al,[hook+1]         ;check if hook is up
         sub al,[boat+1]         ;y position
@@ -198,7 +197,7 @@ drawscreen:
         inc dh
         jmp .loop
 
-        ;erase old score and hook count ---------
+        ;borrar puntaje y cantidad de anzuelos -----
 
 .score  mov bl,0x70             ;sky color
         mov dl,17
@@ -207,7 +206,7 @@ drawscreen:
         mov di,4
         call os_draw_block     
 
-        ;display score --------------------------
+        ;mostrar el puntaje -----------------------
 
         mov dl,17               ;col
         mov dh,2                ;row
@@ -217,7 +216,7 @@ drawscreen:
         mov si,ax
         call os_print_string
 
-        ;display hook count ---------------------
+        ;mostrar los anzuelos restantes ------------
 
         mov dl,17               ;col
         mov dh,3                ;row
@@ -230,7 +229,7 @@ drawscreen:
         ret
 
 ;------------------------------------------------
-;Get scan code if a key is pressed
+;Obtener el codigo de tecla si se pulsa una tecla.
 
 inp:    mov ah,1        ;check for key press
         int 16h         
@@ -242,11 +241,11 @@ inp:    mov ah,1        ;check for key press
 .exit   ret
 
 ;------------------------------------------------
-; Move objects
-; Must be called with scancode in AX
+; Mover los objetos.
+; Llamar con el codigo de tecla en AX.
 
 move_obs:
-        ;user input
+        ;entrada del usuario
         cmp ax,5000h            ;down arrow
         je .down
         cmp ax,4800h            ;up arrow
@@ -301,16 +300,16 @@ movefish:
 .exit   ret
                                              
 ;------------------------------------------------
-; Collisions
+; Colisiones
 
-; collisions possible
-;  hook with fish hits boat (point)
-;  fish hits empty hook (catch)
-;  fish hits line (loose hook)
+; Colisiones posibles:
+;  el pez enganchado llega al bote (puntos)
+;  un pez toca un anzuelo vacio (captura)
+;  un pez toca el sedal (se pierde el anzuelo)
 
-;  if a fish is caught, replace hook graphic with fish graphic
+;  al capturar un pez, reemplazar el dibujo del anzuelo por el del pez.
 
-        ;hook with fish hits boat ---------------
+        ;el pez enganchado llega al bote ---------
 
 coll:   mov al,[boat+1]         ;y pos of boat
         inc al                  ;just below
@@ -320,7 +319,7 @@ coll:   mov al,[boat+1]         ;y pos of boat
         cmp al,0xA8             ;or a fish
         je hkcoll               ;no, next collision
 
-        ;find the fish that was caught
+        ;buscar el pez capturado
 .obs    xor cl,cl               ;loop counter
         mov bx,fish             ;fish array
 .obloop cmp cl,fishcnt          ;last fish?
@@ -334,7 +333,7 @@ coll:   mov al,[boat+1]         ;y pos of boat
         inc cl                  ;loop counter
         jmp .obloop
 
-        ;did a fish hit an empty hook? ----------
+        ;¿un pez toco un anzuelo vacio? -----------
 
 hkcoll: xor cl,cl               ;loop counter
         mov bx,fish             ;fish array
@@ -347,7 +346,7 @@ hkcoll: xor cl,cl               ;loop counter
         cmp al,[hook+1]         ;is fish below hook?
         ja .eloop               ;fish is below hook
         je .hook                ;fish hit hook
-                                ;fish hit line
+                                ;el pez toco el sedal
 .line   mov [hook+3], byte 0xA8 ;if fish on hook, drop
         mov [hook+1], byte 12   ;reset hook to boat
         dec word [hooks]        ;lost a hook
@@ -375,7 +374,7 @@ hkcoll: xor cl,cl               ;loop counter
 .exit   ret
 
 ;------------------------------------------------
-;calc score
+;Calcular el puntaje
 
 score:  xor dx,dx               ;running sum
         xor cl,cl               ;loop counter
@@ -393,11 +392,11 @@ score:  xor dx,dx               ;running sum
         ret
 
 ;------------------------------------------------
-;Show catch log
+;Mostrar el registro de pesca
 
 
 gameover:
-        ;draw green border
+        ;dibujar el borde verde
         mov bl,0x20
         mov dl,lbcol            
         mov dh,lbrow            
@@ -405,7 +404,7 @@ gameover:
         mov di,lbbot            
         call os_draw_block     
 
-        ;draw catch log sheet
+        ;dibujar el panel del registro
         mov bl,0x70
         mov dl,lbcol+1
         mov dh,lbrow+1
@@ -413,14 +412,14 @@ gameover:
         mov di,lbbot-1
         call os_draw_block     
 
-        ;print Catch Log
+        ;mostrar el titulo del registro
         mov dl,lbcol+2
         mov dh,lbrow+2
         call os_move_cursor
         mov si,gomsg
         call os_print_string
 
-        ;date
+        ;fecha
         mov dl,lbcol+27
         mov dh,lbrow+2
         call os_move_cursor
@@ -431,7 +430,7 @@ gameover:
         mov si,bx
         call os_print_string
 
-        ;Column Headings
+        ;encabezados de columna
         mov dl,lbcol+5
         mov dh,lbrow+4
         call os_move_cursor
@@ -442,7 +441,7 @@ gameover:
         mov si,head2
         call os_print_string
 
-        ;display individual fish counts 
+        ;mostrar los datos de cada tipo de pez
         mov dl,lbcol+5          ;first column
         mov dh,lbrow+6          ;first row 
         xor cl,cl               ;loop counter
@@ -499,16 +498,16 @@ exit:   call os_show_cursor
         ret    
 
 
-;data ----------------------------------------
+;datos ---------------------------------------
 
-goflag  db 0            ;0 = running, 1 = game over
-total   dw 0            ;score total
-hooks   dw 10           ;hooks left
-behav   db 0            ;will inc 1 each time thru game loop
-line    db 0xB3,0       ;graphic only (x and y from boat)
+goflag  db 0            ;0 = en curso, 1 = fin del juego
+total   dw 0            ;puntaje total
+hooks   dw 10           ;anzuelos restantes
+behav   db 0            ;aumenta en cada ciclo del juego
+line    db 0xB3,0       ;grafico de la linea desde el bote
 
 objects:        
-           ;x,y,behavior,graphic,term,caught,direction,value
+           ;x,y,comportamiento,grafico,terminador,capturado,direccion,valor
 boat:   db 38,11,00000000b,0x9D,0,0,0,0       
 hook:   db 38,12,00000000b,0xA8,0,0,0,0       
 fish:   db 02,13,00010100b,0xAF,0,0,0,1   
@@ -522,25 +521,25 @@ fish:   db 02,13,00010100b,0xAF,0,0,0,1
         db 02,21,01000000b,0xF0,0,0,0,81       
         db 77,22,00010000b,0xE5,0,0,1,100       
 
-scmsg   db 'Total Score: ',0
-hkmsg   db 'Hooks Left:  ',0
+scmsg   db 'Puntaje total: ',0
+hkmsg   db 'Anzuelos:      ',0
 
-gomsg   db 'Catch Log',0
-head1   db '       Market   Number',0
-head2   db 'Fish   Value    Caught   Score',0
+gomsg   db 'Registro de pesca',0
+head1   db '       Valor    Numero',0
+head2   db 'Pez    Valor    Capturas Puntos',0
 
-        ;line length (including 0), Message, 0
-intro:  db 16,'Deep Sea Fisher',0
+        ;longitud de linea (incluido el cero), mensaje, cero
+intro:  db 28,'Pescador de aguas profundas',0
         db 1,0
-        db 39,'Catch a fish and reel it in for points',0
-        db 49,'The deeper the fish, the more points it is worth',0
-        db 43,'If a fish hits your line, you loose a hook',0
-        db 45,'When you run out of hooks, the game is over!',0
+        db 43,'Atrapa peces y recojelos para ganar puntos',0
+        db 44,'Cuanto mas profundo el pez, mas puntos vale',0
+        db 44,'Si un pez toca el sedal, perdera un anzuelo',0
+        db 45,'Al quedarse sin anzuelos, termina la partida',0
         db 1,0
-        db 45,'Up arrow raises hook, Down arrow lowers hook',0
-        db 35,'Press Esc at any time to quit game',0
+        db 45,'Flecha arriba sube el anzuelo; abajo lo baja',0
+        db 42,'Pulse Esc en cualquier momento para salir',0
         db 1,0
-        db 20,'Press Enter to start',0
+        db 26,'Pulse Intro para comenzar',0
 es      db 0
 credit: db 'Fuseki Games',0
 dtbuff: times 64 db 0

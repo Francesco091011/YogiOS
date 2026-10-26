@@ -1,5 +1,5 @@
 ; ------------------------------------------------------------------
-; Program to display text files and PCX images (320x200, 8-bit only)
+; Programa para mostrar archivos de texto e imágenes PCX (solo 320 × 200, 8 bits).
 ; ------------------------------------------------------------------
 
 
@@ -45,7 +45,7 @@ main_start:
 	rep cmpsb			; Does the extension contain 'PCX'?
 	je valid_pcx_extension		; Skip ahead if so
 
-					; Otherwise show error dialog
+					; De lo contrario, mostrar un cuadro de error.
 	mov dx, 0			; One button for dialog box
 	mov ax, err_string
 	mov bx, 0
@@ -71,7 +71,7 @@ valid_pcx_extension:
 
 
 	mov si, 36864+80h		; Move source to start of image data
-					; (First 80h bytes is header)
+					; Los primeros 80h bytes corresponden a la cabecera.
 
 	mov di, 0			; Start our loop at top of video RAM
 
@@ -125,7 +125,7 @@ draw_background:
 
 
 
-	; Meanwhile, if it's a text file...
+	; Si se trata de un archivo de texto...
 
 valid_txt_extension:
 	mov ax, bx
@@ -133,8 +133,8 @@ valid_txt_extension:
 	call os_load_file
 
 
-	; Now BX contains the number of bytes in the file, so let's add
-	; the load offset to get the last byte of the file in RAM
+	; BX contiene el tamaño del archivo en bytes. Sumar el desplazamiento
+	; de carga para obtener la dirección de su último byte en la RAM.
 
 	add bx, 36864
 
@@ -253,13 +253,13 @@ close:
 	bas_extension	db 'BAS', 0
 	pcx_extension	db 'PCX', 0
 
-	err_string	db 'Please select a TXT, BAS or PCX file!', 0
+	err_string	db 'Seleccione un archivo TXT, BAS o PCX.', 0
 
-	title_msg	db 'MikeOS File Viewer', 0
-	footer_msg	db 'Select a TXT, BAS or PCX file to view, or press Esc to exit', 0
+	title_msg	db 'Visor de archivos de YogiOS', 0
+	footer_msg	db 'Elija un archivo TXT, BAS o PCX, o pulse Esc para salir', 0
 
-	txt_title_msg	db 'MikeOS Text File Viewer', 0
-	txt_footer_msg	db 'Use arrow keys to scroll and Q to quit', 0
+	txt_title_msg	db 'Visor de archivos de texto de YogiOS', 0
+	txt_footer_msg	db 'Use las flechas para desplazarse y Q para salir', 0
 
 	skiplines	dw 0
 

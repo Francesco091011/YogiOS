@@ -1,22 +1,21 @@
 ; ------------------------------------------------------------------
-; Minicom-like program for MikeOS
+; Emulador de terminal serie sencillo para YogiOS
 ; ------------------------------------------------------------------
 
 
-; With this program and an appropriate serial (null modem) cable, you
-; can log in to Linux machines. You will need your Linux box to establish
-; a serial terminal in /etc/inittab, with something like this:
+; Con este programa y un cable serie adecuado (módem nulo), puede iniciar
+; sesión en equipos Linux. Configure un terminal serie en /etc/inittab,
+; por ejemplo:
 ;
 ;	T0:2345:respawn:/sbin/getty/ -L ttyS0 9600 vt100
 ;
-; Connect the serial cable to your MikeOS machine and Linux machine.
-; Start MikeOS and run SERIAL.BIN, then start your Linux box with the
-; above serial terminal entry. On the MikeOS machine, you will see a
-; familiar Linux login prompt -- you're ready to go! Note that very few
-; VT100 terminal features are implemented at present, so complicated
-; programs (eg Emacs) will not display correctly.
+; Conecte el cable serie al equipo con YogiOS y al equipo Linux. Inicie
+; YogiOS y ejecute SERIAL.BIN; luego inicie Linux con la entrada de terminal
+; anterior. En YogiOS aparecerá el inicio de sesión de Linux. La emulación
+; VT100 es limitada, por lo que programas complejos como Emacs podrían verse
+; incorrectamente.
 ;
-; Press the F8 key to exit.
+; Pulse F8 para salir.
 
 
 	BITS 16
@@ -108,9 +107,8 @@ esc_received:
 	je near erase_to_end_of_line
 
 
-					; If it wasn't a control char that
-					; we can parse yet, print the whole
-					; thing for debugging purposes
+					; Si aún no podemos interpretar el carácter de control,
+					; mostrar la secuencia completa para depurarla.
 
 	mov cl, al			; Store second char
 	mov al, bl			; Get first
@@ -186,11 +184,11 @@ erase_sub:
 	ret
 
 
-	warnmsg_1	db 'Serial terminal program -- may lock up', 0
-	warnmsg_2	db 'if you have no serial ports! Proceed?', 0
+	warnmsg_1	db 'Terminal serie: podria bloquearse.', 0
+	warnmsg_2	db 'Sin puertos serie. Desea continuar?', 0
 
-	start_msg	db 'MikeOS minicom -- Press F8 to quit', 13, 10, 'Connecting via serial at 9600 baud...', 13, 10, 13, 10, 0
-	finish_msg	db 13, 10, 13, 10, 'Exiting MikeOS minicom; press a key to return to MikeOS', 13, 10, 0
+	start_msg	db 'Terminal serie de YogiOS -- Pulse F8 para salir', 13, 10, 'Conectando a 9600 baudios...', 13, 10, 13, 10, 0
+	finish_msg	db 13, 10, 13, 10, 'Saliendo del terminal serie; pulse una tecla para volver a YogiOS', 13, 10, 0
 
 
 ; ------------------------------------------------------------------

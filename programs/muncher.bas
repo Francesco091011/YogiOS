@@ -1,14 +1,14 @@
-rem ** Muncher for MikeOS **
-rem Created by Justin Tokarchuk
+rem ** Muncher para YogiOS **
+rem Creado por Justin Tokarchuk
 rem ------------------------------
 
-rem VARS
-rem j = score multiplier
-rem x, y = coords
-rem e = body
-rem s = score
-rem i = multipliers
-rem n = wallpiece counter, gets reloaded by bonus engine
+rem VARIABLES
+rem j = multiplicador del puntaje
+rem x, y = coordenadas
+rem e = cuerpo
+rem s = puntaje
+rem i = multiplicadores
+rem n = contador de paredes; se reinicia con los bonos
 
 cursor off
 goto logo
@@ -35,7 +35,7 @@ logo:
   print ""
   print "     ======================================================================"
   print ""
-  print "                      Press ENTER to play, ESC to quit.                    "
+  print "                      Pulse INTRO para jugar, ESC para salir.              "
   gosub changelook
 
   goto waitforenter
@@ -61,20 +61,20 @@ pregame:
   gosub setwalls
 
 
-  rem ** Place user in middle of screen. **
+  rem ** Colocar al jugador en el centro de la pantalla. **
   x = 40
   y = 12
   move x y
 
-  rem ** dirs = up (1), down (2), left (3), right (4)
-  rem ** start moving left
+  rem ** direcciones: arriba (1), abajo (2), izquierda (3), derecha (4)
+  rem ** comenzar a moverse a la izquierda
 
   d = 3
 
-  rem ** score
+  rem ** puntaje
   s = 0
 
-  rem ** Body character.
+  rem ** caracter del cuerpo
   e = 35
 
 
@@ -89,7 +89,7 @@ game:
   
   getkey k
   
-  rem ** controls
+  rem ** controles
   if k = 'w' then d = 1
   if k = 'W' then d = 1
   if k = 'a' then d = 3
@@ -100,7 +100,7 @@ game:
   if k = 'D' then d = 4
  
   
-  rem if they press ESC exit game
+  rem salir del juego si se pulsa Esc
   if k = 27 then goto finish
   
   if d = 1 then gosub moveupdown
@@ -111,7 +111,7 @@ game:
   move x y
   
   curschar c
-  rem ***did we collide with wall***
+  rem ***comprobar si chocamos con una pared***
   if x = 79 then goto finish
   if c = 'x' then goto finish
   if c = 178 then goto finish
@@ -168,7 +168,7 @@ setwalls:
 
 printscore:
   move 0 24
-  print "Score: " ;
+  print "Puntaje: " ;
   print s ;
   move x y
   return
@@ -182,7 +182,7 @@ addapple:
   move q r
   print chr g
 
-  rem generate random number of wallpieces
+  rem generar una cantidad aleatoria de segmentos de pared
   if s < 500 then rand g 1 2
   if s > 499 then rand g 2 5
   if s > 999 then rand g 5 10
@@ -195,16 +195,16 @@ addapple:
   return  
 
 wallpiece:
-  rem ** now add a wall piece **
+  rem ** agregar un segmento de pared **
   rand l 1 77
   rand m 1 22
-  rem Don't put it on a character or the apple please!
+  rem No colocarlo sobre un personaje ni sobre la manzana.
   if l = q then goto wallpiece
   if l = x then goto wallpiece
   if m = r then goto wallpiece
   if m = y then goto wallpiece
 
-  rem is the wall piece too close to the character?
+  rem esta demasiado cerca del personaje el segmento?
   if l > x then a = l - x
   if l < x then a = x - l
   if m > y then b = m - y
@@ -232,7 +232,7 @@ getbonus:
   pause 1
   move x y
   print " "
-  rem *i = intermediate number for score bonus
+  rem *i = numero temporal para la bonificacion de puntaje
   if s > 250 then j = 2
   if s > 1000 then j = 3
   if s > 3000 then j = 5
@@ -264,10 +264,10 @@ finish:
   print "                    ##     ##   ## ##   ##       ##    ##  "
   print "                     #######     ###    ######## ##     ## "
   print ""
-  print "                             Your Score Was: " ;
+  print "                             Tu puntaje fue: " ;
   print s
   print ""
-  print "                               Play Again? (Y/N)"
+  print "                               Jugar otra vez? (S/N)"
   gosub changelook
 
  goto escloop
@@ -280,5 +280,7 @@ escloop:
   if x = 27 then end
   if x = 'y' then goto logo
   if x = 'Y' then goto logo
+  if x = 's' then goto logo
+  if x = 'S' then goto logo
   goto escloop
   

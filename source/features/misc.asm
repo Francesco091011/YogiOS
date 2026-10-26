@@ -1,5 +1,5 @@
 ; ==================================================================
-; YogiOS -- The Yogi Operating System kernel
+; YogiOS -- Kernel del sistema operativo Yogi
 ; Copyright (C) 2026 FAEH Premium
 ;
 ; RUTINAS MISCELÁNEAS
@@ -7,7 +7,7 @@
 
 ; ------------------------------------------------------------------
 ; os_get_api_version -- Regresa versión actual del YogiOS API
-; IN: Nothing; OUT: AL = número de versión API
+; ENTRADA: ninguna. SALIDA: AL = número de versión de la API.
 
 os_get_api_version:
 	mov al, YOGIOS_API_VER
@@ -16,13 +16,13 @@ os_get_api_version:
 
 ; ------------------------------------------------------------------
 ; os_pause -- Retrasa la ejecución por trozos específicos de 110ms
-; IN: AX = trozos de 100 milisegundos por esperar (máx. tardanza es 32767,
+; ENTRADA: AX = intervalos de 110 milisegundos (máximo: 32767,
 ;     que multiplicado por 55ms = 1802 segundos = 30 minutos)
 
 os_pause:
 	pusha
 	cmp ax, 0
-	je .time_up			; Si retraso = 0 entonces bail out
+	je .time_up			; Si el retraso es 0, terminar.
 
 	mov cx, 0
 	mov [.counter_var], cx		; Vacía la variable contadora
@@ -52,12 +52,12 @@ os_pause:
 	ret
 
 .up_date:
-	mov ax, [.counter_var]		; Inc counter_var
+	mov ax, [.counter_var]		; Incrementar el contador.
 	inc ax
 	mov [.counter_var], ax
 
-	cmp ax, [.orig_req_delay]	; Es counter_var = retraso requerido?
-	jge .time_up			; Sí, así, retírese
+	cmp ax, [.orig_req_delay]	; ¿Se alcanzó el retraso solicitado?
+	jge .time_up			; Sí: terminar.
 
 	mov [.prev_tick_count], dx	; No, así actualiza .prev_tick_count 
 
@@ -70,8 +70,8 @@ os_pause:
 
 
 ; ------------------------------------------------------------------
-; os_fatal_error -- Muestra mensaje de error y ejecución de halt¡
-; IN: AX = ubicación del texto del mensaje de error
+; os_fatal_error -- Mostrar un mensaje de error y detener la ejecución.
+; ENTRADA: AX = dirección del texto del mensaje de error.
 
 os_fatal_error:
 	mov bx, ax			; Guardar ubicación del texto por aghora

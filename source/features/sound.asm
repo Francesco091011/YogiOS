@@ -6,8 +6,8 @@
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_speaker_tone -- Genera tono de PC speaker (call os_speaker_off to turn off)
-; IN: AX = nota frecuancia; OUT: Nothing (registros preservados)
+; os_speaker_tone -- Genera un tono con el altavoz interno del PC.
+; ENTRADA: AX = frecuencia de la nota. SALIDA: ninguna (se conservan los registros).
 
 os_speaker_tone:
 	pusha
@@ -21,7 +21,7 @@ os_speaker_tone:
 	mov al, ah
 	out 42h, al
 
-	in al, 61h			; Switch PC speaker on
+	in al, 61h			; Activar el altavoz interno.
 	or al, 03h
 	out 61h, al
 
@@ -31,7 +31,7 @@ os_speaker_tone:
 
 ; ------------------------------------------------------------------
 ; os_speaker_off -- Apagar el PC speaker
-; IN/OUT: Nothing (registros preservados)
+; ENTRADA/SALIDA: ninguna (se conservan los registros).
 
 os_speaker_off:
 	pusha

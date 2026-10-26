@@ -1,8 +1,8 @@
 ; ------------------------------------------------------------------
-; Machine code monitor -- by Yutaka Saito and Mike Saunders
+; Monitor de codigo maquina -- por Yutaka Saito y Mike Saunders
 ;
-; Accepts code in hex format, ORGed to 36864 (4K after where
-; this program is loaded)
+; Acepta codigo hexadecimal con origen 36864 (4 KiB despues de la
+; direccion donde se carga este programa).
 ; ------------------------------------------------------------------
 
 
@@ -11,9 +11,8 @@
 	ORG 32768
 
 
-	; This line determines where the machine code will
-	; be generated -- if you change it, you will need to
-	; ORG the code you enter at the new address
+	; Esta linea determina donde se generara el codigo maquina. Si la cambia,
+	; debe usar ORG con la nueva direccion para el codigo que introduzca.
 
 	CODELOC	equ 36864
 
@@ -119,10 +118,10 @@ main_loop:
 	input		times 255 db 0	; Code entered by user (in ASCII)
 	run		times 255 db 0	; Translated machine code to execute
 
-	helpmsg1	db 'MIKEOS MACHINE CODE MONITOR', 10, 13, 0
-	helpmsg2	db '(See the User Handbook for a quick guide)', 13, 10, 13, 10, 0
-	helpmsg3	db 'Enter instructions in hex, terminated by $ character', 10, 13, 0
-	helpmsg4	db 'Commands: r = re-run previous code, x = exit', 10, 13, 0
+	helpmsg1	db 'MONITOR DE CODIGO MAQUINA DE YOGIOS', 10, 13, 0
+	helpmsg2	db '(Consulte la guia del usuario para una introduccion)', 13, 10, 13, 10, 0
+	helpmsg3	db 'Escriba instrucciones hexadecimales y termine con $', 10, 13, 0
+	helpmsg4	db 'Comandos: r = repetir codigo anterior, x = salir', 10, 13, 0
 
 	prompt		db '= ', 0
 

@@ -1,10 +1,10 @@
-rem *** MikeOS BASIC demo ***
+rem *** Demostracion de BASIC para YogiOS ***
 
 cls
 
-$1 = "Hex dumper,MikeTron"
-$2 = "Choose a program to run,"
-$3 = "Or press Esc to exit"
+$1 = "Volcado hexadecimal,MikeTron"
+$2 = "Elija un programa para ejecutar,"
+$3 = "o pulse Esc para salir"
 
 listbox $1 $2 $3 a
 
@@ -17,11 +17,11 @@ end
 
 runhex:
 
-rem *** Hex dumper ***
+rem *** Volcado hexadecimal ***
 
 cls
 
-print "Enter a filename to make a hex dump from:"
+print "Nombre del archivo para volcar en hexadecimal:"
 input $1
 
 x = RAMSTART
@@ -43,7 +43,7 @@ print ""
 end
 
 hexerror:
-print "Could not load file! Does it exist?"
+print "No se pudo cargar el archivo. Existe?"
 end
 
 
@@ -54,17 +54,17 @@ rem *** MikeTron ***
 
 cls
 
-print "You control a vehicle leaving a trail behind it."
+print "Controlas un vehiculo que deja un rastro."
 print ""
-print "It is always moving, and if it crosses any part"
-print "of the trail or border (+ characters), the game"
-print "is over. Use the Q and A keys to change the direction"
-print "to up and down, and O and P for left and right."
-print "See how long you can survive! Score at the end."
+print "El vehiculo siempre avanza. Si toca el rastro"
+print "o el borde (los signos +), termina la partida."
+print "Use Q y A para subir y bajar, y O y P para"
+print "moverse a la izquierda y a la derecha."
+print "Sobrevive todo lo que puedas! Veras tu puntuacion al final."
 print ""
-print "NOTE: May perform at wrong speed in emulators!"
+print "NOTA: la velocidad podria variar en algunos emuladores."
 print ""
-print "Hit a key to begin..."
+print "Pulsa una tecla para comenzar..."
 
 waitkey x
 
@@ -73,12 +73,12 @@ cls
 cursor off
 
 
-rem *** Draw border around screen ***
+rem *** Dibujar el borde de la pantalla ***
 
 gosub setupscreen
 
 
-rem *** Start in the middle of the screen ***
+rem *** Comenzar en el centro de la pantalla ***
 
 x = 40
 y = 12
@@ -86,13 +86,13 @@ y = 12
 move x y
 
 
-rem *** Movement directions: 1 - 4 = up, down, left, right ***
-rem *** We start the game moving right ***
+rem *** Direcciones: 1 a 4 = arriba, abajo, izquierda, derecha ***
+rem *** Comenzar el juego moviendose a la derecha ***
 
 d = 4
 
 
-rem *** S = score variable ***
+rem *** S = variable del puntaje ***
 
 s = 0
 
@@ -127,9 +127,9 @@ finish:
 cursor on
 cls
 
-print "Your score was: " ;
+print "Tu puntuacion fue: " ;
 print s
-print "Press Esc to finish"
+print "Pulsa Esc para terminar"
 
 escloop:
   waitkey x

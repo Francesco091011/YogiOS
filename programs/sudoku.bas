@@ -1,4 +1,4 @@
-rem *** MikeOS Sudoku 1.0 ***
+rem *** Sudoku para YogiOS 1.0 ***
 
 
 cls
@@ -9,15 +9,15 @@ c = 78
 d = 24
 gosub draw_box
 
-$1 = "Easy,Medium,Hard"
-$2 = "MikeOS Sudoku"
-$3 = "Choose a difficulty level..."
+$1 = "Facil,Medio,Dificil"
+$2 = "Sudoku para YogiOS"
+$3 = "Elija el nivel de dificultad..."
 listbox $1 $2 $3 z
 
 if z = 0 then goto finish
 
 
-rem *** Copy level information into RAM ***
+rem *** Copiar en RAM los datos del nivel ***
 d = RAMSTART
 for c = 1 to 81
   if z = 1 then read level_easy c a
@@ -28,7 +28,7 @@ for c = 1 to 81
 next c
 
 
-rem *** X and Y vars are cursor position ***
+rem *** X e Y indican la posicion del cursor ***
 x = 0
 y = 0
 
@@ -39,7 +39,7 @@ gosub setup_screen
 main_loop:
   gosub update_screen
 
-  rem *** Move cursor according to keypresses, skipping divider lines ***
+  rem *** Mover el cursor con las flechas, saltando las lineas divisorias ***
   waitkey k
   if k = 27 then goto finish
   if k = 4 and x < 16 then x = x + 2
@@ -63,13 +63,13 @@ finish:
 
 enter_pressed:
   move 40 14
-  print "Enter a number: " ;
+  print "Ingrese un numero: " ;
   input a
 
   if a > 9 then goto invalid
 
-  rem *** These lines convert our coordinates in the grid into the ***
-  rem *** corresponding point in the Sudoku numbers in RAM ***
+  rem *** Convertir las coordenadas de la cuadricula en la posicion ***
+  rem *** correspondiente de los numeros del Sudoku en RAM ***
   b = x / 2
   c = RAMSTART
   c = c + b
@@ -87,7 +87,7 @@ return
 
 invalid:
   move 40 16
-  print "Invalid number!"
+  print "Numero no valido."
   waitkey a
   move 40 14
   print "                          "
@@ -100,7 +100,7 @@ check_completed:
   d = 0
   u = 0
 
-  rem *** First, go through the rows, looking for uniques ***
+  rem *** Primero, recorrer las filas buscando valores unicos ***
   a = RAMSTART
 
   for p = 0 to 8
@@ -123,7 +123,7 @@ check_completed:
   next p
 
 
-  rem *** And then through columns ***
+  rem *** Luego, recorrer las columnas ***
   a = RAMSTART
   d = 0
 
@@ -148,7 +148,7 @@ check_completed:
   next p    
 
 
-  rem *** And through first column of boxes ***
+  rem *** Luego, recorrer la primera columna de cuadros ***
 
   for g = 0 to 2
     a = RAMSTART
@@ -178,7 +178,7 @@ check_completed:
   next g
 
 
-  rem *** Second column ***
+  rem *** Segunda columna ***
   for g = 0 to 2
     a = RAMSTART
     d = 0
@@ -208,7 +208,7 @@ check_completed:
   next g
 
 
-  rem *** Third column ***
+  rem *** Tercera columna ***
   for g = 0 to 2
     a = RAMSTART
     d = 0
@@ -244,10 +244,10 @@ return
 win:
   move 45 12
   ink 14
-  print "PUZZLE COMPLETE!"
+  print "SUDOKU COMPLETADO!"
   move 44 14
   ink 7
-  print "Press a key to end"
+  print "Pulse una tecla para terminar"
   waitkey x
   cursor on
   cls
@@ -257,7 +257,7 @@ win:
 setup_screen:
   cls
 
-  rem *** Outer border ***
+  rem *** Borde exterior ***
   a = 0
   b = 0
   c = 78
@@ -265,7 +265,7 @@ setup_screen:
   gosub draw_box
 
 
-  rem *** Sudoku grid lines ***
+  rem *** Lineas de la cuadricula Sudoku ***
   ink 8
 
   a = 13
@@ -301,9 +301,9 @@ setup_screen:
 
   ink 7
   move 3 2
-  print "MikeOS Sudoku - Press H for help, or Esc to quit"
+  print "Sudoku YogiOS - H: ayuda; Esc: salir"
   move 3 4
-  print "Cursor keys navigate, Enter inputs a number, zero blanks a square"
+  print "Flechas: mover; Intro: escribir numero; cero: vaciar casilla"
 return
 
 
@@ -311,7 +311,7 @@ update_screen:
   rem *** Cursor ***
   ink 14
 
-  rem *** First, blank out area where cursor could be ***
+  rem *** Primero, borrar el area donde puede estar el cursor ***
   move 14 6
   print "                    "
   move 14 7
@@ -333,7 +333,7 @@ update_screen:
   ink 7
 
 
-  rem *** Numbers ***
+  rem *** Numeros ***
   a = 14
   b = 9
 
@@ -347,7 +347,7 @@ update_screen:
     if d = 0 then print " " ;
     a = a + 2
 
-    rem *** Handle wrapping ***
+    rem *** Gestionar el salto al borde ***
     if a = 32 then b = b + 1
     if a = 32 then a = 14
     if b = 12 then b = 13
@@ -363,13 +363,12 @@ show_help:
 
   print ""
   print ""
-  print "   Sudoku is a puzzle game. You have a grid of 9 x 9 squares,"
-  print "   which is divided into smaller 3 x 3 sections. Your goal is"
-  print "   to fill the grid so that every row has the numbers 1 to 9,"
-  print "   every column has the numbers 1 to 9, and every small 3 x 3"
-  print "   section has the numbers 1 to 9."
+  print "   Sudoku es un rompecabezas con una cuadricula de 9 x 9 casillas,"
+  print "   dividida en secciones de 3 x 3. Debes llenarla para que cada fila"
+  print "   tenga los numeros del 1 al 9, cada columna tambien y cada seccion"
+  print "   pequena de 3 x 3 contenga todos los numeros del 1 al 9."
   print ""
-  print "   Press a key to return to the game..."
+  print "   Pulse una tecla para volver al juego..."
 
   a = 0
   b = 0
@@ -383,7 +382,7 @@ show_help:
 return
 
 
-rem *** Level data ***
+rem *** Datos de los niveles ***
 level_easy:
 0 5 0 0 8 1 0 0 7
 4 6 0 0 0 0 3 5 0
@@ -418,8 +417,8 @@ level_hard:
 0 0 5 6 4 3 0 0 0
 
 
-rem *** draw_box routine ***
-rem *** Takes coords in A, B, C and D vars. Uses Z internally ***
+rem *** Rutina draw_box ***
+rem *** Recibe coordenadas en A, B, C y D; usa Z internamente ***
 draw_box:
   move a b
   for z = a to c

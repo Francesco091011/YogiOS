@@ -1,13 +1,13 @@
-REM >>>MIKEBASIC-PLUS-PLUS-LIBRARY<<<
-REM Library Version 3.2.3
+REM >>>BIBLIOTECA MIKEBASIC-PLUS-PLUS<<<
+REM Version de la biblioteca 3.2.3
 REM Copyright (C) Joshua Beck.
-REM Email: mikeosdeveloper@gmail.com
-REM Licenced under the GNU General Public Licence revision 3.
-REM Requires MikeOS version 4.3 or greater.
+REM Correo: mikeosdeveloper@gmail.com
+REM Licencia Publica General de GNU, version 3.
+REM Requiere MikeOS 4.3 o posterior.
 
-REM See the wiki at: http://mikebasicplusplus.wikispot.org/
+REM Consulte la wiki: http://mikebasicplusplus.wikispot.org/
 
-PRINT "MB++ Library version 3.2.3"
+PRINT "Biblioteca MB++ version 3.2.3"
 END
 
 ANCITEXT:
@@ -45,7 +45,6 @@ ANCITXTS:
   IF J = 10 THEN Y = Y + 1
   IF J = 10 THEN PEEK X 65431
   IF J = 10 THEN V = V + 1
-  IF J = 10 THEN GOTO ANCITEX2
 RETURN
   
 ANICLOSE:
@@ -108,9 +107,9 @@ ANISTARB:
 
 ARRAYGET:
   POKEINT J 65418
-  IF X > 99 THEN $E = "ARRAYGET: Array over maximum"
+  IF X > 99 THEN $E = "ARRAYGET: indice fuera del limite"
   IF X > 99 THEN GOTO ERRBOX
-  IF X < 0 THEN $E = "ARRAYGET: Number below zero"
+  IF X < 0 THEN $E = "ARRAYGET: el numero es menor que cero"
   IF X < 0 THEN GOTO ERRBOX
   J = X
   J = J * 2
@@ -121,9 +120,9 @@ RETURN
 
 ARRAYPUT:
   POKEINT J 65418
-  IF X > 99 THEN $E = "ARRAYGET: Array over maximum"
+  IF X > 99 THEN $E = "ARRAYGET: indice fuera del limite"
   IF X > 99 THEN GOTO ERRBOX
-  IF X < 0 THEN $E = "ARRAYGET: Number below zero"
+  IF X < 0 THEN $E = "ARRAYGET: el numero es menor que cero"
   IF X < 0 THEN GOTO ERRBOX
   J = X
   J = J * 2
@@ -145,7 +144,7 @@ ASKBOX:
   move 22 15
   print $9
   move 27 16
-  print "--Yes--        --No--"
+  print "--Si--         --No--"
   poke 1 65420
   V = 1
   gosub askdraw
@@ -180,7 +179,7 @@ askdraw:
   move 27 16
   if v = 0 then ink h
   if v = 1 then ink c
-  print "--Yes--"
+  print "--Si--"
   move 42 16
   if v = 0 then ink c
   if v = 1 then ink h
@@ -357,9 +356,6 @@ CLOSEBOX:
   PEEK V 65418
 RETURN
 
-CONTENT:
-RETURN
-
 cserial:
   gosub savevar
   v = 0
@@ -381,7 +377,7 @@ cserial:
 return
 
 DINBOX:
-  $E = "INPBOX: Invalid input type."
+  $E = "INPBOX: tipo de entrada no valido."
   IF V > 1 THEN GOTO ERRBOX
   IF V < 0 THEN GOTO ERRBOX
   GOSUB OPENBOX
@@ -422,15 +418,15 @@ ERRBOX:
   GOSUB OPENBOX
   POKEINT V 65418
   LEN $E V
-  IF V > 38 THEN $E = "Error text too long!"
+  IF V > 38 THEN $E = "Mensaje de error demasiado largo."
   IF V > 38 THEN GOTO FATALERR
   PEEKINT V 65418
   move 22 12
   print $E
   MOVE 22 14
-  PRINT "Press escape to end program."
+  PRINT "Pulse Esc para terminar el programa."
   MOVE 22 15
-  print "Press any other key to continue."
+  print "Pulse otra tecla para continuar."
   cursor on
   move 53 15
   waitkey j
@@ -448,7 +444,7 @@ FATALERR:
 GOSUB ENDPROG
 
 INPBOX:
-  $E = "INPBOX: Invalid input type."
+  $E = "INPBOX: tipo de entrada no valido."
   IF V > 1 THEN GOTO ERRBOX
   IF V < 0 THEN GOTO ERRBOX
   GOSUB OPENBOX
@@ -480,7 +476,7 @@ RETURN
 LOADVAR:
   POKEINT J 65426
   PEEK J 65421
-  IF J = 0 THEN $E = "Can't load variables, none stored!"
+  IF J = 0 THEN $E = "No hay variables guardadas."
   IF J = 0 THEN GOSUB FATALERR
   J = J + 65198
   PEEKINT Y J
@@ -537,7 +533,7 @@ MENUBOX:
     NEXT W
     MOVE 22 16
     INK C
-    PRINT "Press enter to select an option."
+    PRINT "Pulse Intro para seleccionar una opcion."
   RETURN
   MENUITEM:
     $J = ""
@@ -569,7 +565,7 @@ MESBOX:
   move 22 15
   print $9
   move 22 16
-  print "Press any key to continue..."
+  print "Pulse una tecla para continuar..."
   waitkey j
   GOSUB CLOSEBOX
 return
@@ -589,7 +585,7 @@ NUMBOX:
   print b
   numboxb:
   move 22 16
-  print "Press any key to continue..."
+  print "Pulse una tecla para continuar..."
   waitkey j
   GOSUB CLOSEBOX
 return
@@ -604,11 +600,11 @@ OPENBOX:
     IF X = 3 THEN LEN $7 V
     IF X = 4 THEN LEN $8 V
     IF X = 5 THEN LEN $9 V
-    IF V > 37 AND X = 1 THEN $E = "String $5 too long!"
-    IF V > 37 AND X = 2 THEN $E = "String $6 too long!"
-    IF V > 37 AND X = 3 THEN $E = "String $7 too long!"
-    IF V > 37 AND X = 4 THEN $E = "String $8 too long!"
-    IF V > 37 AND X = 5 THEN $E = "String $9 too long!"
+    IF V > 37 AND X = 1 THEN $E = "La cadena $5 es demasiado larga."
+    IF V > 37 AND X = 2 THEN $E = "La cadena $6 es demasiado larga."
+    IF V > 37 AND X = 3 THEN $E = "La cadena $7 es demasiado larga."
+    IF V > 37 AND X = 4 THEN $E = "La cadena $8 es demasiado larga."
+    IF V > 37 AND X = 5 THEN $E = "La cadena $9 es demasiado larga."
     IF V > 37 THEN GOTO ERRBOX
   NEXT X
   GOSUB LOADVAR
@@ -673,7 +669,7 @@ rserial:
   loop until w > 0
   if w = 20 then goto rserialc
   gosub loadvar
-  $E = "Serial: Invalid protocol!"
+  $E = "Serie: protocolo no valido."
   goto errbox
   rserialc:
   serial rec w
@@ -703,7 +699,7 @@ RETURN
 SAVEVAR:
   POKEINT Y 65426
   PEEK Y 65421
-  IF Y > 198 THEN $E = "Variable storage area full!"
+  IF Y > 198 THEN $E = "El area de almacenamiento de variables esta llena."
   IF Y > 198 THEN GOSUB FATALERR
   Y = Y + 65200
   POKEINT J Y
@@ -756,7 +752,7 @@ SETTITLE:
 RETURN
 
 sserial:
-  if v > 255 then $E = "Serial: Packet size too big!"
+  if v > 255 then $E = "Serie: el paquete es demasiado grande."
   if v > 255 then goto errbox
   gosub savevar
   do
@@ -840,4 +836,8 @@ XPUT:
   POKEINT X 65424
   POKE V 65422
   CALL 65168
+RETURN
+
+REM Rutina predeterminada; los programas pueden definir su propia etiqueta CONTENT.
+CONTENT:
 RETURN

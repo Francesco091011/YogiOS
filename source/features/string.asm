@@ -6,9 +6,9 @@
 ; ==================================================================
 
 ; ------------------------------------------------------------------
-; os_string_length -- Return length of a string
-; IN: AX = string location
-; OUT AX = length (other regs preserved)
+; os_string_length -- Obtener la longitud de una cadena
+; ENTRADA: AX = dirección de la cadena.
+; SALIDA: AX = longitud (se conservan los demás registros).
 
 os_string_length:
 	pusha
@@ -37,8 +37,8 @@ os_string_length:
 
 
 ; ------------------------------------------------------------------
-; os_string_reverse -- Reverse the characters in a string
-; IN: SI = string location
+; os_string_reverse -- Invertir los caracteres de una cadena
+; ENTRADA: SI = dirección de la cadena.
 
 os_string_reverse:
 	pusha
@@ -72,16 +72,15 @@ os_string_reverse:
 
 
 ; ------------------------------------------------------------------
-; os_find_char_in_string -- Find location of character in a string
-; IN: SI = string location, AL = character to find
-; OUT: AX = location in string, or 0 if char not present
+; os_find_char_in_string -- Buscar un carácter en una cadena
+; ENTRADA: SI = dirección de la cadena, AL = carácter buscado.
+; SALIDA: AX = posición del carácter o 0 si no aparece.
 
 os_find_char_in_string:
 	pusha
 
-	mov cx, 1			; Counter -- start at first char (we count
-					; from 1 in chars here, so that we can
-					; return 0 if the source char isn't found)
+	mov cx, 1			; Empezar a contar desde 1 para poder devolver 0
+					; si no se encuentra el carácter buscado.
 
 .more:
 	cmp byte [si], al
@@ -108,8 +107,8 @@ os_find_char_in_string:
 
 
 ; ------------------------------------------------------------------
-; os_string_charchange -- Change instances of character in a string
-; IN: SI = string, AL = char to find, BL = char to replace with
+; os_string_charchange -- Reemplazar apariciones de un carácter en una cadena
+; ENTRADA: SI = cadena, AL = carácter buscado, BL = carácter de reemplazo.
 
 os_string_charchange:
 	pusha
@@ -135,8 +134,8 @@ os_string_charchange:
 
 
 ; ------------------------------------------------------------------
-; os_string_uppercase -- Convert zero-terminated string to upper case
-; IN/OUT: AX = string location
+; os_string_uppercase -- Convertir una cadena terminada en cero a mayúsculas
+; ENTRADA/SALIDA: AX = dirección de la cadena.
 
 os_string_uppercase:
 	pusha
@@ -167,8 +166,8 @@ os_string_uppercase:
 
 
 ; ------------------------------------------------------------------
-; os_string_lowercase -- Convert zero-terminated string to lower case
-; IN/OUT: AX = string location
+; os_string_lowercase -- Convertir una cadena terminada en cero a minúsculas
+; ENTRADA/SALIDA: AX = dirección de la cadena.
 
 os_string_lowercase:
 	pusha
@@ -199,8 +198,8 @@ os_string_lowercase:
 
 
 ; ------------------------------------------------------------------
-; os_string_copy -- Copy one string into another
-; IN/OUT: SI = source, DI = destination (programmer ensure sufficient room)
+; os_string_copy -- Copiar una cadena en otra
+; ENTRADA/SALIDA: SI = origen, DI = destino (reservar espacio suficiente).
 
 os_string_copy:
 	pusha
@@ -219,9 +218,9 @@ os_string_copy:
 
 
 ; ------------------------------------------------------------------
-; os_string_truncate -- Chop string down to specified number of characters
-; IN: SI = string location, AX = number of characters
-; OUT: String modified, registers preserved
+; os_string_truncate -- Recortar una cadena a la cantidad indicada de caracteres
+; ENTRADA: SI = dirección de la cadena, AX = cantidad de caracteres.
+; SALIDA: cadena modificada; se conservan los registros.
 
 os_string_truncate:
 	pusha
@@ -234,8 +233,8 @@ os_string_truncate:
 
 
 ; ------------------------------------------------------------------
-; os_string_join -- Join two strings into a third string
-; IN/OUT: AX = string one, BX = string two, CX = destination string
+; os_string_join -- Unir dos cadenas en una tercera
+; ENTRADA/SALIDA: AX y BX = cadenas de origen, CX = cadena de destino.
 
 os_string_join:
 	pusha
@@ -257,8 +256,8 @@ os_string_join:
 
 
 ; ------------------------------------------------------------------
-; os_string_chomp -- Strip leading and trailing spaces from a string
-; IN: AX = string location
+; os_string_chomp -- Quitar los espacios iniciales y finales de una cadena
+; ENTRADA: AX = dirección de la cadena.
 
 os_string_chomp:
 	pusha
@@ -314,8 +313,8 @@ os_string_chomp:
 
 
 ; ------------------------------------------------------------------
-; os_string_strip -- Removes specified character from a string (max 255 chars)
-; IN: SI = string location, AL = character to remove
+; os_string_strip -- Quitar de una cadena el carácter indicado (máximo 255).
+; ENTRADA: SI = dirección de la cadena, AL = carácter que se quitará.
 
 os_string_strip:
 	pusha
@@ -340,9 +339,9 @@ os_string_strip:
 	ret
 
 ; ------------------------------------------------------------------
-; os_string_compare -- See if two strings match
-; IN: SI = string one, DI = string two
-; OUT: carry set if same, clear if different
+; os_string_compare -- Comprobar si dos cadenas son iguales
+; ENTRADA: SI y DI = cadenas que se compararán.
+; SALIDA: acarreo activado si son iguales; desactivado si son distintas.
 
 os_string_compare:
 	pusha
@@ -375,9 +374,9 @@ os_string_compare:
 
 
 ; ------------------------------------------------------------------
-; os_string_strincmp -- See if two strings match up to set number of chars
-; IN: SI = string one, DI = string two, CL = chars to check
-; OUT: carry set if same, clear if different
+; os_string_strincmp -- Comparar una cantidad determinada de caracteres
+; ENTRADA: SI y DI = cadenas, CL = caracteres que se compararán.
+; SALIDA: acarreo activado si coinciden; desactivado si son distintas.
 
 os_string_strincmp:
 	pusha
@@ -415,9 +414,9 @@ os_string_strincmp:
 
 
 ; ------------------------------------------------------------------
-; os_string_parse -- Take string (eg "run foo bar baz") and return
-; pointers to zero-terminated strings (eg AX = "run", BX = "foo" etc.)
-; IN: SI = string; OUT: AX, BX, CX, DX = individual strings
+; os_string_parse -- Separar una cadena (p. ej., «run foo bar baz») y devolver
+; punteros a sus partes terminadas en cero (AX = «run», BX = «foo», etc.).
+; ENTRADA: SI = cadena. SALIDA: AX, BX, CX y DX = cadenas separadas.
 
 os_string_parse:
 	push si
@@ -474,9 +473,9 @@ os_string_parse:
 
 
 ; ------------------------------------------------------------------
-; os_string_to_int -- Convert decimal string to integer value
-; IN: SI = string location (max 5 chars, up to '65536')
-; OUT: AX = number
+; os_string_to_int -- Convertir una cadena decimal a un entero
+; ENTRADA: SI = dirección de la cadena (máximo 5 caracteres, hasta «65536»).
+; SALIDA: AX = número.
 
 os_string_to_int:
 	pusha
@@ -493,10 +492,9 @@ os_string_to_int:
 	mov ax, 0
 
 
-	; As we move left in the string, each char is a bigger multiple. The
-	; right-most character is a multiple of 1, then next (a char to the
-	; left) a multiple of 10, then 100, then 1,000, and the final (and
-	; leftmost char) in a five-char number would be a multiple of 10,000
+	; Al avanzar hacia la izquierda, cada carácter representa un múltiplo mayor:
+	; el de más a la derecha vale unidades; siguen decenas, centenas, millares
+	; y, para un número de cinco caracteres, decenas de millar.
 
 	mov word [.multiplier], 1	; Start with multiples of 1
 
@@ -535,9 +533,8 @@ os_string_to_int:
 
 
 ; ------------------------------------------------------------------
-; os_int_to_string -- Convert unsigned integer to string
-; IN: AX = signed int
-; OUT: AX = string location
+; os_int_to_string -- Convertir un entero sin signo en una cadena
+; ENTRADA: AX = entero. SALIDA: AX = dirección de la cadena.
 
 os_int_to_string:
 	pusha
@@ -572,9 +569,8 @@ os_int_to_string:
 
 
 ; ------------------------------------------------------------------
-; os_sint_to_string -- Convert signed integer to string
-; IN: AX = signed int
-; OUT: AX = string location
+; os_sint_to_string -- Convertir un entero con signo en una cadena
+; ENTRADA: AX = entero. SALIDA: AX = dirección de la cadena.
 
 os_sint_to_string:
 	pusha
@@ -616,9 +612,9 @@ os_sint_to_string:
 
 
 ; ------------------------------------------------------------------
-; os_long_int_to_string -- Convert value in DX:AX to string
-; IN: DX:AX = long unsigned integer, BX = number base, DI = string location
-; OUT: DI = location of converted string
+; os_long_int_to_string -- Convertir el valor de DX:AX en una cadena
+; ENTRADA: DX:AX = entero largo sin signo, BX = base numérica, DI = destino.
+; SALIDA: DI = dirección de la cadena resultante.
 
 os_long_int_to_string:
 	pusha
@@ -635,7 +631,7 @@ os_long_int_to_string:
 
 .conversion_loop:
 	mov cx, 0			; Zero extend unsigned integer, number = CX:DX:AX
-					; If number = 0, goes through loop once and stores '0'
+					; Si el número es 0, recorrer el bucle una vez y guardar «0».
 
 	xchg ax, cx			; Number order DX:AX:CX for high order division
 	xchg ax, dx
@@ -684,8 +680,8 @@ os_long_int_to_string:
 
 
 ; ------------------------------------------------------------------
-; os_set_time_fmt -- Set time reporting format (eg '10:25 AM' or '2300 hours')
-; IN: AL = format flag, 0 = 12-hr format
+; os_set_time_fmt -- Establecer formato de hora (p. ej., «10:25 AM» o «2300 horas»)
+; ENTRADA: AL = indicador de formato; 0 = formato de 12 horas.
 
 os_set_time_fmt:
 	pusha
@@ -699,8 +695,8 @@ os_set_time_fmt:
 
 
 ; ------------------------------------------------------------------
-; os_get_time_string -- Get current time in a string (eg '10:25')
-; IN/OUT: BX = string location
+; os_get_time_string -- Obtener la hora actual como cadena (p. ej., «10:25»)
+; ENTRADA/SALIDA: BX = dirección de la cadena.
 
 os_get_time_string:
 	pusha
@@ -803,16 +799,16 @@ os_get_time_string:
 	ret
 
 
-	.hours_string	db 'hours', 0
+	.hours_string	db 'horas', 0
 	.am_string 	db 'AM', 0
 	.pm_string 	db 'PM', 0
 
 
 ; ------------------------------------------------------------------
-; os_set_date_fmt -- Set date reporting format (M/D/Y, D/M/Y or Y/M/D - 0, 1, 2)
-; IN: AX = format flag, 0-2
-; If AX bit 7 = 1 = use name for months
-; If AX bit 7 = 0, high byte = separator character
+; os_set_date_fmt -- Establecer formato de fecha (M/D/A, D/M/A o A/M/D: 0, 1, 2)
+; ENTRADA: AX = indicador de formato, de 0 a 2.
+; Si el bit 7 de AX es 1, usar nombres de meses.
+; Si el bit 7 de AX es 0, el byte alto contiene el separador.
 
 os_set_date_fmt:
 	pusha
@@ -836,8 +832,8 @@ os_set_date_fmt:
 
 
 ; ------------------------------------------------------------------
-; os_get_date_string -- Get current date in a string (eg '12/31/2007')
-; IN/OUT: BX = string location
+; os_get_date_string -- Obtener la fecha actual como cadena (p. ej., «31/12/2007»)
+; ENTRADA/SALIDA: BX = dirección de la cadena.
 
 os_get_date_string:
 	pusha
@@ -1015,13 +1011,13 @@ os_get_date_string:
 	ret
 
 
-	.months db 'Jan.Feb.Mar.Apr.May JuneJulyAug.SeptOct.Nov.Dec.'
+	.months db 'Ene.Feb.Mar.Abr.May.Jun.Jul.Ago.Sep.Oct.Nov.Dic.'
 
 
 ; ------------------------------------------------------------------
-; os_string_tokenize -- Reads tokens separated by specified char from
-; a string. Returns pointer to next token, or 0 if none left
-; IN: AL = separator char, SI = beginning; OUT: DI = next token or 0 if none
+; os_string_tokenize -- Leer elementos de una cadena separados por el carácter
+; indicado. Devolver un puntero al siguiente elemento o 0 si no quedan más.
+; ENTRADA: AL = separador, SI = inicio. SALIDA: DI = siguiente elemento o 0.
 
 os_string_tokenize:
 	push si

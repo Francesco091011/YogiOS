@@ -1,16 +1,16 @@
 
 REM ------------------------------------------------
-REM ADVENTURE 2.3 -- By Justin Tokarchuk
-REM For MikeOS and MikeBasic Derivatives
+REM AVENTURA 2.3 -- Por Justin Tokarchuk
+REM Para YogiOS y derivados de MikeBasic
 REM ------------------------------------------------
 
-REM VARS:
-REM $1 = Player Name
-REM a = room number
-REM b = got note
-REM c = got candle
-REM d = opened treasure chest
-REM e = got key
+REM VARIABLES:
+REM $1 = nombre del jugador
+REM a = numero de habitacion
+REM b = obtuvo la nota
+REM c = obtuvo la vela
+REM d = abrio el cofre
+REM e = obtuvo la llave
 
 a = 1
 b = 0
@@ -28,7 +28,7 @@ LOGO:
   PRINT "         |___|___||_____| \___/|_____|__|__||____|_____|__| |_____||__|"
   PRINT " "
   PRINT "         --------------------------------------------------------------"
-  PRINT "                        |  A Text-Based Adventure Game  |              "
+  PRINT "                        | Juego de aventuras de texto |               "
   PRINT "                         -------------------------------               "
   PRINT ""
   PRINT ""
@@ -37,7 +37,7 @@ LOGO:
 
 GETNAME:
   PRINT ""
-  PRINT " What do you call yourself?: " ;
+  PRINT " Como te llamas?: " ;
   INPUT $1
   IF $1 = "" THEN GOTO GETNAME
 
@@ -46,28 +46,28 @@ GETNAMEREMARK:
   PRINT ""
   PRINT " " ;
   PRINT $1 ;
-  if x = 1 then PRINT "! Did your mother even love you? Oh well, it's your name."
-  if x = 2 then PRINT "? What kind of name is that! Oh well, not like we can change it."
-  if x = 3 then PRINT "!? You aren't from around here, are you?"
+  if x = 1 then PRINT "! Tu madre te queria? Bueno, es tu nombre."
+  if x = 2 then PRINT "? Que clase de nombre es ese! No podemos cambiarlo."
+  if x = 3 then PRINT "!? No eres de por aqui, verdad?"
   GOSUB PRESSAKEY
   
 GOTO GAMEINTRO
 
 HELP:
   PRINT ""  
-  PRINT " The following are valid commands ingame:"
+  PRINT " Estos son los comandos disponibles:"
   PRINT ""
-  PRINT " CLS                       - CLEARS THE SCREEN"
-  PRINT " LOOK                      - REPRINTS ROOM DESCRIPTION"
-  PRINT " INVENTORY                 - VIEW WHAT YOU ARE CARRYING"
-  PRINT " NORTH, WEST, SOUTH, EAST  - MOVES TO INPUTTED DIRECTION"
-  PRINT " EXAMINE (OBJECT)          - EXAMINES AN OBJECT"
-  PRINT " USE (OBJECT)              - USES AN OBJECT"
-  PRINT " TAKE (OBJECT)             - TAKES AN OBJECT"
-  PRINT " OPEN (OBJECT)             - OPENS A CONTAINER"
-  PRINT " UNLOCK (OBJECT)           - ATTEMPTS TO UNLOCK AN OBJECT"
-  PRINT " HELP                      - VIEW THESE COMMANDS AGAIN"
-  PRINT " EXIT                      - QUITS THE GAME"
+  PRINT " LIMPIAR                   - LIMPIA LA PANTALLA"
+  PRINT " MIRAR                     - MUESTRA LA DESCRIPCION"
+  PRINT " INVENTARIO                - MUESTRA TUS OBJETOS"
+  PRINT " NORTE, OESTE, SUR, ESTE   - CAMBIA DE DIRECCION"
+  PRINT " EXAMINAR (OBJETO)         - EXAMINA UN OBJETO"
+  PRINT " USAR (OBJETO)             - USA UN OBJETO"
+  PRINT " TOMAR (OBJETO)            - TOMA UN OBJETO"
+  PRINT " ABRIR (OBJETO)            - ABRE UN CONTENEDOR"
+  PRINT " DESBLOQUEAR (OBJETO)      - INTENTA ABRIR UNA CERRADURA"
+  PRINT " AYUDA                     - MUESTRA ESTA AYUDA"
+  PRINT " SALIR                     - TERMINA EL JUEGO"
   RETURN
 
 LOWERCASE:
@@ -85,25 +85,24 @@ RETURN
 
 GAMEINTRO:
   PRINT ""
-  PRINT " HALLOWEEN NIGHT. The spookiest night of the year! Not very spooky"
-  PRINT " in your cruddy room, though. So what if toilet paper takes hours"
-  PRINT " to clean off of MR. RAUL's house. Why did I have to get grounded?"
+  PRINT " NOCHE DE HALLOWEEN. La noche mas tenebrosa del ano. Aunque tu cuarto"
+  PRINT " no da mucho miedo. Que importa si limpiar el papel higienico de la"
+  PRINT " casa del senor Raul toma horas? Por que me castigaron?"
   GOSUB PRESSAKEY
-  PRINT " SCREW IT. I am " ;
+  PRINT " NO IMPORTA. Soy " ;
   PRINT $1 ;
-  PRINT ", I am mighty! I will not be held down by parents!"
-  PRINT " I'm going to sneak out, and prove to everyone that MR. RAUL's house"
-  PRINT " is not haunted!"
+  PRINT ", soy valiente! Mis padres no me detendran!"
+  PRINT " Voy a escaparme y demostrar que la casa del senor Raul"
+  PRINT " no esta embrujada!"
   GOSUB PRESSAKEY
-  PRINT " You sneak down the stairs from your room, and notice your mother is"
-  PRINT " fast asleep on the couch! Opportunity is knocking! You dart through"
-  PRINT " your front door and across the street to MR. RAUL's house."
+  PRINT " Bajas sigilosamente las escaleras y ves que tu madre duerme en el"
+  PRINT " sofa. Es tu oportunidad. Sales por la puerta y cruzas la calle"
+  PRINT " hasta la casa del senor Raul."
   GOSUB PRESSAKEY
-  PRINT " You notice the door is cracked open, you push the door open and walk"
-  PRINT " inside."
+  PRINT " La puerta esta entreabierta. La empujas y entras."
   GOSUB PRESSAKEY
-  PRINT " -- SLAM!! -- Oh no! The door swings shut behind you! -- CLICK! --"
-  PRINT " You examine the door to find a padlock holding it shut!"
+  PRINT " -- PUM -- La puerta se cierra detras de ti. -- CLIC --"
+  PRINT " Al examinarla, encuentras un candado que la mantiene cerrada."
   GOSUB PRESSAKEY
   GOSUB MOVEROOM
   GOTO PARSER   
@@ -119,45 +118,44 @@ MOVEROOM:
 
 R1:
   PRINT ""
-  PRINT " -- The House Entrance -- "
-  PRINT " The entrance of the house."
-  PRINT " There is a large padlock behind you, barring your freedom." 
+  PRINT " -- Entrada de la casa -- "
+  PRINT " Estas en la entrada de la casa."
+  PRINT " Un candado grande te impide salir."
   RETURN
 
 R2:
   PRINT ""
-  PRINT " -- The Dining Room -- "
-  PRINT " There is a large table in the middle of the room. There are multiple"
-  PRINT " doors going out of this room. You see a large painting."
+  PRINT " -- Comedor -- "
+  PRINT " Hay una mesa grande en medio de la habitacion y varias puertas."
+  PRINT " Tambien ves un cuadro grande."
   RETURN
 
 R3:
   PRINT ""
-  PRINT " -- The Kitchen -- "
-  PRINT " There is a doorway in this room, with the door ripped off of the"
-  PRINT " hinges. Odd, you think. The rest of the kitchen seems immaculate."
+  PRINT " -- Cocina -- "
+  PRINT " Hay una puerta arrancada de sus bisagras. Que extrano."
+  PRINT " El resto de la cocina esta impecable."
   RETURN
 
 R4:
   PRINT ""
-  PRINT " -- The Bathroom -- "
-  PRINT " Odd, for being a bathroom there are no windows or methods of"
-  PRINT " ventilation."
-  IF c = 0 THEN PRINT " There is a candle sitting atop the sink."
+  PRINT " -- Bano -- "
+  PRINT " Es extrano: no hay ventanas ni ventilacion."
+  IF c = 0 THEN PRINT " Hay una vela sobre el lavabo."
   RETURN
 
 R5:
   PRINT ""
-  PRINT " -- The Bedroom -- "
-  PRINT " A door leads back to the dining room." 
+  PRINT " -- Habitacion -- "
+  PRINT " Una puerta lleva de vuelta al comedor."
   RETURN
 
 R6:
   PRINT ""
-  PRINT " -- The Basement -- "
-  IF c = 1 THEN PRINT " + You light your candle."
-  IF c = 1 THEN PRINT " There is a treasure Chest on the floor."
-  IF c = 0 THEN PRINT " It is too dark to see anything in here."
+  PRINT " -- Sotano -- "
+  IF c = 1 THEN PRINT " + Enciendes la vela."
+  IF c = 1 THEN PRINT " Hay un cofre en el suelo."
+  IF c = 0 THEN PRINT " Esta demasiado oscuro para ver algo."
   RETURN
 
 PARSER:
@@ -167,54 +165,75 @@ PARSER:
   INPUT $2
   GOSUB LOWERCASE
   IF $2 = "cls" THEN CLS
+  IF $2 = "limpiar" THEN CLS
   IF $2 = "help" THEN GOSUB HELP
+  IF $2 = "ayuda" THEN GOSUB HELP
   IF $2 = "north" THEN GOSUB NORTH
   IF $2 = "n" THEN GOSUB NORTH
+  IF $2 = "norte" THEN GOSUB NORTH
   IF $2 = "south" THEN GOSUB SOUTH
   IF $2 = "s" THEN GOSUB SOUTH
+  IF $2 = "sur" THEN GOSUB SOUTH
   IF $2 = "west" THEN GOSUB WEST
   IF $2 = "w" THEN GOSUB WEST
+  IF $2 = "oeste" THEN GOSUB WEST
   IF $2 = "east" THEN GOSUB EAST
   IF $2 = "e" THEN GOSUB EAST
+  IF $2 = "este" THEN GOSUB EAST
   IF $2 = "look" THEN GOSUB MOVEROOM
+  IF $2 = "mirar" THEN GOSUB MOVEROOM
   IF $2 = "inventory" THEN GOSUB INVENTORY
-  IF $2 = "examine rug" AND a = 1 THEN PRINT " A worn-out, stained old rug."
-  IF $2 = "examine table" AND a = 2 THEN PRINT " A grandiose hardwood table."
-  IF $2 = "examine table" AND a = 2 AND b = 0 THEN PRINT " A note sits atop it."
-  IF $2 = "examine painting" AND a = 2 THEN PRINT " It is a picture of MR. RAUL"
+  IF $2 = "inventario" THEN GOSUB INVENTORY
+  IF $2 = "examine rug" AND a = 1 THEN PRINT " Una alfombra vieja, gastada y manchada."
+  IF $2 = "examinar alfombra" AND a = 1 THEN PRINT " Una alfombra vieja, gastada y manchada."
+  IF $2 = "examine table" AND a = 2 THEN PRINT " Una mesa enorme de madera noble."
+  IF $2 = "examinar mesa" AND a = 2 THEN PRINT " Una mesa enorme de madera noble."
+  IF $2 = "examine table" AND a = 2 AND b = 0 THEN PRINT " Hay una nota encima."
+  IF $2 = "examinar mesa" AND a = 2 AND b = 0 THEN PRINT " Hay una nota encima."
+  IF $2 = "examine painting" AND a = 2 THEN PRINT " Es un retrato del senor Raul."
+  IF $2 = "examinar cuadro" AND a = 2 THEN PRINT " Es un retrato del senor Raul."
   IF $2 = "take note" AND a = 2 AND b = 0 THEN b = 1
-  IF $2 = "take note" AND a = 2 AND b = 1 THEN PRINT " You've taken the note."
+  IF $2 = "tomar nota" AND a = 2 AND b = 0 THEN b = 1
+  IF $2 = "take note" AND a = 2 AND b = 1 THEN PRINT " Ya tienes la nota."
+  IF $2 = "tomar nota" AND a = 2 AND b = 1 THEN PRINT " Ya tienes la nota."
   IF $2 = "open treasure chest" THEN GOSUB TREASURECHEST
+  IF $2 = "abrir cofre" THEN GOSUB TREASURECHEST
   IF $2 = "unlock door" AND a = 1 AND e = 1 THEN GOTO GAMEEND
+  IF $2 = "desbloquear puerta" AND a = 1 AND e = 1 THEN GOTO GAMEEND
+  IF $2 = "abrir puerta" AND a = 1 AND e = 1 THEN GOTO GAMEEND
   IF $2 = "use note" THEN GOSUB NOTE
+  IF $2 = "usar nota" THEN GOSUB NOTE
   IF $2 = "read note" THEN GOSUB NOTE
+  IF $2 = "leer nota" THEN GOSUB NOTE
   IF $2 = "take candle" AND a = 4 AND c = 0 THEN GOSUB CANDLE
+  IF $2 = "tomar vela" AND a = 4 AND c = 0 THEN GOSUB CANDLE
   IF $2 = "exit" THEN END
-  IF $2 = "" THEN PRINT " Confused? Need a hand? Type HELP for a list of commands!"
+  IF $2 = "salir" THEN END
+  IF $2 = "" THEN PRINT " Te perdiste? Escribe HELP para ver los comandos."
   GOTO PARSER
 
 CANDLE:
-  PRINT " + You take the candle from the sink."
+  PRINT " + Tomas la vela del lavabo."
   c = 1
   RETURN
 
 TREASURECHEST:
   IF a = 6 AND c = 1 THEN e = 1
-  IF a = 6 AND e = 1 AND f = 0 THEN PRINT " + You open the treasure chest and take a KEY out of it."
-  IF f = 1 THEN PRINT " You already have the treasure!" 
+  IF a = 6 AND e = 1 AND f = 0 THEN PRINT " + Abres el cofre y sacas una LLAVE."
+  IF f = 1 THEN PRINT " Ya tienes el tesoro."
   f = 1
   RETURN    
 
 NOTE:
-  IF b = 1 THEN PRINT " The note reads:"
-  IF b = 1 THEN PRINT " The secret to your freedom lies in a box!"
+  IF b = 1 THEN PRINT " La nota dice:"
+  IF b = 1 THEN PRINT " Tu libertad esta dentro de una caja."
   RETURN
 
 GAMEEND:
-  PRINT " You unlock the door and rush outside as you gasp the free air!"
-  PRINT " Nightfall is close and you almost had to spend the night! You "
-  PRINT " decide that it would be wise to run home before mom wakes."
-  PRINT " GAME OVER! Thanks for playing!"
+  PRINT " Abres la puerta y corres afuera a respirar aire libre."
+  PRINT " Casi pasas la noche aqui. Ya esta oscureciendo, asi que"
+  PRINT " decides volver a casa antes de que despierte tu madre."
+  PRINT " FIN DEL JUEGO. Gracias por jugar."
   END
 
 INVENTORY:
@@ -227,29 +246,29 @@ INVENTORY:
 
 EMPTY:
   RAND X 1 5
-  IF X = 1 THEN PRINT " Nothing. Not even so much as a fly out of your packsack."
-  IF X = 2 THEN PRINT " You wonder why your packsack is so light, it's empty."
-  IF X = 3 THEN PRINT " Your packsack has a surprising emptyness."
-  IF X = 4 THEN PRINT " Apart from several dead flies in your packsack, it's empty."
-  IF X = 5 THEN PRINT " You're packsack is full of loot!"
-  IF X = 5 THEN PRINT " Not really, it's empty."
+  IF X = 1 THEN PRINT " Nada. Ni siquiera una mosca en tu mochila."
+  IF X = 2 THEN PRINT " Tu mochila pesa poco porque esta vacia."
+  IF X = 3 THEN PRINT " Tu mochila esta sorprendentemente vacia."
+  IF X = 4 THEN PRINT " Solo hay unas cuantas moscas muertas."
+  IF X = 5 THEN PRINT " Tu mochila esta llena de tesoros."
+  IF X = 5 THEN PRINT " En realidad, esta vacia."
   RETURN
 
 NODIR:
   RAND X 1 3
-  IF x = 1 THEN PRINT " ..So that's how the wall feels on my face. Excellent."
-  IF x = 2 THEN PRINT " You cannot go that way."
-  IF x = 3 THEN PRINT " You win!"
-  IF x = 3 THEN PRINT " .... Just kidding." 
+  IF x = 1 THEN PRINT " Asi se siente la pared en la cara. Genial."
+  IF x = 2 THEN PRINT " No puedes ir por ahi."
+  IF x = 3 THEN PRINT " Ganaste."
+  IF x = 3 THEN PRINT " Es broma."
   RETURN
 
 NORTH:
-  REM -- ENTRANCE TO DINING ROOM --
+  REM -- DE LA ENTRADA AL COMEDOR --
   IF a = 1 THEN x = 1
   IF a = 1 THEN a = 2
   IF x = 1 THEN GOSUB MOVEROOM
   IF x = 1 THEN RETURN
-  REM -- DINING ROOM TO KITCHEN --
+  REM -- DEL COMEDOR A LA COCINA --
   IF a = 2 THEN x = 2
   IF a = 2 THEN a = 3
   IF x = 2 THEN GOSUB MOVEROOM
@@ -258,17 +277,17 @@ NORTH:
   RETURN
 
 WEST:
-  REM -- ENTRANCE TO BEDROOM --
+  REM -- DE LA ENTRADA A LA HABITACION --
   IF a = 1 THEN x = 1
   IF a = 1 THEN a = 5
   IF x = 1 THEN GOSUB MOVEROOM
   IF x = 1 THEN RETURN
-  REM -- DINING ROOM TO BASEMENT --
+  REM -- DEL COMEDOR AL SOTANO --
   IF a = 2 THEN x = 2
   IF a = 2 THEN a = 6
   IF x = 2 THEN GOSUB MOVEROOM
   IF x = 2 THEN RETURN
-  REM -- KITCHEN TO BATHROOM
+  REM -- DE LA COCINA AL BANO
   IF a = 3 THEN x = 3
   IF a = 3 THEN a = 4
   IF x = 3 THEN GOSUB MOVEROOM
@@ -277,12 +296,12 @@ WEST:
   RETURN
 
 SOUTH:
-  REM -- DINING ROOM TO ENTRANCE
+  REM -- DEL COMEDOR A LA ENTRADA
   IF a = 2 THEN x = 2
   IF a = 2 THEN a = 1
   IF x = 2 THEN GOSUB MOVEROOM
   IF x = 2 THEN RETURN
-  REM -- KITCHEN TO DINING ROOM --
+  REM -- DE LA COCINA AL COMEDOR --
   IF a = 3 THEN x = 3
   IF a = 3 THEN a = 2
   IF x = 3 THEN GOSUB MOVEROOM
@@ -291,17 +310,17 @@ SOUTH:
   RETURN
 
 EAST:
-  REM -- BATHROOM TO KITCHEN --
+  REM -- DEL BANO A LA COCINA --
   IF a = 4 THEN x = 4
   IF a = 4 THEN a = 3
   IF x = 4 THEN GOSUB MOVEROOM
   IF x = 4 THEN RETURN
-  REM -- BEDROOM TO ENTRANCE --
+  REM -- DE LA HABITACION A LA ENTRADA --
   IF a = 5 THEN x = 5
   IF a = 5 THEN a = 1
   IF x = 5 THEN GOSUB MOVEROOM
   IF x = 5 THEN RETURN
-  REM -- BASEMENT TO DINING ROOM --
+  REM -- DEL SOTANO AL COMEDOR --
   IF a = 6 THEN x = 6
   IF a = 6 then a = 2
   IF x = 6 THEN GOSUB MOVEROOM
@@ -311,7 +330,7 @@ EAST:
 
 PRESSAKEY:
   PRINT ""
-  PRINT " -- Press any key to continue. --"
+  PRINT " -- Pulse una tecla para continuar. --"
   WAITKEY X
   PRINT ""
   RETURN
